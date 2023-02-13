@@ -1,0 +1,8 @@
+import { DatabaseModel } from './DatabaseModel';
+
+export const bucketDisplayName = 'Bucket';
+
+export interface Bucket extends DatabaseModel {
+  name: string;
+  accountId: string;
+}

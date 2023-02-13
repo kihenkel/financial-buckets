@@ -1,0 +1,31 @@
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Bucket } from '@/models';
+import { useCallback } from 'react';
+import { useAccountContext, useDataContext, useUserContext } from '@/context';
+
+interface AddBucketProps {
+  amountBuckets: number;
+}
+
+export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
+  const { user } = useUserContext();
+  const { account } = useAccountContext();
+  const { updateData } = useDataContext();
+
+  const onClickedAddBucket = useCallback(() => {
+    const newBucket: Partial<Bucket> = {
+      userId: user?.id,
+      accountId: account.id,
+      name: `My Bucket ${amountBuckets + 1}`,
+    };
+
+    updateData({ buckets: [newBucket] });
+  }, [user, account.id, amountBuckets, updateData]);
+
+  return (
+    <Button type="dashed" icon={<PlusOutlined />} size="large" onClick={onClickedAddBucket}>
+      Add Bucket
+    </Button>
+  );
+};

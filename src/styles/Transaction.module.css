@@ -1,0 +1,21 @@
+.transactionAddButton {
+  padding: 0;
+  margin: 0 -10px;
+}
+
+.transactionListItem {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.transactionListItem:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.transactionItem {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color .1s ease-in;
+}

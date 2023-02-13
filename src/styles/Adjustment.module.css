@@ -1,0 +1,21 @@
+.adjustmentAddButton {
+  padding: 0;
+  margin: 0 -10px;
+}
+
+.adjustmentListItem {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.adjustmentListItem:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.adjustmentItem {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color .1s ease-in;
+}

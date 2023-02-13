@@ -1,0 +1,92 @@
+import { List, Tooltip } from 'antd';
+import { useCallback, useMemo, useState } from 'react';
+import { PartialData, Adjustment } from '@/models';
+import { useDataContext, useUserConfigContext } from '@/context';
+import { toCurrency } from '@/utils/toCurrency';
+
+import { EditableText } from '../EditableText';
+import { ButtonDelete } from '../ButtonDelete';
+
+import styles from '@/styles/Adjustment.module.css';
+
+interface AdjustmentItemProps {
+  adjustment: Adjustment;
+}
+
+const validateAmount = (newAmount: string) => {
+  return !isNaN(Number.parseFloat(newAmount));
+};
+
+const adjustmentUpdateWith = (key: keyof Adjustment, value: any, adjustment: Adjustment): PartialData => {
+  return {
+    adjustments: [{
+      id: adjustment.id,
+      userId: adjustment.userId,
+      [key]: value,
+    }]
+  };
+};
+
+export const AdjustmentItem = ({ adjustment }: AdjustmentItemProps) => {
+  const { locale, currency } = useUserConfigContext();
+  const { updateData, deleteData } = useDataContext();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const formattedAmount = useMemo(() => toCurrency(adjustment.amount, locale, currency), [adjustment.amount, locale, currency]);
+
+  const handleItemClicked = useCallback(() => {
+    setIsEditMode(!isEditMode);
+  }, [isEditMode, setIsEditMode]);
+
+  const handleDeleteConfirmed = useCallback(() => {
+    deleteData({
+      adjustments: [adjustment.id]
+    });
+  }, [adjustment.id, deleteData]);
+
+  const handleLabelChange = useCallback((newLabel: string) => {
+    updateData(adjustmentUpdateWith('label', newLabel, adjustment));
+  }, [adjustment, updateData]);
+
+  const handleAmountChange = useCallback((newAmount: string) => {
+    const amount = Number.parseFloat(newAmount);
+    updateData(adjustmentUpdateWith('amount', amount, adjustment));
+  }, [adjustment, updateData]);
+
+  const handleDescriptionChange = useCallback((newDescription: string) => {
+    updateData(adjustmentUpdateWith('description', newDescription, adjustment));
+  }, [adjustment, updateData]);
+
+  return (
+    <>
+      <Tooltip placement="right" title={adjustment.description}>
+        <List.Item onClick={handleItemClicked} className={styles.adjustmentListItem}>
+          <div className={styles.adjustmentItem}>
+            <EditableText
+              text={adjustment.label}
+              textProps={{ type: 'secondary' }}
+              inputProps={{ style: { width: 80 }}}
+              onEdit={handleLabelChange}
+            />
+            <EditableText
+              text={formattedAmount}
+              textProps={{ style: { textAlign: 'right' }}}
+              inputProps={{ style: { width: 80, textAlign: 'right' }}}
+              onEdit={handleAmountChange}
+              validate={validateAmount}
+            />
+          </div>
+          {isEditMode &&
+            <div className={styles.adjustmentItem}>
+              <EditableText
+                text={adjustment.description}
+                placeholder="No description"
+                onEdit={handleDescriptionChange}
+              />
+              <ButtonDelete itemName="adjustment" onConfirm={handleDeleteConfirmed} />
+            </div>
+          }
+        </List.Item>
+      </Tooltip>
+    </>
+  );
+};
