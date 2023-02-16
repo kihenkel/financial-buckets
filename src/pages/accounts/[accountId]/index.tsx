@@ -1,17 +1,14 @@
-import { useEffect, useMemo } from 'react';
-import { useRouter } from 'next/router';
-import isEqual from 'lodash/isEqual';
+import { useMemo } from 'react';
 import { Bucket } from '@/components/bucket/Bucket';
 import { BucketDisplayData, Bucket as BucketModel, Data, Transaction, Adjustment } from '@/models';
 import { MainBucket } from '@/components/bucket/MainBucket';
 import { useAccountContext } from '@/context';
 import { AddBucket } from '@/components/bucket/AddBucket';
 import { AccountBalance } from '@/components/AccountBalance';
+import { PageProps } from '@/components/AppContainer';
+import { ToolsBar } from '@/components/tools-bar/ToolsBar';
 
 import styles from '@/styles/AccountPage.module.css';
-import { PageProps } from '@/components/AppContainer';
-
-const needsIntroduction = (data?: Data) => data && (!data.user.name || !data.accounts[0]?.name);
 
 const getBucketDisplayData = (accountBalance: number, buckets: BucketModel[], transactions: Transaction[], adjustments: Adjustment[]): BucketDisplayData => {
   const bucketTransactions = buckets.map((bucket) =>
@@ -34,23 +31,7 @@ const getBucketDisplayData = (accountBalance: number, buckets: BucketModel[], tr
 };
 
 export default function AccountPage({ data }: PageProps) {
-  const router = useRouter();
-  const { accountId } = router.query;
-  const { account, setAccount } = useAccountContext();
-
-  useEffect(() => {
-    const serverAccount = data?.accounts.find(account => account.id === accountId);
-    if (serverAccount && !isEqual(account, serverAccount)) {
-      setAccount(serverAccount);
-    }
-  }, [account, data, setAccount]);
-
-  useEffect(() => {
-    const isIntroductionNeeded = needsIntroduction(data);
-    if (isIntroductionNeeded) {
-      router.push('/introduction');
-    }
-  }, [data]);
+  const { account } = useAccountContext();
 
   const bucketDisplayData: BucketDisplayData = useMemo(() => {
     if (!account.balance || !data?.buckets || !data?.transactions) {
@@ -60,7 +41,8 @@ export default function AccountPage({ data }: PageProps) {
   }, [data, account]);
 
   return (
-    <>
+    <div className={styles.accountPage}>
+      <ToolsBar />
       {data && account.name && account.balance &&
         <div className={styles.mainBuckets}>
           <div className={styles.left}>
@@ -84,6 +66,6 @@ export default function AccountPage({ data }: PageProps) {
           </div>
         </div>
       }
-    </>
+    </div>
   );
 }

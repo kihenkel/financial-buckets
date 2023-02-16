@@ -78,3 +78,7 @@ a {
     color-scheme: dark;
   }
 }
+
+.ant-spin-dot-item {
+  background-color: #838383 !important;
+}

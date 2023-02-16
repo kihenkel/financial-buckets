@@ -21,6 +21,10 @@ export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit,
     setIsEditMode(true);
   }, [setIsEditMode]);
 
+  const handleInputClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   const handleInputFinish = useCallback<EventHandler<any>>((event) => {
     const newText = String(event.target.value);
     setIsEditMode(false);
@@ -41,6 +45,7 @@ export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit,
           style={{ padding: 0, ...inputProps?.style }}
           onPressEnter={handleInputFinish}
           onBlur={handleInputFinish}
+          onClick={handleInputClick}
         />
       }
     </>

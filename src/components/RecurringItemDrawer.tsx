@@ -2,17 +2,18 @@ import { Button, Drawer, Space } from 'antd';
 
 interface RecurringItemDrawerProps {
   itemName: string;
+  isOpen: boolean;
   children: React.ReactNode;
   onClose(): void;
 }
 
-export const RecurringItemDrawer = ({ itemName, onClose, children }: RecurringItemDrawerProps) => {
+export const RecurringItemDrawer = ({ itemName, isOpen, onClose, children }: RecurringItemDrawerProps) => {
   return (
     <Drawer
       title={`Create recurring ${itemName}`}
-      width={450}
+      width={800}
       onClose={onClose}
-      open
+      open={isOpen}
       bodyStyle={{ paddingBottom: 80 }}
       extra={
         <Space>

@@ -1,0 +1,10 @@
+.toolsBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  gap: 8px;
+  width: 64px;
+  border-right: 1px solid #ccc;
+  background-color: rgb(var(--background-start-rgb));
+}

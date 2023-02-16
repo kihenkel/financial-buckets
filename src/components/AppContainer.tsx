@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import { useSession } from 'next-auth/react';
 import isEqual from 'lodash/isEqual';
-import { useDataContext, useUserContext } from '@/context';
+import { useAccountContext, useDataContext, useUserContext } from '@/context';
 import { useData } from '@/hooks/useData';
 import { LoadingIndicator } from '@/components/LoadingIndicator';
 import { Header } from './Header';
@@ -10,6 +10,9 @@ import { Header } from './Header';
 import styles from '@/styles/AppContainer.module.css';
 import { Data } from '@/models';
 import { Spin } from 'antd';
+import { useRouter } from 'next/router';
+
+const needsIntroduction = (data?: Data) => data && (!data.user.name || !data.accounts[0]?.name);
 
 export interface PageProps {
   data: Data;
@@ -17,9 +20,26 @@ export interface PageProps {
 
 export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const { status } = useSession({ required: true });
+  const router = useRouter();
   const { data, isLoading, error, update, remove } = useData({ shouldLoad: status === 'authenticated' });
   const { user, setUser } = useUserContext();
   const { setUpdateData, setDeleteData } = useDataContext();
+  const { account, setAccount } = useAccountContext();
+  const { accountId } = router.query;
+
+  useEffect(() => {
+    const serverAccount = data?.accounts.find(account => account.id === accountId);
+    if (serverAccount && !isEqual(account, serverAccount)) {
+      setAccount(serverAccount);
+    }
+  }, [account, data, setAccount]);
+
+  useEffect(() => {
+    const isIntroductionNeeded = needsIntroduction(data);
+    if (isIntroductionNeeded) {
+      router.push('/introduction');
+    }
+  }, [data]);
 
   useEffect(() => {
     const serverUser = data?.user;
