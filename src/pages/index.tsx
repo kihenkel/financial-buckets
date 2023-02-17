@@ -1,28 +1,31 @@
-import { useEffect } from 'react';
-import { Button, Space, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Space, Spin, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Data } from '@/models';
 import { PageProps } from '@/components/AppContainer';
 
 import styles from '@/styles/HomePage.module.css';
 
 const { Title } = Typography;
 
-const needsIntroduction = (data?: Data) => data && (!data.user.name || !data.accounts[0]?.name);
-
 export default function HomePage({ data }: PageProps) {
   const router = useRouter();
+  const [isInitialRender, setIsInitialRender] = useState(true);
 
   useEffect(() => {
-    const isIntroductionNeeded = needsIntroduction(data);
-    if (isIntroductionNeeded) {
-      router.push('/introduction');
-    } else if (data.accounts.length === 1) {
+    if (!isInitialRender) {
+      return;
+    }
+    if (data.accounts.length === 1) {
       router.push(`/accounts/${data.accounts[0].id}`);
     }
-  }, [data]);
+    setIsInitialRender(false);
+  }, [isInitialRender, data.accounts, router]);
+
+  if (isInitialRender) {
+    return <div className={styles.spinner}><Spin size="large" /></div>;
+  }
 
   return (
     <div className={styles.page}>

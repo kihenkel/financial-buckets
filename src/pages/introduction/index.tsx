@@ -48,7 +48,7 @@ export default function IntroductionPage() {
     };
     updateData(submitData);
     router.push(`/accounts/${account.id}`);
-  }, [user, account.id, updateData]);
+  }, [user, account.id, router, updateData]);
 
   return (
     <div className={styles.introduction}>

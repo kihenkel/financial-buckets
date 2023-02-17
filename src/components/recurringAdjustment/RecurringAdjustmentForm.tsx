@@ -1,63 +1,39 @@
 import { useUserConfigContext } from '@/context';
-import { DatePicker, Form, Input, InputNumber, Select } from 'antd';
+import { Form, FormProps, Input, InputNumber } from 'antd';
 
-const { Option } = Select;
+interface RecurringAdjustmentFormProps extends FormProps {
+}
 
-const intervalTypes = [
-  { value: 'daily', label: 'Daily'},
-  { value: 'weekly', label: 'Weekly'},
-  { value: 'monthly', label: 'Monthly'},
-  { value: 'yearly', label: 'Yearly'},
-  { value: 'semiMonthly', label: 'Semi-monthly (1st and 15th)'},
-];
-
-export const RecurringAdjustmentForm = () => {
+export const RecurringAdjustmentForm = ({ ...formProps }: RecurringAdjustmentFormProps) => {
   const { currency } = useUserConfigContext();
   return (
-    <Form layout="vertical" requiredMark={false}>
+    <Form layout="vertical" requiredMark={false} {...formProps}>
+      <Form.Item
+        name="label"
+        label="Enter name for adjustment"
+        rules={[{ required: true, message: 'Please enter label' }]}
+      >
+        <Input placeholder="Label" />
+      </Form.Item>
       <Form.Item
         name="amount"
         label="Amount"
         rules={[{ required: true, message: 'Please enter amount' }]}
       >
-        <InputNumber placeholder={currency} />
+        <InputNumber placeholder={currency} controls={false} />
       </Form.Item>
       <Form.Item
-        name="intervalType"
-        label="Interval Type"
-        rules={[{ required: true, message: 'Please select interval type' }]}
+        name="dayOfMonth"
+        label="Which day of the month should the adjustment happen? (1-31)"
+        rules={[{ required: true, message: 'Please enter day of month' }]}
       >
-        <Select placeholder="Select interval type">
-          {intervalTypes.map((intervalType) => (
-            <Option key={intervalType.value} value={intervalType.value}>{intervalType.label}</Option>
-          ))}
-        </Select>
-      </Form.Item>
-      <Form.Item
-        name="interval"
-        label="Interval (every X days/weeks/months/years)"
-        rules={[{ required: true, message: 'Please enter interval' }]}
-      >
-        <InputNumber placeholder="Interval" />
-      </Form.Item>
-      <Form.Item
-        name="date"
-        label="First transaction date"
-        rules={[{ required: true, message: 'Please enter date' }]}
-      >
-        <DatePicker />
-      </Form.Item>
-      <Form.Item
-        name="transactionsLeft"
-        label="Limit transactions"
-      >
-        <InputNumber placeholder="Amount" defaultValue={-1} />
+        <InputNumber min={1} max={31} placeholder="Day" controls={false} />
       </Form.Item>
       <Form.Item
         name="description"
-        label="Description"
+        label="Enter descripton"
       >
-        <Input placeholder="Description" />
+        <Input.TextArea placeholder="Description" />
       </Form.Item>
     </Form>
   );

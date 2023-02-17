@@ -42,7 +42,7 @@ export const Header = ({ data }: HeaderProps) => {
         label: (<Link href="/new-account"><PlusOutlined /> Add account</Link>),
       }
     ];
-  }, [account, router.pathname, data?.accounts.length]);
+  }, [account, router.pathname, data?.accounts]);
   
   return (
     <header className={styles.header}>

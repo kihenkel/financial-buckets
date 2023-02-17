@@ -1,45 +1,45 @@
-import { List } from 'antd';
+import { Button, List, Typography } from 'antd';
 import { RecurringAdjustment } from '@/models';
+import { useUserConfigContext } from '@/context';
+import { toCurrency } from '@/utils/toCurrency';
+import { toOrdinalNumber } from '@/utils/toOrdinalNumber';
+import { useCallback } from 'react';
+import { ButtonDelete } from '../ButtonDelete';
+
+const { Title } = Typography;
 
 interface RecurringAdjustmentItemProps {
   recurringAdjustment: RecurringAdjustment;
+  onClickedEdit(recurringAdjustment: RecurringAdjustment): void;
+  onClickedDelete(recurringAdjustment: RecurringAdjustment): void;
 }
 
-export const RecurringAdjustmentItem = ({ recurringAdjustment }: RecurringAdjustmentItemProps) => {
-  // const { locale, currency } = useUserConfigContext();
-  // const { updateData, deleteData } = useDataContext();
-  // const [isEditMode, setIsEditMode] = useState(false);
-  // const formattedAmount = useMemo(() => toCurrency(recurringAdjustment.amount, locale, currency), [recurringAdjustment.amount, locale, currency]);
+export const RecurringAdjustmentItem = ({ recurringAdjustment, onClickedEdit, onClickedDelete }: RecurringAdjustmentItemProps) => {
+  const { locale, currency } = useUserConfigContext();
 
-  // const handleItemClicked = useCallback(() => {
-  //   setIsEditMode(!isEditMode);
-  // }, [isEditMode, setIsEditMode]);
+  const handleEditClicked = useCallback(() => {
+    onClickedEdit(recurringAdjustment);
+  }, [recurringAdjustment, onClickedEdit]);
 
-  // const handleDeleteConfirmed = useCallback(() => {
-  //   deleteData({
-  //     recurringAdjustments: [recurringAdjustment.id]
-  //   });
-  // }, [recurringAdjustment.id, deleteData]);
-
-  // const handleLabelChange = useCallback((newLabel: string) => {
-  //   updateData(recurringAdjustmentUpdateWith('label', newLabel, recurringAdjustment));
-  // }, [recurringAdjustment, updateData]);
-
-  // const handleAmountChange = useCallback((newAmount: string) => {
-  //   const amount = Number.parseFloat(newAmount);
-  //   updateData(recurringAdjustmentUpdateWith('amount', amount, recurringAdjustment));
-  // }, [recurringAdjustment, updateData]);
-
-  // const handleDescriptionChange = useCallback((newDescription: string) => {
-  //   updateData(recurringAdjustmentUpdateWith('description', newDescription, recurringAdjustment));
-  // }, [recurringAdjustment, updateData]);
+  const handleDeleteClicked = useCallback(() => {
+    onClickedDelete(recurringAdjustment);
+  }, [recurringAdjustment, onClickedDelete]);
 
   return (
-    <List.Item>
+    <List.Item
+      actions={[
+        <Button key={`${recurringAdjustment.id}_edit`} type="link" onClick={handleEditClicked}>edit</Button>,
+        <ButtonDelete key={`${recurringAdjustment.id}_delete`} itemName="recurring adjustment" onConfirm={handleDeleteClicked} />
+      ]}
+    >
       <List.Item.Meta
+        avatar={<Title level={2} style={{ width: 64 }}>{toOrdinalNumber(recurringAdjustment.dayOfMonth, locale)}</Title>}
         title={recurringAdjustment.label}
         description={recurringAdjustment.description}
       />
+      <div>
+        {toCurrency(recurringAdjustment.amount, locale, currency)}
+      </div>
     </List.Item>
   );
 };
