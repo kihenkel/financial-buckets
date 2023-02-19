@@ -1,4 +1,5 @@
 export * from './databaseModelSchema';
+export * from './intervalModelSchema';
 export * from './userSchema';
 export * from './accountSchema';
 export * from './bucketSchema';

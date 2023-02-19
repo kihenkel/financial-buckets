@@ -44,6 +44,8 @@
   --input-submit-bkg-rgb: 212, 212, 212;
   --input-submit-bkg-hover-rgb: 0, 124, 240;
 
+  --header-height: 48px;
+
 }
 
 * {
@@ -59,6 +61,7 @@ body {
 }
 
 body {
+  min-height: 100vh;
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,

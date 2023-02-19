@@ -1,12 +1,13 @@
-import { Button, List, Typography } from 'antd';
+import { Button, List, Space, Typography } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import { RecurringAdjustment } from '@/models';
 import { useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
-import { toOrdinalNumber } from '@/utils/toOrdinalNumber';
 import { useCallback } from 'react';
 import { ButtonDelete } from '../ButtonDelete';
+import { RecurringItemAvatar } from '../RecurringItemAvatar';
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 interface RecurringAdjustmentItemProps {
   recurringAdjustment: RecurringAdjustment;
@@ -28,18 +29,19 @@ export const RecurringAdjustmentItem = ({ recurringAdjustment, onClickedEdit, on
   return (
     <List.Item
       actions={[
-        <Button key={`${recurringAdjustment.id}_edit`} type="link" onClick={handleEditClicked}>edit</Button>,
+        <Button key={`${recurringAdjustment.id}_edit`} type="text" onClick={handleEditClicked}><EditOutlined /></Button>,
         <ButtonDelete key={`${recurringAdjustment.id}_delete`} itemName="recurring adjustment" onConfirm={handleDeleteClicked} />
       ]}
     >
       <List.Item.Meta
-        avatar={<Title level={2} style={{ width: 64 }}>{toOrdinalNumber(recurringAdjustment.dayOfMonth, locale)}</Title>}
+        avatar={<RecurringItemAvatar intervalType={recurringAdjustment.intervalType} interval={recurringAdjustment.interval} date={recurringAdjustment.date} />}
         title={recurringAdjustment.label}
         description={recurringAdjustment.description}
       />
-      <div>
+      <Space>
+        {recurringAdjustment.isLimited && <Text type="warning">({recurringAdjustment.amountLeft} occurences left)</Text>}
         {toCurrency(recurringAdjustment.amount, locale, currency)}
-      </div>
+      </Space>
     </List.Item>
   );
 };

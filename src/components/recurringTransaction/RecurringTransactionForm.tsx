@@ -1,8 +1,7 @@
-
 import { Form, FormProps, Input, InputNumber } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { useUserConfigContext } from '@/context';
-import { RecurringAdjustment } from '@/models';
+import { RecurringTransaction } from '@/models';
 import { Interval } from '@/models/IntervalModel';
 import { IntervalFormPart } from '../form/IntervalFormPart';
 
@@ -11,14 +10,14 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
-export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
+export const RecurringTransactionForm = ({ ...formProps }: FormProps) => {
   const { currency } = useUserConfigContext();
   const [isLimit, setIsLimit] = useState(false);
-  const initialValues = formProps.initialValues as RecurringAdjustment;
-  const [intervalSuffix, setIntervalSuffix] = useState(Interval[initialValues?.intervalType]?.plural ?? Interval.daily.plural);
+  const initialValues = formProps.initialValues as RecurringTransaction;
+  const [intervalSuffix, setIntervalSuffix] = useState(Interval[initialValues.intervalType]?.plural ?? Interval.daily.plural);
 
   useEffect(() => {
-    const initialValues = formProps.initialValues as RecurringAdjustment;
+    const initialValues = formProps.initialValues as RecurringTransaction;
     if (initialValues.intervalType) {
       setIntervalSuffix(Interval[initialValues?.intervalType]?.plural);
     }
@@ -27,7 +26,7 @@ export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
     }
   }, [formProps.initialValues, setIntervalSuffix, setIsLimit]);
 
-  const handleValuesChange = useCallback((changedValues: Partial<RecurringAdjustment>) => {
+  const handleValuesChange = useCallback((changedValues: Partial<RecurringTransaction>) => {
     if (changedValues.intervalType !== undefined) {
       setIntervalSuffix(Interval[changedValues.intervalType].plural);
     }
@@ -38,13 +37,6 @@ export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
 
   return (
     <Form requiredMark={false} onValuesChange={handleValuesChange} {...formItemLayout} {...formProps}>
-      <Form.Item
-        name="label"
-        label="Adjustment name"
-        rules={[{ required: true }]}
-      >
-        <Input placeholder="Label" />
-      </Form.Item>
       <Form.Item
         name="amount"
         label="Amount"

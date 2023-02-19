@@ -1,19 +1,18 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { intervalModelSchemaNew, intervalModelSchemaUpdate } from './intervalModelSchema';
 
-export const recurringAdjustmentSchemaNew = databaseModelSchema.append({
+export const recurringAdjustmentSchemaNew = intervalModelSchemaNew.append({
   accountId: Joi.string().required(),
   amount: Joi.number().required(),
-  dayOfMonth: Joi.number().min(1).max(31).required(),
   label: Joi.string().required(),
   description: Joi.string(),
 });
 
-export const recurringAdjustmentSchemaUpdate = recurringAdjustmentSchemaNew.keys({
+export const recurringAdjustmentSchemaUpdate = intervalModelSchemaUpdate.append({
   accountId: Joi.string(),
   amount: Joi.number(),
-  dayOfMonth: Joi.number().min(1).max(31),
   label: Joi.string(),
+  description: Joi.string(),
 });
 
 export const recurringAdjustmentOptimizeKeys = ['userId', 'accountId'];

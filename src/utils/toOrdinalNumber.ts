@@ -1,14 +1,13 @@
 import { Locale } from '@/context/UserConfigContext';
 
-export const toOrdinalNumber = (number: string | number, locale: Locale): string => {
-  const numberString = String(number);
+export const toOrdinalNumber = (dateString: string, locale: Locale): string => {
+  const date = new Date(dateString);
   if (locale === 'en-US') {
-    switch (numberString) {
-      case '1': return `${numberString}st`;
-      case '2': return `${numberString}nd`;
-      case '3': return `${numberString}rd`;
-      default: return `${numberString}th`;
-    }
+    const day = String(date.getDate());
+    if (day.endsWith('1')) return `${day}st`;
+    if (day.endsWith('2')) return `${day}nd`;
+    if (day.endsWith('3')) return `${day}rd`;
+    return `${day}th`;
   }
-  return numberString;
+  return String(date.getDate());
 }

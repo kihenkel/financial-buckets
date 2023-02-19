@@ -4,6 +4,7 @@ import { RecurringAdjustmentList } from '@/components/recurringAdjustment/Recurr
 import { ToolsBar } from '@/components/tools-bar/ToolsBar';
 
 import styles from '@/styles/RecurringItemsPage.module.css';
+import { RecurringTransactionList } from '@/components/recurringTransaction/RecurringTransactionList';
 
 export default function RecurringItemsPage({ data }: PageProps) {
 
@@ -13,6 +14,7 @@ export default function RecurringItemsPage({ data }: PageProps) {
       <div className={styles.main}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <RecurringAdjustmentList recurringAdjustments={data.recurringAdjustments} />
+          {data.buckets?.length > 0 && <RecurringTransactionList buckets={data.buckets} recurringTransactions={data.recurringTransactions} />}
         </Space>
       </div>
     </div>

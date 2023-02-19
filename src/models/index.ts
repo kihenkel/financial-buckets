@@ -1,6 +1,7 @@
 export * from './Data';
 
 export * from './DatabaseModel';
+export * from './IntervalModel';
 export * from './User';
 export * from './Account';
 export * from './Bucket';

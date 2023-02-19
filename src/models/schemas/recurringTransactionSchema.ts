@@ -1,25 +1,16 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { intervalModelSchemaNew, intervalModelSchemaUpdate } from './intervalModelSchema';
 
-export const recurringTransactionSchemaNew = databaseModelSchema.append({
+export const recurringTransactionSchemaNew = intervalModelSchemaNew.append({
   bucketId: Joi.string().required(),
   amount: Joi.number().required(),
-  date: Joi.string().isoDate()
-    .when('intervalType', { is: 'semiMonthly', then: Joi.required(), otherwise: Joi.optional() }),
-  interval: Joi.number().positive()
-    .when('intervalType', { is: 'semiMonthly', then: Joi.required(), otherwise: Joi.optional() }),
-  intervalType: Joi.string().valid('daily', 'weekly', 'monthly', 'yearly', 'semiMonthly').required(),
-  transactionsLeft: Joi.number().positive().allow(-1, 0).required(),
   description: Joi.string(),
 });
 
-export const recurringTransactionSchemaUpdate = recurringTransactionSchemaNew.keys({
+export const recurringTransactionSchemaUpdate = intervalModelSchemaUpdate.append({
   bucketId: Joi.string(),
   amount: Joi.number(),
-  date: Joi.string().isoDate(),
-  interval: Joi.number().positive(),
-  intervalType: Joi.string().valid('daily', 'weekly', 'monthly', 'yearly', 'semiMonthly'),
-  transactionsLeft: Joi.number().positive().allow(-1, 0),
+  description: Joi.string(),
 });
 
 export const recurringTransactionOptimizeKeys = ['userId', 'bucketId'];

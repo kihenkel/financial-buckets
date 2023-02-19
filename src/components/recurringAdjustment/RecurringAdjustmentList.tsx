@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Card, List } from 'antd';
+import { PlusCircleTwoTone } from '@ant-design/icons';
 import { RecurringAdjustment } from '@/models';
 import { RecurringAdjustmentItem } from './RecurringAdjustmentItem';
 import { RecurringItemDrawer } from '../RecurringItemDrawer';
 import { useAccountContext, useDataContext, useUserContext } from '@/context';
 import { RecurringAdjustmentForm } from './RecurringAdjustmentForm';
+import { sortIntervalItems } from '@/utils/sortIntervalItems';
 
 interface AdjustmentListProps {
   recurringAdjustments: RecurringAdjustment[];
@@ -18,9 +20,10 @@ export const RecurringAdjustmentList = ({ recurringAdjustments }: AdjustmentList
   const { user } = useUserContext();
   const { account } = useAccountContext();
 
-  const handleFormFinish = useCallback((recurringAdjustment: any) => {
+  const handleFormFinish = useCallback((recurringAdjustment: Partial<RecurringAdjustment>) => {
     updateData({
       recurringAdjustments: [{
+        id: existingRecurringAdjustment?.id,
         userId: user?.id,
         accountId: account.id,
         ...recurringAdjustment,
@@ -28,7 +31,7 @@ export const RecurringAdjustmentList = ({ recurringAdjustments }: AdjustmentList
     });
     setIsDrawerOpen(false);
     setExistingRecurringAdjustment(undefined);
-  }, [user?.id, account.id, updateData, setIsDrawerOpen]);
+  }, [user?.id, account.id, existingRecurringAdjustment, updateData, setIsDrawerOpen]);
 
   const handleAddClicked = useCallback(() => {
     setIsDrawerOpen(true);
@@ -48,11 +51,15 @@ export const RecurringAdjustmentList = ({ recurringAdjustments }: AdjustmentList
     setExistingRecurringAdjustment(undefined);
   }, [setIsDrawerOpen, setExistingRecurringAdjustment]);
 
-  const sortedRecurringAdjustments = [...recurringAdjustments].sort((a, b) => a.dayOfMonth - b.dayOfMonth);
+  const recurringAdjustmentsStringified = JSON.stringify(recurringAdjustments);
+  const sortedRecurringAdjustments = useMemo(() => {
+    return [...recurringAdjustments].sort(sortIntervalItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recurringAdjustmentsStringified]);
 
   return (
     <>
-      <Card title="Recurring Adjustments" extra={<Button type="link" onClick={handleAddClicked}>Add</Button>}>
+      <Card title={`Recurring Adjustments (${sortedRecurringAdjustments.length})`} extra={<Button type="text" onClick={handleAddClicked}><PlusCircleTwoTone /></Button>}>
         <List
           dataSource={sortedRecurringAdjustments}
           itemLayout="horizontal"

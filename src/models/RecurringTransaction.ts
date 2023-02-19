@@ -1,15 +1,10 @@
 import { DatabaseModel } from './DatabaseModel';
+import { IntervalModel } from './IntervalModel';
 
 export const recurringTransactionDisplayName = 'RecurringTransaction';
 
-export type TransactionInterval = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'semiMonthly';
-
-export interface RecurringTransaction extends DatabaseModel {
+export interface RecurringTransaction extends DatabaseModel, IntervalModel {
   bucketId: string;
   amount: number;
   description: string;
-  date: string;
-  interval: number;
-  intervalType: TransactionInterval;
-  transactionsLeft: number;
 }

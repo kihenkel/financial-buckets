@@ -1,6 +1,7 @@
 import { RecurringAdjustment, RecurringTransaction } from '@/models';
 import { Button, Drawer, Form, FormProps, Space } from 'antd';
-import { useCallback, useEffect } from 'react';
+import dayjs from 'dayjs';
+import { useCallback, useEffect, useMemo } from 'react';
 
 interface RecurringItemDrawerProps {
   itemName: string;
@@ -14,9 +15,29 @@ interface RecurringItemDrawerProps {
 export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormComponent, existingData, onFinish, onClose }: RecurringItemDrawerProps) => {
   const [form] = Form.useForm();
 
+  const handleOnFinish = useCallback((data: any) => {
+    if (data.date) {
+      data.date = data.date.format(); // dayjs object
+    }
+    onFinish(data);
+  }, [onFinish]);
+
   const handleSubmit = useCallback(() => {
     form.submit();
   }, [form]);
+
+  const handleClose = useCallback(() => {
+    form.resetFields();
+    onClose();
+  }, [form, onClose]);
+
+  const initialValues = useMemo(() => {
+    const values = { ...existingData } as any;
+    if (values?.date) {
+      values.date = dayjs(values.date);
+    }
+    return values;
+  }, [existingData]);
 
   useEffect(() => {
     form.resetFields();
@@ -25,8 +46,8 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
   return ( 
     <Drawer
       title={`Create recurring ${itemName}`}
-      width={800}
-      onClose={onClose}
+      width={600}
+      onClose={handleClose}
       open={isOpen}
       bodyStyle={{ paddingBottom: 80 }}
       extra={
@@ -38,7 +59,7 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
         </Space>
       }
     >
-      <FormComponent form={form} onFinish={onFinish} initialValues={existingData} />
+      <FormComponent form={form} onFinish={handleOnFinish} initialValues={initialValues} />
     </Drawer>
   );
 };
