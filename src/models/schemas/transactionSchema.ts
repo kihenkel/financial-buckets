@@ -5,7 +5,6 @@ export const transactionSchemaNew = databaseModelSchema.append({
   bucketId: Joi.string().required(),
   amount: Joi.number().required(),
   timestamp: Joi.number().positive().required(),
-  refBucketId: Joi.string(),
   description: Joi.string(),
   recurringTransactionId: Joi.string(),
 });

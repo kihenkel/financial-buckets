@@ -23,7 +23,7 @@ async function updateTransaction(newTransaction: Partial<Transaction>, user: Use
   return updatedTransaction;
 }
 
-async function addTransaction(newTransaction: Partial<Transaction>, user: User): Promise<Transaction> {
+export async function addTransaction(newTransaction: Partial<Transaction>, user: User): Promise<Transaction> {
   logger.info(`Adding new transaction for user ${user.id} ...`);
   if (newTransaction.userId !== user.id) {
     throw new Error(`User id from transaction ${newTransaction.userId} and signed in user ${user.id} dont match. Aborting transaction creation!`);
@@ -39,17 +39,17 @@ async function updateOrAddTransaction(newTransaction: Partial<Transaction>, user
   }
 }
 
+async function deleteTransaction(id: string, user: User): Promise<void> {
+  logger.info(`Deleting transaction ${id} ...`);
+  const query = new Query<Transaction>().findById(id).findBy('userId', user.id);
+  return db.deleteTransactions(query);
+}
+
 export async function updateTransactions(newTransactions: Partial<Transaction>[], user: User): Promise<Transaction[]> {
   logger.info(`Updating ${newTransactions.length} transactions ...`);
 
   const updatedTransactions = await chainPromises(newTransactions, (transaction: Partial<Transaction>) => updateOrAddTransaction(transaction, user));
   return updatedTransactions;
-}
-
-async function deleteTransaction(id: string, user: User): Promise<void> {
-  logger.info(`Deleting transaction ${id} ...`);
-  const query = new Query<Transaction>().findById(id).findBy('userId', user.id);
-  return db.deleteTransactions(query);
 }
 
 export async function deleteTransactions(ids: string[], user: User): Promise<void> {

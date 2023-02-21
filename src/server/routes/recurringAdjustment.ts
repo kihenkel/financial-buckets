@@ -4,11 +4,6 @@ import { Query } from '@/server/db/Query';
 import logger from '../logger';
 import { chainPromises } from '@/utils/chainPromises';
 
-export function getRecurringAdjustments(user: User, account: Account): Promise<RecurringAdjustment[]> {
-  const query = new Query<RecurringAdjustment>().findBy('userId', user.id).findBy('accountId', account.id);
-  return db.getAllRecurringAdjustments(query);
-}
-
 async function updateRecurringAdjustment(newRecurringAdjustment: Partial<RecurringAdjustment>, user: User): Promise<RecurringAdjustment> {
   if (!newRecurringAdjustment.id) {
     throw new Error('Failed to update: Missing recurringAdjustment id!');
@@ -38,17 +33,22 @@ async function updateOrAddRecurringAdjustment(newRecurringAdjustment: Partial<Re
   }
 }
 
+async function deleteRecurringAdjustment(id: string, user: User): Promise<void> {
+  logger.info(`Deleting recurringAdjustment ${id} ...`);
+  const query = new Query().findById(id).findBy('userId', user.id);
+  return db.deleteRecurringAdjustments(query);
+}
+
+export function getRecurringAdjustments(user: User, account: Account): Promise<RecurringAdjustment[]> {
+  const query = new Query<RecurringAdjustment>().findBy('userId', user.id).findBy('accountId', account.id);
+  return db.getAllRecurringAdjustments(query);
+}
+
 export async function updateRecurringAdjustments(newRecurringAdjustments: Partial<RecurringAdjustment>[], user: User): Promise<RecurringAdjustment[]> {
   logger.info(`Updating ${newRecurringAdjustments.length} recurringAdjustments ...`);
 
   const updatedRecurringAdjustments = await chainPromises(newRecurringAdjustments, (recurringAdjustment: Partial<RecurringAdjustment>) => updateOrAddRecurringAdjustment(recurringAdjustment, user));
   return updatedRecurringAdjustments;
-}
-
-async function deleteRecurringAdjustment(id: string, user: User): Promise<void> {
-  logger.info(`Deleting recurringAdjustment ${id} ...`);
-  const query = new Query().findById(id).findBy('userId', user.id);
-  return db.deleteRecurringAdjustments(query);
 }
 
 export async function deleteRecurringAdjustments(ids: string[], user: User): Promise<void> {

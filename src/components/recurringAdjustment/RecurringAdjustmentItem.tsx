@@ -34,7 +34,7 @@ export const RecurringAdjustmentItem = ({ recurringAdjustment, onClickedEdit, on
       ]}
     >
       <List.Item.Meta
-        avatar={<RecurringItemAvatar intervalType={recurringAdjustment.intervalType} interval={recurringAdjustment.interval} date={recurringAdjustment.date} />}
+        avatar={<RecurringItemAvatar intervalType={recurringAdjustment.intervalType} interval={recurringAdjustment.interval} date={recurringAdjustment.initialDate} />}
         title={recurringAdjustment.label}
         description={recurringAdjustment.description}
       />

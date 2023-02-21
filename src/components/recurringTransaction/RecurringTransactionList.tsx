@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Badge, Button, Card, List, Space } from 'antd';
+import { Button, Card, List } from 'antd';
 import { PlusCircleTwoTone } from '@ant-design/icons';
 import { Bucket, RecurringTransaction } from '@/models';
 import { RecurringTransactionItem } from './RecurringTransactionItem';
@@ -76,7 +76,7 @@ export const RecurringTransactionList = ({ buckets, recurringTransactions }: Rec
   }, [recurringAdjustmentsStringified, bucketsStringified]);
 
   const tabList = useMemo(() => {
-    return buckets.map((bucket) => ({ key: bucket.id, tab: <Space><Badge count={sortedRecurringTransactionMap[bucket.id].length} color='#faad14' />{bucket.name}</Space> }));
+    return buckets.map((bucket) => ({ key: bucket.id, tab: `${bucket.name} (${sortedRecurringTransactionMap[bucket.id].length})` }));
   }, [buckets, sortedRecurringTransactionMap]);
 
   return (

@@ -16,8 +16,8 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
   const [form] = Form.useForm();
 
   const handleOnFinish = useCallback((data: any) => {
-    if (data.date) {
-      data.date = data.date.format(); // dayjs object
+    if (data.initialDate) {
+      data.initialDate = data.initialDate.format(); // dayjs object
     }
     onFinish(data);
   }, [onFinish]);
@@ -33,8 +33,8 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
 
   const initialValues = useMemo(() => {
     const values = { ...existingData } as any;
-    if (values?.date) {
-      values.date = dayjs(values.date);
+    if (values?.initialDate) {
+      values.initialDate = dayjs(values.initialDate);
     }
     return values;
   }, [existingData]);

@@ -35,7 +35,7 @@ export const RecurringTransactionItem = ({ recurringTransaction, onClickedEdit, 
       ]}
     >
       <List.Item.Meta
-        avatar={<RecurringItemAvatar intervalType={recurringTransaction.intervalType} interval={recurringTransaction.interval} date={recurringTransaction.date} />}
+        avatar={<RecurringItemAvatar intervalType={recurringTransaction.intervalType} interval={recurringTransaction.interval} date={recurringTransaction.initialDate} />}
         title={recurringTransaction.description}
       />
       <div>

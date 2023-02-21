@@ -6,7 +6,7 @@ import { deleteAccounts, getAccount, getAccountsFromUser, updateAccounts } from 
 import { deleteBuckets, getBuckets, updateBuckets } from './bucket';
 import { deleteTransactions, getTransactions, updateTransactions } from './transaction';
 import { deleteAdjustments, getAdjustments, updateAdjustments } from './adjustment';
-import { deleteRecurringTransactions, getRecurringTransactions, updateRecurringTransactions } from './recurringTransaction';
+import { createNewTransactions, deleteRecurringTransactions, getRecurringTransactions, updateRecurringTransactions } from './recurringTransaction';
 import { deleteRecurringAdjustments, getRecurringAdjustments, updateRecurringAdjustments } from './recurringAdjustment';
 
 export async function fetchData(session: Session, accountId?: string) {
@@ -19,6 +19,7 @@ export async function fetchData(session: Session, accountId?: string) {
   const buckets = await getBuckets(user, account);
   const transactions = await getTransactions(user, buckets);
   const recurringTransactions = await getRecurringTransactions(user, buckets);
+  const newTransactions = await createNewTransactions(user, recurringTransactions);
   const adjustments = await getAdjustments(user, account);
   const recurringAdjustments = await getRecurringAdjustments(user, account);
 
@@ -26,7 +27,7 @@ export async function fetchData(session: Session, accountId?: string) {
     user,
     accounts: [account],
     buckets,
-    transactions,
+    transactions: [...transactions, ...newTransactions],
     recurringTransactions,
     adjustments,
     recurringAdjustments,

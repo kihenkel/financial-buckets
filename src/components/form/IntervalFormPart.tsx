@@ -1,16 +1,58 @@
 
-import { DatePicker, Form, InputNumber, Select, Space, Switch } from 'antd';
+import { Alert, DatePicker, Form, InputNumber, Select, Space, Switch } from 'antd';
 import dayjs from 'dayjs';
-import { Intervals } from '@/models/IntervalModel';
+import { Interval, Intervals } from '@/models/IntervalModel';
+import { RecurringAdjustment, RecurringTransaction } from '@/models';
+import { useEffect, useState } from 'react';
+import { calculateOccurences } from '@/utils/calculateOccurences';
+import { useUserConfigContext } from '@/context';
 
 const { Option } = Select;
 
+const MAX_NEXT_OCCURENCES: number = 5;
+const localeStringOptions: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+};
+
 interface IntervalFormPartProps {
-  intervalSuffix: string;
-  isLimit: boolean;
+  initialValues: Partial<RecurringTransaction | RecurringAdjustment>;
+  changedValues: Partial<RecurringTransaction | RecurringAdjustment>;
 }
 
-export const IntervalFormPart = ({ intervalSuffix, isLimit }: IntervalFormPartProps) => {
+export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormPartProps) => {
+  const form = Form.useFormInstance();
+  const { locale } = useUserConfigContext();
+  const [isLimit, setIsLimit] = useState(false);
+  const [intervalSuffix, setIntervalSuffix] = useState(initialValues.intervalType ? Interval[initialValues.intervalType]?.plural : Interval.daily.plural);
+
+  useEffect(() => {
+    setIntervalSuffix(initialValues.intervalType ? Interval[initialValues.intervalType]?.plural : Interval.daily.plural);
+    if (initialValues.isLimited !== undefined) {
+      setIsLimit(initialValues.isLimited);
+    }
+  }, [initialValues]);
+
+  useEffect(() => {
+    if (changedValues.intervalType !== undefined) {
+      setIntervalSuffix(Interval[changedValues.intervalType].plural);
+    }
+    if (changedValues.isLimited !== undefined) {
+      setIsLimit(changedValues.isLimited);
+    }
+  }, [changedValues]);
+
+  const interval = Form.useWatch('interval', form);
+  const initialDate = Form.useWatch('initialDate', form);
+  const amountLeft = Form.useWatch('amountLeft', form);
+  const intervalType = Form.useWatch('intervalType', form);
+  const nextOccurences = calculateOccurences({ interval, initialDate, calculateStartDate: Date.now(), limit: Math.min(amountLeft ?? MAX_NEXT_OCCURENCES, MAX_NEXT_OCCURENCES), intervalType });
+  const displayNextOccurences = nextOccurences ? nextOccurences.map((occurence) => new Date(occurence).toLocaleString(locale, localeStringOptions)) : 'Please enter valid interval';
+
   return (
     <>
       <Form.Item name="intervalType" label="Interval" initialValue={Intervals[0][0]}>
@@ -36,7 +78,7 @@ export const IntervalFormPart = ({ intervalSuffix, isLimit }: IntervalFormPartPr
         <InputNumber min={1} controls={false} />
       </Form.Item>
       <Form.Item
-        name="date"
+        name="initialDate"
         label="First occurence"
         hidden={!intervalSuffix}
         rules={[({ getFieldValue }) => ({
@@ -69,10 +111,11 @@ export const IntervalFormPart = ({ intervalSuffix, isLimit }: IntervalFormPartPr
             return Promise.reject(new Error('Please enter valid limit'));
           },
         })]}
-        hidden={!isLimit}
+        hidden={isLimit === false}
       >
         <InputNumber min={1} controls={false} />
       </Form.Item>
+      <Alert message="Next occurences:" description={<Space direction="vertical">{displayNextOccurences}</Space>} type="info" />
     </>
   );
 };

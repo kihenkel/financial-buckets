@@ -1,9 +1,8 @@
 
 import { Form, FormProps, Input, InputNumber } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useUserConfigContext } from '@/context';
 import { RecurringAdjustment } from '@/models';
-import { Interval } from '@/models/IntervalModel';
 import { IntervalFormPart } from '../form/IntervalFormPart';
 
 const formItemLayout = {
@@ -13,28 +12,11 @@ const formItemLayout = {
 
 export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
   const { currency } = useUserConfigContext();
-  const [isLimit, setIsLimit] = useState(false);
-  const initialValues = formProps.initialValues as RecurringAdjustment;
-  const [intervalSuffix, setIntervalSuffix] = useState(Interval[initialValues?.intervalType]?.plural ?? Interval.daily.plural);
-
-  useEffect(() => {
-    const initialValues = formProps.initialValues as RecurringAdjustment;
-    if (initialValues.intervalType) {
-      setIntervalSuffix(Interval[initialValues?.intervalType]?.plural);
-    }
-    if (initialValues.isLimited !== undefined) {
-      setIsLimit(initialValues.isLimited);
-    }
-  }, [formProps.initialValues, setIntervalSuffix, setIsLimit]);
+  const [changedValues, setChangedValues] = useState<Partial<RecurringAdjustment>>({});
 
   const handleValuesChange = useCallback((changedValues: Partial<RecurringAdjustment>) => {
-    if (changedValues.intervalType !== undefined) {
-      setIntervalSuffix(Interval[changedValues.intervalType].plural);
-    }
-    if (changedValues.isLimited !== undefined) {
-      setIsLimit(changedValues.isLimited);
-    }
-  }, [setIntervalSuffix]);
+    setChangedValues(changedValues);
+  }, [setChangedValues]);
 
   return (
     <Form requiredMark={false} onValuesChange={handleValuesChange} {...formItemLayout} {...formProps}>
@@ -55,7 +37,7 @@ export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
       <Form.Item name="description" label="Enter descripton">
         <Input.TextArea placeholder="Description" />
       </Form.Item>
-      <IntervalFormPart intervalSuffix={intervalSuffix} isLimit={isLimit} />
+      <IntervalFormPart initialValues={formProps.initialValues as Partial<RecurringAdjustment>} changedValues={changedValues} />
     </Form>
   );
 };

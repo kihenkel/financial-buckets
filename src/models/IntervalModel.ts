@@ -13,7 +13,8 @@ export const Intervals = Object.entries(Interval);
 export interface IntervalModel {
   intervalType: IntervalType;
   interval: number;
-  date: string;
+  initialDate: string;
   isLimited: boolean;
   amountLeft: number;
+  lastRun: string;
 }

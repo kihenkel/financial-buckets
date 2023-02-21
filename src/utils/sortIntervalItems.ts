@@ -12,5 +12,5 @@ export const sortIntervalItems = (itemA: IntervalModel, itemB: IntervalModel) =>
   if (itemA.intervalType !== itemB.intervalType) {
     return intervalTypeHierachy[itemA.intervalType] - intervalTypeHierachy[itemB.intervalType];
   }
-  return Date.parse(itemA.date) - Date.parse(itemB.date);
+  return Date.parse(itemA.initialDate) - Date.parse(itemB.initialDate);
 };
