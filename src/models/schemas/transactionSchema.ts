@@ -1,18 +1,20 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { databaseModelNew, databaseModelSchemaUpdate } from './databaseModelSchema';
 
-export const transactionSchemaNew = databaseModelSchema.append({
+export const transactionSchemaNew = databaseModelNew.append({
   bucketId: Joi.string().required(),
   amount: Joi.number().required(),
-  timestamp: Joi.number().positive().required(),
+  date: Joi.string().isoDate().required(),
   description: Joi.string(),
   recurringTransactionId: Joi.string(),
 });
 
-export const transactionSchemaUpdate = transactionSchemaNew.keys({
+export const transactionSchemaUpdate = databaseModelSchemaUpdate.append({  
   bucketId: Joi.string(),
   amount: Joi.number(),
-  timestamp: Joi.number().positive(),
+  date: Joi.string().isoDate(),
+  description: Joi.string(),
+  recurringTransactionId: Joi.string(),
 });
 
 export const transactionOptimizeKeys = ['userId'];

@@ -6,7 +6,8 @@ export interface Adjustment extends DatabaseModel {
   accountId: string;
   amount: number;
   label: string;
+  date: string;
   description: string;
-  validUntilTimestamp: number;
   recurringAdjustmentId: string;
+  isNew: true;
 }

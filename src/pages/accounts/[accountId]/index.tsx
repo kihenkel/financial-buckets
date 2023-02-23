@@ -13,7 +13,7 @@ import styles from '@/styles/AccountPage.module.css';
 const getBucketDisplayData = (accountBalance: number, buckets: BucketModel[], transactions: Transaction[], adjustments: Adjustment[]): BucketDisplayData => {
   const bucketTransactions = buckets.map((bucket) =>
     transactions.filter((transaction) => transaction.bucketId === bucket.id)
-      .sort((transactionA, transactionB) => transactionA.timestamp - transactionB.timestamp)
+      .sort((transactionA, transactionB) => Date.parse(transactionA.date) - Date.parse(transactionB.date))
   );
   const bucketBalances = buckets.map((_bucket, index) => {
     return bucketTransactions[index].reduce((currentBalance, transaction) => {

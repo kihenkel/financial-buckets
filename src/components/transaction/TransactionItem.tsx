@@ -35,7 +35,7 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   const { updateData, deleteData } = useDataContext();
   const [isEditMode, setIsEditMode] = useState(false);
   const formattedAmount = useMemo(() => toCurrency(transaction.amount, locale, currency), [transaction.amount, locale, currency]);
-  const formattedDate = useMemo(() => new Date(transaction.timestamp).toLocaleDateString(), [transaction.timestamp]);
+  const formattedDate = useMemo(() => new Date(transaction.date).toLocaleDateString(), [transaction.date]);
 
   const handleItemClicked = useCallback(() => {
     setIsEditMode(!isEditMode);
@@ -48,8 +48,8 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   }, [transaction.id, deleteData]);
 
   const handleDateChange = useCallback((newDate: string) => {
-    const timestamp = Date.parse(newDate);
-    updateData(transactionUpdateWith('timestamp', timestamp, transaction));
+    const date = new Date(newDate).toISOString();
+    updateData(transactionUpdateWith('date', date, transaction));
   }, [transaction, updateData]);
 
   const handleAmountChange = useCallback((newAmount: string) => {

@@ -2,19 +2,23 @@ import { FilterQuery } from 'mongoose';
 import { DatabaseModel } from '@/models';
 
 export class Query<T = DatabaseModel> {
-  protected id: string | null;
+  protected ids: string[];
   protected fields: Record<string, string>;
   protected fieldsMultipleOr: Record<string, string[]> | null;
 
   constructor() {
-    this.id = null;
+    this.ids = [];
     this.fields = {};
     this.fieldsMultipleOr = null;
   }
 
-  findById(id: string) {
-    this.id = id;
+  findByIds(ids: string[]) {
+    this.ids = ids;
     return this;
+  }
+
+  findById(id: string) {
+    return this.findByIds([id]);
   }
 
   findBy(key: keyof T, value: string | string[]) {
@@ -39,10 +43,10 @@ export class Query<T = DatabaseModel> {
       }, {});
     let filter: FilterQuery<any> = {
       ...this.fields,
-      ...filterMultipleOr
+      ...filterMultipleOr,
     };
-    if (this.id) {
-      filter._id = this.id;
+    if (this.ids.length > 0) {
+      filter._id = this.ids.length === 1 ? this.ids[0] : { '$in': this.ids };
     }
     return filter;
   }

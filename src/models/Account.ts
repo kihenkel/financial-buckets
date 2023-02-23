@@ -8,4 +8,5 @@ export interface Account extends DatabaseModel {
   name: string;
   balance: number;
   cycle: AccountCycle;
+  lastAccess: string;
 }

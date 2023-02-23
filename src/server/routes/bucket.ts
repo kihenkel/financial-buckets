@@ -3,7 +3,6 @@ import { User, Bucket, Account } from '@/models';
 import { Query } from '@/server/db/Query';
 import logger from '../logger';
 import { chainPromises } from '@/utils/chainPromises';
-import { deleteTransactionsByBucket } from './transaction';
 
 export function getBuckets(user: User, account: Account): Promise<Bucket[]> {
   const query = new Query<Bucket>().findBy('userId', user.id).findBy('accountId', account.id);
@@ -46,15 +45,12 @@ export async function updateBuckets(newBuckets: Partial<Bucket>[], user: User): 
   return updatedBuckets;
 }
 
-async function deleteBucket(id: string, user: User): Promise<void> {
-  logger.info(`Deleting bucket ${id} ...`);
-  await deleteTransactionsByBucket(id, user);
-  const query = new Query().findById(id).findBy('userId', user.id);
-  return db.deleteBuckets(query);
-}
-
 export async function deleteBuckets(ids: string[], user: User): Promise<void> {
   logger.info(`Deleting ${ids.length} buckets ...`);
 
-  await chainPromises(ids, (id: string) => deleteBucket(id, user));
+  // Not deleting transactions for buckets for now, to preserve data
+  // await chainPromises(ids, (id: string) => deleteTransactionsByBucket(id, user));
+
+  const query = new Query().findByIds(ids).findBy('userId', user.id);
+  return db.deleteBuckets(query);
 }

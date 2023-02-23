@@ -3,6 +3,10 @@ import { getServerSession, Session } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { deleteData, fetchData, updateData } from '@/server/routes';
 
+import dayjs from 'dayjs';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+dayjs.extend(weekOfYear);
+
 interface SessionValidationResult {
   success: boolean;
   status: number;

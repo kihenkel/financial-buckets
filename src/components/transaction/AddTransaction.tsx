@@ -22,7 +22,7 @@ export const AddTransaction = ({ bucket }: AddTransactionProps) => {
       updateData({
         transactions: [{
           bucketId: bucket.id,
-          timestamp: Date.now(),
+          date: new Date().toISOString(),
           userId: account.userId,
           amount,
         }]

@@ -42,7 +42,7 @@ const adapter: DatabaseAdapter = {
   add: async (modelName, data) => {
     const MongooseModel = models[modelName];
     const model = new MongooseModel(data);
-    const doc = await model.save();
+    const doc = (await model.save()).toObject();
     return mongoToDomainModel(doc);
   },
   update: async (modelName, query, data) => {

@@ -14,8 +14,8 @@ interface CalculateOccurencesPropsInternal {
 interface CalculateOccurencesProps {
   interval: number;
   initialDate: dayjs.Dayjs | string;
-  calculateStartDate: string | number;
-  calculateEndDate?: string | number;
+  calculateStartDate: dayjs.Dayjs | string | number;
+  calculateEndDate?: dayjs.Dayjs | string | number;
   limit: number;
   intervalType: IntervalType;
 }
@@ -108,8 +108,8 @@ export const calculateOccurences = ({ interval, initialDate, calculateStartDate,
     interval,
     limit,
     initialDate: dayjs.isDayjs(initialDate) ? initialDate : dayjs(initialDate),
-    calculateStartDate: dayjs(calculateStartDate),
-    calculateEndDate: calculateEndDate ? dayjs(calculateEndDate) : undefined,
+    calculateStartDate: dayjs.isDayjs(calculateStartDate) ? calculateStartDate : dayjs(calculateStartDate),
+    calculateEndDate: calculateEndDate ? (dayjs.isDayjs(calculateEndDate) ? calculateEndDate : dayjs(calculateEndDate)) : undefined,
   };
   switch(intervalType) {
     case 'daily': return calculateWith('days', propsInternal);

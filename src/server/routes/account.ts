@@ -42,14 +42,13 @@ export async function updateAccounts(newAccounts: Partial<Account>[], user: User
   return updatedAccounts;
 }
 
-async function deleteAccount(id: string, user: User): Promise<void> {
-  logger.info(`Deleting account ${id} ...`);
-  const query = new Query<Account>().findById(id).findBy('userId', user.id);
-  return db.deleteAccounts(query);
-}
+export async function refreshAccountAccess(accountId: string, user: User): Promise<void> {
+  logger.info(`Updating last access for account ${accountId} ...`);
+  await updateAccount({ id: accountId, lastAccess: new Date().toISOString() }, user);
+};
 
 export async function deleteAccounts(ids: string[], user: User): Promise<void> {
   logger.info(`Deleting ${ids.length} accounts ...`);
-
-  await chainPromises(ids, (id: string) => deleteAccount(id, user));
+  const query = new Query<Account>().findByIds(ids).findBy('userId', user.id);
+  return db.deleteAccounts(query);
 }

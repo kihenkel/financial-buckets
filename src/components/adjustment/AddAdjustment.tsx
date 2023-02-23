@@ -21,6 +21,7 @@ export const AddAdjustment = () => {
           userId: account.userId,
           label,
           amount: parsedAmount,
+          date: new Date().toISOString(),
         }]
       });
       setLabel('');

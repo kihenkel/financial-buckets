@@ -39,13 +39,10 @@ async function updateOrAddTransaction(newTransaction: Partial<Transaction>, user
   }
 }
 
-async function deleteTransaction(id: string, user: User): Promise<void> {
-  logger.info(`Deleting transaction ${id} ...`);
-  const query = new Query<Transaction>().findById(id).findBy('userId', user.id);
-  return db.deleteTransactions(query);
-}
-
 export async function updateTransactions(newTransactions: Partial<Transaction>[], user: User): Promise<Transaction[]> {
+  if (!newTransactions.length) {
+    return [];
+  }
   logger.info(`Updating ${newTransactions.length} transactions ...`);
 
   const updatedTransactions = await chainPromises(newTransactions, (transaction: Partial<Transaction>) => updateOrAddTransaction(transaction, user));
@@ -53,9 +50,12 @@ export async function updateTransactions(newTransactions: Partial<Transaction>[]
 }
 
 export async function deleteTransactions(ids: string[], user: User): Promise<void> {
+  if (!ids.length) {
+    return;
+  }
   logger.info(`Deleting ${ids.length} transactions ...`);
-
-  await chainPromises(ids, (id: string) => deleteTransaction(id, user));
+  const query = new Query<Transaction>().findByIds(ids).findBy('userId', user.id);
+  return db.deleteTransactions(query);
 }
 
 export async function deleteTransactionsByBucket(bucketId: string, user: User): Promise<void> {

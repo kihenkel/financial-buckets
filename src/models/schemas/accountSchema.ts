@@ -1,15 +1,18 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { databaseModelNew, databaseModelSchemaUpdate } from './databaseModelSchema';
 
-export const accountSchemaNew = databaseModelSchema.append({
+export const accountSchemaNew = databaseModelNew.append({
   name: Joi.string(),
   cycle: Joi.string().valid('weekly', 'biweekly', 'semimonthly', 'monthly'),
   balance: Joi.number().required(),
+  lastAccess: Joi.string().isoDate(),
 });
 
-export const accountSchemaUpdate = accountSchemaNew.keys({
-  userId: Joi.string(),
+export const accountSchemaUpdate = databaseModelSchemaUpdate.append({
+  name: Joi.string(),
+  cycle: Joi.string().valid('weekly', 'biweekly', 'semimonthly', 'monthly'),
   balance: Joi.number(),
+  lastAccess: Joi.string().isoDate(),
 });
 
 export const accountOptimizeKeys = ['userId'];

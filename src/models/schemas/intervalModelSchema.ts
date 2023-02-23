@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { databaseModelNew, databaseModelSchemaUpdate } from './databaseModelSchema';
 
-export const intervalModelSchemaNew = databaseModelSchema.append({
+export const intervalModelSchemaNew = databaseModelNew.append({
   intervalType: Joi.string()
     .valid('daily', 'weekly', 'semiMonthly', 'monthly', 'yearly').required(),
   interval: Joi.number().positive()
@@ -11,10 +11,9 @@ export const intervalModelSchemaNew = databaseModelSchema.append({
   isLimited: Joi.boolean().required(),
   amountLeft: Joi.number().positive()
     .when('isLimited', { is: true, then: Joi.required(), otherwise: Joi.optional() }),
-  lastRun: Joi.string().isoDate(),
 });
 
-export const intervalModelSchemaUpdate = intervalModelSchemaNew.keys({
+export const intervalModelSchemaUpdate = databaseModelSchemaUpdate.append({
   intervalType: Joi.string().valid('daily', 'weekly', 'semiMonthly', 'monthly', 'yearly'),
   interval: Joi.number().positive(),
   initialDate: Joi.string().isoDate(),

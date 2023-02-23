@@ -2,12 +2,12 @@ import { Session } from 'next-auth';
 import db from '@/server/db';
 import { DeleteDataRequest, PartialData } from '@/models';
 import { getUserFromSession, updateUser } from './user';
-import { deleteAccounts, getAccount, getAccountsFromUser, updateAccounts } from './account';
+import { deleteAccounts, getAccount, getAccountsFromUser, refreshAccountAccess, updateAccounts } from './account';
 import { deleteBuckets, getBuckets, updateBuckets } from './bucket';
 import { deleteTransactions, getTransactions, updateTransactions } from './transaction';
 import { deleteAdjustments, getAdjustments, updateAdjustments } from './adjustment';
 import { createNewTransactions, deleteRecurringTransactions, getRecurringTransactions, updateRecurringTransactions } from './recurringTransaction';
-import { deleteRecurringAdjustments, getRecurringAdjustments, updateRecurringAdjustments } from './recurringAdjustment';
+import { deleteRecurringAdjustments, getRecurringAdjustments, syncAdjustments, updateRecurringAdjustments } from './recurringAdjustment';
 
 export async function fetchData(session: Session, accountId?: string) {
   const isConnected = await db.isConnected();
@@ -19,9 +19,12 @@ export async function fetchData(session: Session, accountId?: string) {
   const buckets = await getBuckets(user, account);
   const transactions = await getTransactions(user, buckets);
   const recurringTransactions = await getRecurringTransactions(user, buckets);
-  const newTransactions = await createNewTransactions(user, recurringTransactions);
-  const adjustments = await getAdjustments(user, account);
+  const newTransactions = await createNewTransactions(user, recurringTransactions, account);
+  const existingAdjustments = await getAdjustments(user, account);
   const recurringAdjustments = await getRecurringAdjustments(user, account);
+  const adjustments = await syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
+
+  await refreshAccountAccess(account.id, user);
 
   return {
     user,

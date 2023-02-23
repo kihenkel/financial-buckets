@@ -1,13 +1,14 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { databaseModelNew, databaseModelSchemaUpdate } from './databaseModelSchema';
 
-export const bucketSchemaNew = databaseModelSchema.append({
+export const bucketSchemaNew = databaseModelNew.append({
   accountId: Joi.string().required(),
   name: Joi.string(),
 });
 
-export const bucketSchemaUpdate = bucketSchemaNew.keys({
+export const bucketSchemaUpdate = databaseModelSchemaUpdate.append({
   accountId: Joi.string(),
+  name: Joi.string(),
 });
 
 export const bucketOptimizeKeys = ['userId', 'accountId'];

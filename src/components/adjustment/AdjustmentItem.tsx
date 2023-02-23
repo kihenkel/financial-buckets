@@ -56,10 +56,12 @@ export const AdjustmentItem = ({ adjustment }: AdjustmentItemProps) => {
     updateData(adjustmentUpdateWith('description', newDescription, adjustment));
   }, [adjustment, updateData]);
 
+  const itemStyles = adjustment.isNew ? `${styles.adjustmentListItem} ${styles.adjustmentListItemNew}` : styles.adjustmentListItem;
+
   return (
     <>
       <Tooltip placement="right" title={adjustment.description}>
-        <List.Item onClick={handleItemClicked} className={styles.adjustmentListItem}>
+        <List.Item onClick={handleItemClicked} className={itemStyles}>
           <div className={styles.adjustmentItem}>
             <EditableText
               text={adjustment.label}

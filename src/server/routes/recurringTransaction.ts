@@ -1,5 +1,5 @@
 import db from '@/server/db';
-import { User, RecurringTransaction, Bucket, Transaction } from '@/models';
+import { User, RecurringTransaction, Bucket, Transaction, Account } from '@/models';
 import { Query } from '@/server/db/Query';
 import logger from '../logger';
 import { chainPromises } from '@/utils/chainPromises';
@@ -35,12 +35,6 @@ async function updateOrAddRecurringTransaction(newRecurringTransaction: Partial<
   }
 }
 
-async function deleteRecurringTransaction(id: string, user: User): Promise<void> {
-  logger.info(`Deleting recurringTransaction ${id} ...`);
-  const query = new Query<RecurringTransaction>().findById(id).findBy('userId', user.id);
-  return db.deleteRecurringTransactions(query);
-}
-
 export function getRecurringTransactions(user: User, buckets: Bucket[]): Promise<RecurringTransaction[]> {
   const bucketIds = buckets.map((bucket) => bucket.id);
   const query = new Query<RecurringTransaction>().findBy('userId', user.id).findBy('bucketId', bucketIds);
@@ -56,8 +50,8 @@ export async function updateRecurringTransactions(newRecurringTransactions: Part
 
 export async function deleteRecurringTransactions(ids: string[], user: User): Promise<void> {
   logger.info(`Deleting ${ids.length} recurringTransactions ...`);
-
-  await chainPromises(ids, (id: string) => deleteRecurringTransaction(id, user));
+  const query = new Query<RecurringTransaction>().findByIds(ids).findBy('userId', user.id);
+  return db.deleteRecurringTransactions(query);
 }
 
 export async function deleteRecurringTransactionsByBucket(bucketId: string, user: User): Promise<void> {
@@ -68,12 +62,12 @@ export async function deleteRecurringTransactionsByBucket(bucketId: string, user
 }
 
 const MAX_NEW_TRANSACTIONS = 50;
-export async function createNewTransactions(user: User, recurringTransactions: RecurringTransaction[]): Promise<Transaction[]> {
+export async function createNewTransactions(user: User, recurringTransactions: RecurringTransaction[], account: Account): Promise<Transaction[]> {
   const newTransactions = recurringTransactions.reduce((currentNewTransactions: Partial<Transaction>[], recurringTransaction) => {
     const occurences = calculateOccurences({
       interval: recurringTransaction.interval,
       initialDate: recurringTransaction.initialDate,
-      calculateStartDate: recurringTransaction.lastRun ?? recurringTransaction.initialDate ?? Date.now(),
+      calculateStartDate: account.lastAccess ?? recurringTransaction.initialDate ?? Date.now(),
       calculateEndDate: Date.now(),
       limit: Math.min(recurringTransaction.amountLeft ?? MAX_NEW_TRANSACTIONS, MAX_NEW_TRANSACTIONS),
       intervalType: recurringTransaction.intervalType,
@@ -85,7 +79,7 @@ export async function createNewTransactions(user: User, recurringTransactions: R
       userId: recurringTransaction.userId,
       bucketId: recurringTransaction.bucketId,
       amount: recurringTransaction.amount,
-      timestamp: new Date(occurence).valueOf(),
+      date: new Date(occurence).toISOString(),
       description: recurringTransaction.description,
       recurringTransactionId: recurringTransaction.id,
     }));
@@ -94,7 +88,6 @@ export async function createNewTransactions(user: User, recurringTransactions: R
       ...transactions,
     ];
   }, []);
-  const lastRun = new Date().toISOString();
-  await updateRecurringTransactions(recurringTransactions.map((recurringTransaction) => ({ ...recurringTransaction, lastRun })), user);
-  return updateTransactions(newTransactions, user);
+  const addedTransactions = await updateTransactions(newTransactions, user);
+  return addedTransactions.map((transaction) => ({ ...transaction, isNew: true }))
 }

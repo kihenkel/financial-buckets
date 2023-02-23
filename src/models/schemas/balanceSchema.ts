@@ -1,12 +1,12 @@
 import Joi from 'joi';
-import { databaseModelSchema } from './databaseModelSchema';
+import { databaseModelNew, databaseModelSchemaUpdate } from './databaseModelSchema';
 
-export const balanceSchemaNew = databaseModelSchema.append({
+export const balanceSchemaNew = databaseModelNew.append({
   accountId: Joi.string().required(),
   amount: Joi.number().required(),
 });
 
-export const balanceSchemaUpdate = balanceSchemaNew.keys({
+export const balanceSchemaUpdate = databaseModelSchemaUpdate.append({
   accountId: Joi.string(),
   amount: Joi.number(),
 });

@@ -39,20 +39,20 @@ async function updateOrAddAdjustment(newAdjustment: Partial<Adjustment>, user: U
 }
 
 export async function updateAdjustments(newAdjustments: Partial<Adjustment>[], user: User): Promise<Adjustment[]> {
+  if (!newAdjustments.length) {
+    return [];
+  }
   logger.info(`Updating ${newAdjustments.length} adjustments ...`);
 
   const updatedAdjustments = await chainPromises(newAdjustments, (adjustment: Partial<Adjustment>) => updateOrAddAdjustment(adjustment, user));
   return updatedAdjustments;
 }
 
-async function deleteAdjustment(id: string, user: User): Promise<void> {
-  logger.info(`Deleting adjustment ${id} ...`);
-  const query = new Query().findById(id).findBy('userId', user.id);
-  return db.deleteAdjustments(query);
-}
-
 export async function deleteAdjustments(ids: string[], user: User): Promise<void> {
+  if (!ids.length) {
+    return;
+  }
   logger.info(`Deleting ${ids.length} adjustments ...`);
-
-  await chainPromises(ids, (id: string) => deleteAdjustment(id, user));
+  const query = new Query().findByIds(ids).findBy('userId', user.id);
+  return db.deleteAdjustments(query);
 }

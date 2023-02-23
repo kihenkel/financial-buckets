@@ -5,7 +5,8 @@ export const transactionDisplayName = 'Transaction';
 export interface Transaction extends DatabaseModel {
   bucketId: string;
   amount: number;
-  timestamp: number;
+  date: string;
   description: string;
   recurringTransactionId: string;
+  isNew: boolean;
 }
