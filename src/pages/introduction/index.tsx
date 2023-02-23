@@ -69,5 +69,5 @@ export default function IntroductionPage() {
         </Form.Item>
       </Form>
     </div>
-  )
+  );
 }

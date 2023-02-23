@@ -1,4 +1,3 @@
-import { DatabaseModel } from '@/models/DatabaseModel';
 import { Query } from '@/server/db/Query';
 
 export interface DatabaseAdapter {

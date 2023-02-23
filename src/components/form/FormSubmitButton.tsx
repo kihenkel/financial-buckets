@@ -1,10 +1,6 @@
 import { Button } from 'antd';
 
-interface FormSubmitButtonProps {
-  label?: string;
-}
-
-export const FormSubmitButton = ({ label }: FormSubmitButtonProps) => {
+export const FormSubmitButton = () => {
   return (
     <Button type="primary" htmlType="submit">
       Next

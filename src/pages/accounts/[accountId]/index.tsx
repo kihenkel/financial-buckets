@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Bucket } from '@/components/bucket/Bucket';
-import { BucketDisplayData, Bucket as BucketModel, Data, Transaction, Adjustment } from '@/models';
+import { BucketDisplayData, Bucket as BucketModel, Transaction, Adjustment } from '@/models';
 import { MainBucket } from '@/components/bucket/MainBucket';
 import { useAccountContext } from '@/context';
 import { AddBucket } from '@/components/bucket/AddBucket';
@@ -27,7 +27,7 @@ const getBucketDisplayData = (accountBalance: number, buckets: BucketModel[], tr
     mainBalance: accountBalance - bucketsTotal - adjustmentsTotal,
     bucketBalances: bucketBalances,
     bucketTransactions,
-  }
+  };
 };
 
 export default function AccountPage({ data }: PageProps) {

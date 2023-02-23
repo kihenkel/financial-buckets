@@ -82,7 +82,7 @@ const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustm
       recurringAdjustmentId: recurringAdjustment.id,
     }));
   return [validAdjustments, newAdjustments, obsoleteAdjustments] as const;
-}
+};
 
 export async function syncAdjustments(existingAdjustments: Adjustment[], recurringAdjustments: RecurringAdjustment[], account: Account, user: User): Promise<Adjustment[]> {
   const [allManualAdjustments, allAutoAdjustments] = existingAdjustments.reduce((currentList: Adjustment[][], existingAdjustment) => {

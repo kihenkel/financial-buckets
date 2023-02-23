@@ -13,7 +13,7 @@ export const RecurringTransactionForm = ({ ...formProps }: FormProps) => {
   const { currency } = useUserConfigContext();
   const [changedValues, setChangedValues] = useState<Partial<RecurringTransaction>>({});
 
-  const handleValuesChange = useCallback((changedValues: Partial<RecurringTransaction>, allValues: Partial<RecurringTransaction>) => {
+  const handleValuesChange = useCallback((changedValues: Partial<RecurringTransaction>) => {
     setChangedValues({ ...changedValues });
   }, [setChangedValues]);
 

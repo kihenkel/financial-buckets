@@ -6,4 +6,4 @@ export const toDayMonth = (dateString: string, locale: Locale): string => {
     return `${date.getMonth() + 1}/${date.getDate()}`;
   }
   return date.toDateString();
-}
+};

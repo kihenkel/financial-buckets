@@ -8,4 +8,4 @@ export const toWeekday = (dateString: string, locale: Locale): string => {
     return weekdays[date.getDay()];
   }
   return date.toDateString();
-}
+};

@@ -1,14 +1,11 @@
-import { Button, List, Typography } from 'antd';
+import { Button, List } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { RecurringTransaction } from '@/models';
 import { useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
-import { toOrdinalNumber } from '@/utils/toOrdinalNumber';
 import { useCallback } from 'react';
 import { ButtonDelete } from '../ButtonDelete';
 import { RecurringItemAvatar } from '../RecurringItemAvatar';
-
-const { Title } = Typography;
 
 interface RecurringTransactionItemProps {
   recurringTransaction: RecurringTransaction;

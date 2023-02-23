@@ -70,7 +70,7 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
         newDate.format()
       ];
     }, []);
-}
+};
 
 const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ): string[] => {
   const { calculateStartDate, calculateEndDate, limit } = propsInternal;
@@ -97,7 +97,7 @@ const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ):
       ];
     }, [])
     .map((date) => date.format());
-}
+};
 
 export const calculateOccurences = ({ interval, initialDate, calculateStartDate, calculateEndDate, limit, intervalType }: CalculateOccurencesProps): string[] | null => {
   if (!intervalType || (intervalType !== 'semiMonthly' && !initialDate) || (intervalType !== 'semiMonthly' && interval <= 0)) {

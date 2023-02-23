@@ -2,20 +2,14 @@ import { Divider } from 'antd';
 import { CSSProperties } from 'react';
 import { useRouter } from 'next/router';
 import { HomeOutlined, FileSyncOutlined, SettingOutlined } from '@ant-design/icons';
-import { Data } from '@/models';
 
 import styles from '@/styles/ToolsBar.module.css';
 import { ToolsBarButton } from './ToolsBarButton';
 import { useAccountContext } from '@/context';
 
-
-interface ToolsBarProps {
-  data?: Data;
-}
-
 const dividerStyle: CSSProperties = {
   margin: '8px 0'
-}
+};
 
 const buttons = [{
   id: '1',
@@ -27,7 +21,7 @@ const buttons = [{
   icon: <FileSyncOutlined />
 }];
 
-export const ToolsBar = ({ data }: ToolsBarProps) => {
+export const ToolsBar = () => {
   const router = useRouter();
   const { account } = useAccountContext();
   return (

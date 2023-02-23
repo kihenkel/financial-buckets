@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import mongoose, { SchemaDefinition, SchemaDefinitionType } from 'mongoose';
+import { SchemaDefinition, SchemaDefinitionType } from 'mongoose';
 
 interface SchemaFieldSchema {
   type: string;
@@ -27,7 +27,7 @@ export const convert = (joiSchema: Joi.AnySchema<any>, optimizeKeys: string[]): 
     return {
       ...currentDefinition,
       [field.key]: value
-    }
+    };
   }, {});
 
   return schemaDefinition;

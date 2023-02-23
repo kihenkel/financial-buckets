@@ -30,7 +30,7 @@ async function updateAccount(newAccount: Partial<Account>, user: User): Promise<
   const query = new Query<Account>().findById(newAccount.id).findBy('userId', user.id);
   const updatedAccount = await db.updateAccount(query, newAccount);
   if (!updatedAccount) {
-    logger.warning(`Could not find and update account with id ${newAccount.id} and userId ${user.id}!`)
+    logger.warning(`Could not find and update account with id ${newAccount.id} and userId ${user.id}!`);
   }
   return updatedAccount;
 }

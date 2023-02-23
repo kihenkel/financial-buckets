@@ -58,7 +58,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
     if (error) {
       messageApi.error(String(error), 60);
     }
-  }, [messageApi, error])
+  }, [messageApi, error]);
 
   return (
     <>
@@ -71,4 +71,4 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
       </main>
     </>
   );
-}
+};

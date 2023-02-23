@@ -8,7 +8,7 @@ const getCurrentPeriod = (account: Account): { start: dayjs.Dayjs, end: dayjs.Da
     return {
       start: now.day(0).hour(0).minute(0).second(0).millisecond(0),
       end: now.add(1, 'week').day(0).hour(0).minute(0).second(0).millisecond(0),
-    }
+    };
   } else if (account.cycle === 'biweekly') {
     const isFirstWeek = now.week() % 2 === 1;
     return {
@@ -16,7 +16,7 @@ const getCurrentPeriod = (account: Account): { start: dayjs.Dayjs, end: dayjs.Da
       end: isFirstWeek ?
         now.add(2, 'week').day(0).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'second') :
         now.add(1, 'week').day(0).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'second'),
-    }
+    };
   } else if (account.cycle === 'semimonthly') {
     const isFirstHalf = now.date() < 15;
     return {
@@ -24,12 +24,12 @@ const getCurrentPeriod = (account: Account): { start: dayjs.Dayjs, end: dayjs.Da
       end: isFirstHalf ?
         now.date(15).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'second') :
         now.add(1, 'month').date(1).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'second'),
-    }
+    };
   } else if (account.cycle === 'monthly') {
     return {
       start: now.date(1).hour(0).minute(0).second(0).millisecond(0),
       end: now.add(1, 'month').date(1).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'second'),
-    }
+    };
   }
   throw new Error(`Account cycle ${account.cycle} not supported`);
 };

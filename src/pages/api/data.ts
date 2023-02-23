@@ -21,15 +21,15 @@ const validateSession = async (req: NextApiRequest, res: NextApiResponse<any>): 
     return {
       success: false,
       status: 403,
-      data: { error: "You must be signed in to view the protected content on this page." },
+      data: { error: 'You must be signed in to view the protected content on this page.' },
     };
   }
   return {
     success: true,
     status: 200,
     session,
-  }
-}
+  };
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const validationResult = await validateSession(req, res);

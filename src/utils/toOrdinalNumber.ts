@@ -10,4 +10,4 @@ export const toOrdinalNumber = (dateString: string, locale: Locale): string => {
     return `${day}th`;
   }
   return String(date.getDate());
-}
+};

@@ -89,5 +89,5 @@ export async function createNewTransactions(user: User, recurringTransactions: R
     ];
   }, []);
   const addedTransactions = await updateTransactions(newTransactions, user);
-  return addedTransactions.map((transaction) => ({ ...transaction, isNew: true }))
+  return addedTransactions.map((transaction) => ({ ...transaction, isNew: true }));
 }

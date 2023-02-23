@@ -60,8 +60,8 @@ export const Header = ({ data }: HeaderProps) => {
         }
       </div>
       <div>
-        {status === "authenticated" && <Link href="/api/auth/signout">Sign out ({session?.user?.email})</Link>}
-        {status !== "authenticated" && <Link href="/api/auth/signin">Sign in</Link>}
+        {status === 'authenticated' && <Link href="/api/auth/signout">Sign out ({session?.user?.email})</Link>}
+        {status !== 'authenticated' && <Link href="/api/auth/signin">Sign in</Link>}
       </div>
     </header>
   );
