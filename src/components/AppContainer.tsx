@@ -29,7 +29,9 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const { accountId } = router.query;
 
   useEffect(() => {
-    const serverAccount = data?.accounts.find(account => account.id === accountId);
+    const serverAccount = router.asPath.startsWith('/accounts') ?
+      data?.accounts.find(account => account.id === accountId) :
+      data?.accounts[0];
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
     }
