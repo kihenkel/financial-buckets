@@ -43,7 +43,7 @@ export default function AccountPage({ data }: PageProps) {
   return (
     <div className={styles.accountPage}>
       <ToolsBar />
-      {data && account.name && account.balance &&
+      {data && account.name && account.balance !== undefined &&
         <div className={styles.mainBuckets}>
           <div className={styles.left}>
             <AccountBalance />

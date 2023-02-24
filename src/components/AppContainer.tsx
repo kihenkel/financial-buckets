@@ -35,7 +35,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
     }
-  }, [account, accountId, data, setAccount]);
+  }, [account, accountId, data, router.asPath, setAccount]);
 
   useEffect(() => {
     const isIntroductionNeeded = needsIntroduction(data);

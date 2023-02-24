@@ -1,11 +1,13 @@
 import { useCallback } from 'react';
-import { Button, Form } from 'antd';
+import { Button, Form, Typography } from 'antd';
 import { useRouter } from 'next/router';
 import { AccountCycle } from '@/models';
 import { useAccountContext, useDataContext, useUserContext } from '@/context';
 import { FormFieldSelect, FormFieldText } from '@/components/form';
 
 import styles from '@/styles/Introduction.module.css';
+
+const { Title } = Typography;
 
 const formLayout = {
   labelCol: { span: 64 },
@@ -47,11 +49,12 @@ export default function IntroductionPage() {
       }]
     };
     updateData(submitData);
-    router.push(`/accounts/${account.id}`);
+    setTimeout(() => router.push(`/accounts/${account.id}`), 0);
   }, [user, account, router, updateData]);
 
   return (
     <div className={styles.introduction}>
+      <Title>Hi!</Title>
       <Form
         {...formLayout}
         form={form}
