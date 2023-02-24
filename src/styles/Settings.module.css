@@ -1,0 +1,11 @@
+.page {
+  display: flex;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  padding-top: 6rem;
+  text-align: center;
+  width: 100%;
+}

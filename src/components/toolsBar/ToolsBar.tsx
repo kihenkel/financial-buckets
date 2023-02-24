@@ -1,7 +1,7 @@
 import { Divider } from 'antd';
 import { CSSProperties } from 'react';
 import { useRouter } from 'next/router';
-import { HomeOutlined, FileSyncOutlined, SettingOutlined } from '@ant-design/icons';
+import { HomeOutlined, FileSyncOutlined, SettingOutlined, ImportOutlined } from '@ant-design/icons';
 
 import styles from '@/styles/ToolsBar.module.css';
 import { ToolsBarButton } from './ToolsBarButton';
@@ -19,6 +19,10 @@ const buttons = [{
   id: '2',
   getHref: (account: any) => `/accounts/${account?.id}/recurring`,
   icon: <FileSyncOutlined />
+}, {
+  id: '3',
+  getHref: (account: any) => `/accounts/${account?.id}/import`,
+  icon: <ImportOutlined />
 }];
 
 export const ToolsBar = () => {
@@ -36,7 +40,7 @@ export const ToolsBar = () => {
         );
       })}
       <Divider style={dividerStyle} />
-      <ToolsBarButton><SettingOutlined /></ToolsBarButton>
+      <ToolsBarButton linkHref="/settings" type={router.asPath === '/settings' ? 'default' : 'text'}><SettingOutlined /></ToolsBarButton>
     </div>
   );
 };

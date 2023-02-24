@@ -1,7 +1,7 @@
 
 import { Alert, DatePicker, Form, InputNumber, Select, Space, Switch } from 'antd';
 import dayjs from 'dayjs';
-import { Interval, Intervals } from '@/models/IntervalModel';
+import { Interval, Intervals } from '@/models';
 import { RecurringAdjustment, RecurringTransaction } from '@/models';
 import { useEffect, useState } from 'react';
 import { calculateOccurences } from '@/utils/calculateOccurences';

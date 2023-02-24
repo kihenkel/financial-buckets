@@ -1,7 +1,7 @@
 import { Space } from 'antd';
 import { PageProps } from '@/components/AppContainer';
 import { RecurringAdjustmentList } from '@/components/recurringAdjustment/RecurringAdjustmentList';
-import { ToolsBar } from '@/components/tools-bar/ToolsBar';
+import { ToolsBar } from '@/components/toolsBar/ToolsBar';
 
 import styles from '@/styles/RecurringItemsPage.module.css';
 import { RecurringTransactionList } from '@/components/recurringTransaction/RecurringTransactionList';

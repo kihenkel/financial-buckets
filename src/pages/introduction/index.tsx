@@ -8,8 +8,8 @@ import { FormFieldSelect, FormFieldText } from '@/components/form';
 import styles from '@/styles/Introduction.module.css';
 
 const formLayout = {
-  labelCol: { span: 16 },
-  wrapperCol: { span: 32 },
+  labelCol: { span: 64 },
+  wrapperCol: { span: 64 },
 };
 
 const cycleOptions: { label: string; value: AccountCycle }[] = [{
@@ -60,7 +60,7 @@ export default function IntroductionPage() {
         onFinish={handleSubmit}
       >
         <FormFieldText label="What is your name?" name="userName" required />
-        <FormFieldText label="Name of your account? (e.g. Checkings)" name="accountName" required />
+        <FormFieldText label="Name of your first account? (e.g. Checkings)" name="accountName" required />
         <FormFieldSelect label="Account financial cycle?" name="accountCycle" options={cycleOptions} required />
         <Form.Item>
           <Button type="primary" htmlType="submit">

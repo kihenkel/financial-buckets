@@ -1,6 +1,6 @@
 import { Session } from 'next-auth';
 import db from '@/server/db';
-import { User, UserAuthModel } from '@/models/User';
+import { User, UserAuthModel } from '@/models';
 import { Query } from '@/server/db/Query';
 import logger from '../logger';
 

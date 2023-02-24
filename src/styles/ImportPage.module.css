@@ -1,0 +1,17 @@
+.page {
+  display: flex;
+  width: 100vw;
+}
+
+.main {
+  margin: auto;
+  text-align: center;
+  padding: 1rem 1rem;
+}
+
+.buckets {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 32px;
+}

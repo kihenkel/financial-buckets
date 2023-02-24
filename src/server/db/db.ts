@@ -9,6 +9,7 @@ import {
   Balance, balanceDisplayName,
   Adjustment, adjustmentDisplayName,
   RecurringAdjustment, recurringAdjustmentDisplayName,
+  Setting, settingDisplayName,
 } from '@/models';
 import {
   userSchemaNew, userSchemaUpdate,
@@ -19,6 +20,7 @@ import {
   balanceSchemaNew, balanceSchemaUpdate,
   adjustmentSchemaNew, adjustmentSchemaUpdate,
   recurringAdjustmentSchemaNew, recurringAdjustmentSchemaUpdate,
+  settingSchemaNew, settingSchemaUpdate,
  } from '@/models/schemas';
 import { Query } from './Query';
 import { withValidatedSchema } from '@/models/schemas/validateSchema';
@@ -93,6 +95,14 @@ interface Database {
   addRecurringAdjustment(data: any | any[]): Promise<RecurringAdjustment>;
   updateRecurringAdjustment(query: Query, data: any): Promise<RecurringAdjustment>;
   deleteRecurringAdjustments(query: Query): Promise<void>;
+
+  // Setting
+  getAllSettings(query?: Query): Promise<Setting[]>;
+  getFirstSetting(query?: Query): Promise<Setting>;
+  getSetting(id: string): Promise<Setting>;
+  addSetting(data: any | any[]): Promise<Setting>;
+  updateSetting(query: Query, data: any): Promise<Setting>;
+  deleteSettings(query: Query): Promise<void>;
 }
 
 const db: Database = {
@@ -163,6 +173,14 @@ const db: Database = {
   addRecurringAdjustment: (data) => withValidatedSchema(recurringAdjustmentSchemaNew, data, () => dbAdapter.add(recurringAdjustmentDisplayName, data)),
   updateRecurringAdjustment: (query, data) => withValidatedSchema(recurringAdjustmentSchemaUpdate, data, () => dbAdapter.update(recurringAdjustmentDisplayName, query, data)),
   deleteRecurringAdjustments: (query) => dbAdapter.deleteAll(recurringAdjustmentDisplayName, query),
+
+  // Setting
+  getAllSettings: (query) => dbAdapter.getAll(settingDisplayName, query),
+  getFirstSetting: (query) => dbAdapter.getFirst(settingDisplayName, query),
+  getSetting: (id) => dbAdapter.get(settingDisplayName, id),
+  addSetting: (data) => withValidatedSchema(settingSchemaNew, data, () => dbAdapter.add(settingDisplayName, data)),
+  updateSetting: (query, data) => withValidatedSchema(settingSchemaUpdate, data, () => dbAdapter.update(settingDisplayName, query, data)),
+  deleteSettings: (query) => dbAdapter.deleteAll(settingDisplayName, query),
 };
 
 export default db;

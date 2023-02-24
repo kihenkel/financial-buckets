@@ -6,7 +6,7 @@ import { useAccountContext } from '@/context';
 import { AddBucket } from '@/components/bucket/AddBucket';
 import { AccountBalance } from '@/components/AccountBalance';
 import { PageProps } from '@/components/AppContainer';
-import { ToolsBar } from '@/components/tools-bar/ToolsBar';
+import { ToolsBar } from '@/components/toolsBar/ToolsBar';
 
 import styles from '@/styles/AccountPage.module.css';
 

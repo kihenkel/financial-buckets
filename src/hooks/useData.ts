@@ -12,6 +12,7 @@ interface UseDataReturn {
   isLoading: boolean;
   update(newData: PartialData): void;
   remove(deleteData: DeleteDataRequest): void;
+  reset(): void;
   data?: Data;
   error?: Error;
 }
@@ -77,6 +78,13 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
       });
   }, [data, setData, setIsLoading, setError]);
 
+  const reset = useCallback(() => {
+    setData(undefined);
+    if (shouldLoad) {
+      fetchData();
+    }
+  }, [shouldLoad, setData, fetchData]);
+
   useEffect(() => {
     if (shouldLoad) {
       fetchData();
@@ -89,5 +97,6 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     error,
     update,
     remove,
+    reset,
   };
 };

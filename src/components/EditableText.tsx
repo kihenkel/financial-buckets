@@ -4,7 +4,7 @@ import { EventHandler,  MouseEvent,  useCallback, useState } from 'react';
 
 const { Text }= Typography;
 
-interface EditableText {
+interface EditableTextProps {
   text: string;
   placeholder?: string;
   textProps?: TextProps;
@@ -13,7 +13,7 @@ interface EditableText {
   validate?(input: string): boolean;
 }
 
-export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit, validate }: EditableText) => {
+export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit, validate }: EditableTextProps) => {
   const [isEditMode, setIsEditMode] = useState(!text);
 
   const handleTextClick = useCallback((e: MouseEvent) => {
