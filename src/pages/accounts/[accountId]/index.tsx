@@ -34,7 +34,7 @@ export default function AccountPage({ data }: PageProps) {
   const { account } = useAccountContext();
 
   const bucketDisplayData: BucketDisplayData = useMemo(() => {
-    if (!account.balance || !data?.buckets || !data?.transactions) {
+    if (account.balance === undefined || !data?.buckets || !data?.transactions) {
       return { mainBalance: 0, bucketBalances: [], bucketTransactions: [] };
     }
     return getBucketDisplayData(account.balance, data.buckets, data.transactions, data.adjustments);

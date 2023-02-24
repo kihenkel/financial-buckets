@@ -34,7 +34,7 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
 
   useEffect(() => {
     scrollListToBottom();
-  }, [transactions.length, scrollListToBottom]);
+  }, [transactions?.length, scrollListToBottom]);
 
   const handleTitleClicked = useCallback(() => {
     setIsEditMode(!isEditMode);
