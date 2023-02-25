@@ -12,5 +12,15 @@ export const sortIntervalItems = (itemA: IntervalModel, itemB: IntervalModel) =>
   if (itemA.intervalType !== itemB.intervalType) {
     return intervalTypeHierachy[itemA.intervalType] - intervalTypeHierachy[itemB.intervalType];
   }
-  return Date.parse(itemA.initialDate) - Date.parse(itemB.initialDate);
+  switch (itemA.intervalType) {
+    case 'daily': return Date.parse(itemA.initialDate) - Date.parse(itemB.initialDate);
+    case 'weekly': return new Date(itemA.initialDate).getDay() - new Date(itemB.initialDate).getDay();
+    case 'semiMonthly': return Date.parse(itemA.initialDate) - Date.parse(itemB.initialDate);
+    case 'monthly': return new Date(itemA.initialDate).getDate() - new Date(itemB.initialDate).getDate();
+    case 'yearly': {
+      const dateA = new Date(itemA.initialDate);
+      const dateB = new Date(itemB.initialDate);
+      return (dateA.getMonth() * 100 + dateA.getDate()) - (dateB.getMonth() * 100 + dateB.getDate());
+    }
+  }
 };

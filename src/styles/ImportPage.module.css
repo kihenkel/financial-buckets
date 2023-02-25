@@ -4,9 +4,9 @@
 }
 
 .main {
-  margin: auto;
+  margin: 0 auto;
   text-align: center;
-  padding: 1rem 1rem;
+  padding: 3rem 1rem;
 }
 
 .buckets {

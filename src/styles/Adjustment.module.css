@@ -10,7 +10,7 @@
 
 .adjustmentListItemNew {
   background-color: #ffffda;
-  animation: highlight 10s 10s 1;
+  animation: highlight 5s 5s 1;
   animation-fill-mode: forwards;
 }
 

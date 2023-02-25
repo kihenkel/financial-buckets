@@ -60,7 +60,7 @@ export default function ImportPage() {
           <Upload accept=".csv" beforeUpload={handleBeforeUpload} showUploadList={false}>
             <Button icon={<UploadOutlined />}>Select File (CSV)</Button>
           </Upload>
-          <Button type="primary" onClick={handleImportClicked} disabled={!parsedCsv}>Import</Button>
+          <Button type="primary" onClick={handleImportClicked} disabled={!parsedCsv} style={{ marginTop: 16 }}>Import</Button>
           {parsedCsv && (
             <>
               <Title level={3}>Bucket Preview</Title>

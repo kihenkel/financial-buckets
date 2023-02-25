@@ -1,7 +1,9 @@
-import { InputNumber } from 'antd';
+import { InputNumber, Typography } from 'antd';
 import { EventHandler, useCallback, useRef } from 'react';
 import { useAccountContext, useUserConfigContext, useDataContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
+
+const { Text } = Typography;
 
 export const AccountBalance = () => {
   const { locale, currency } = useUserConfigContext();
@@ -34,7 +36,7 @@ export const AccountBalance = () => {
     <InputNumber
       ref={inputRef}
       defaultValue={String(account.balance ?? 0)}
-      addonBefore="Account"
+      addonBefore={<Text strong>Account</Text>}
       onClick={() => inputRef.current?.select()}
       onPressEnter={handleChange}
       onBlur={handleChange}

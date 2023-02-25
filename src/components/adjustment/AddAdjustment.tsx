@@ -12,7 +12,7 @@ export const AddAdjustment = () => {
   const [label, setLabel] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
 
-  const handleChange = useCallback(() => {
+  const handleSubmit = useCallback(() => {
     const parsedAmount = Number.parseFloat(String(amount));
     if (!isNaN(parsedAmount) && label) {
       updateData({
@@ -29,11 +29,11 @@ export const AddAdjustment = () => {
     }
   }, [account.id, account.userId, label, amount, updateData, setLabel, setAmount]);
 
-  const onLabelChange = useCallback((event: any) => {
+  const handleLabelChange = useCallback((event: any) => {
     setLabel(event.target.value);
   }, [setLabel]);
 
-  const onAmountChange = useCallback((event: any) => {
+  const handleAmountChange = useCallback((event: any) => {
     setAmount(event.target.value);
   }, [setAmount]);
 
@@ -43,14 +43,15 @@ export const AddAdjustment = () => {
         style={{ width: '50%' }}
         placeholder="Name"
         value={label}
-        onChange={onLabelChange}
+        onChange={handleLabelChange}
       />
       <Input
         style={{ width: '50%' }}
-        addonAfter={<Button className={styles.adjustmentAddButton} onClick={handleChange} size="small" type="text"><PlusOutlined /></Button>}
+        addonAfter={<Button className={styles.adjustmentAddButton} onClick={handleSubmit} size="small" type="text"><PlusOutlined /></Button>}
         value={amount}
         placeholder={currency}
-        onChange={onAmountChange}
+        onPressEnter={handleSubmit}
+        onChange={handleAmountChange}
       />
     </Input.Group>
   );

@@ -15,7 +15,7 @@ export const AdjustmentList = ({ adjustments, listRef }: AdjustmentListProps) =>
       id="scrollableDiv"
       ref={listRef}
       style={{
-        height: 200,
+        maxHeight: 600,
         overflow: 'auto',
         padding: '0 4px',
       }}

@@ -73,7 +73,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
       .then(() => {
         fetchData();
       });
-  }, [data, doRequest, setData, fetchData]);
+  }, [doRequest, setData, fetchData]);
 
   useEffect(() => {
     if (shouldLoad) {

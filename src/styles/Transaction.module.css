@@ -8,6 +8,12 @@
   align-items: flex-start;
 }
 
+.transactionListItemNew {
+  background-color: #ffffda;
+  animation: highlight 5s 5s 1;
+  animation-fill-mode: forwards;
+}
+
 .transactionListItem:hover {
   background-color: rgba(0, 0, 0, 0.06);
 }
@@ -18,4 +24,13 @@
   justify-content: space-between;
   cursor: pointer;
   transition: background-color .1s ease-in;
+}
+
+@keyframes highlight {
+  from {
+      background-color: #ffffda;
+  }
+  to {
+      background-color: white;
+  }
 }
