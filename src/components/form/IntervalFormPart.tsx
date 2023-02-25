@@ -1,5 +1,5 @@
 
-import { Alert, DatePicker, Form, InputNumber, Select, Space, Switch } from 'antd';
+import { Alert, DatePicker, Form, InputNumber, Select, Space, Switch, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 import { Interval, Intervals } from '@/models';
 import { RecurringAdjustment, RecurringTransaction } from '@/models';
@@ -53,6 +53,7 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
   const nextOccurences = calculateOccurences({ interval, initialDate, calculateStartDate: Date.now(), limit: Math.min(amountLeft ?? MAX_NEXT_OCCURENCES, MAX_NEXT_OCCURENCES), intervalType });
   const displayNextOccurences = nextOccurences ? nextOccurences.map((occurence) => new Date(occurence).toLocaleString(locale, localeStringOptions)) : 'Please enter valid interval';
 
+  const isSemiMonthly = intervalType === 'semiMonthly';
   return (
     <>
       <Form.Item name="intervalType" label="Interval" initialValue={Intervals[0][0]}>
@@ -79,8 +80,7 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
       </Form.Item>
       <Form.Item
         name="initialDate"
-        label="First occurence"
-        hidden={!intervalSuffix}
+        label={isSemiMonthly ? 'Time' : 'First occurence'}
         rules={[({ getFieldValue }) => ({
           validator(_, value) {
             if (value || getFieldValue('intervalType') === 'semiMonthly') {
@@ -90,7 +90,18 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
           },
         })]}
       >
-        <DatePicker placement="bottomRight" showTime={{ defaultValue: dayjs('06:00:00', 'HH:mm:ss') }} />
+        {isSemiMonthly ? (
+          <TimePicker
+            placement="bottomRight"
+            format="HH:mm"
+            minuteStep={10}
+          />
+        ) : (
+          <DatePicker
+            placement="bottomRight"
+            showTime={{ defaultValue: dayjs('06:00:00', 'HH:mm:ss') }}
+          />
+        )}
       </Form.Item>
       <Form.Item
         name="isLimited"

@@ -20,7 +20,8 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
       data.initialDate = data.initialDate.format(); // dayjs object
     }
     onFinish(data);
-  }, [onFinish]);
+    form.resetFields();
+  }, [form, onFinish]);
 
   const handleSubmit = useCallback(() => {
     form.submit();
@@ -52,7 +53,7 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
       bodyStyle={{ paddingBottom: 80 }}
       extra={
         <Space>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} type="primary">
             Submit
           </Button>

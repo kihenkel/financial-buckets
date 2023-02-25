@@ -8,4 +8,4 @@ export * from './recurringTransactionSchema';
 export * from './balanceSchema';
 export * from './adjustmentSchema';
 export * from './recurringAdjustmentSchema';
-export * from './settingSchema';
+export * from './settingsSchema';

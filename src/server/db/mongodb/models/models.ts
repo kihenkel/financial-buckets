@@ -9,7 +9,7 @@ import {
   balanceDisplayName,
   adjustmentDisplayName,
   recurringAdjustmentDisplayName,
-  settingDisplayName,
+  settingsDisplayName,
 } from '@/models';
 import {
   userSchemaNew, userOptimizeKeys,
@@ -20,7 +20,7 @@ import {
   balanceSchemaNew, balanceOptimizeKeys,
   adjustmentSchemaNew, adjustmentOptimizeKeys,
   recurringAdjustmentSchemaNew, recurringAdjustmentOptimizeKeys,
-  settingSchemaNew, settingOptimizeKeys,
+  settingsSchemaNew, settingsOptimizeKeys,
 } from '@/models/schemas';
 import { convert } from './joiToMongooseSchema';
 
@@ -36,7 +36,7 @@ const recurringTransactionMongooseSchema = new mongoose.Schema(convert(recurring
 const balanceMongooseSchema = new mongoose.Schema(convert(balanceSchemaNew, balanceOptimizeKeys), { ...defaultOptions });
 const adjustmentMongooseSchema = new mongoose.Schema(convert(adjustmentSchemaNew, adjustmentOptimizeKeys), { ...defaultOptions });
 const recurringAdjustmentMongooseSchema = new mongoose.Schema(convert(recurringAdjustmentSchemaNew, recurringAdjustmentOptimizeKeys), { ...defaultOptions });
-const settingMongooseSchema = new mongoose.Schema(convert(settingSchemaNew, settingOptimizeKeys), { ...defaultOptions });
+const settingMongooseSchema = new mongoose.Schema(convert(settingsSchemaNew, settingsOptimizeKeys), { ...defaultOptions });
 
 const models: Record<string, mongoose.Model<any>> = {
   [userDisplayName]: createModel(userDisplayName, userMongooseSchema),
@@ -47,7 +47,7 @@ const models: Record<string, mongoose.Model<any>> = {
   [balanceDisplayName]: createModel(balanceDisplayName, balanceMongooseSchema),
   [adjustmentDisplayName]: createModel(adjustmentDisplayName, adjustmentMongooseSchema),
   [recurringAdjustmentDisplayName]: createModel(recurringAdjustmentDisplayName, recurringAdjustmentMongooseSchema),
-  [settingDisplayName]: createModel(settingDisplayName, settingMongooseSchema),
+  [settingsDisplayName]: createModel(settingsDisplayName, settingMongooseSchema),
 };
 
 export default models;

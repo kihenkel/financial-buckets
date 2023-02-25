@@ -9,7 +9,7 @@ import {
   Balance, balanceDisplayName,
   Adjustment, adjustmentDisplayName,
   RecurringAdjustment, recurringAdjustmentDisplayName,
-  Setting, settingDisplayName,
+  Settings, settingsDisplayName,
 } from '@/models';
 import {
   userSchemaNew, userSchemaUpdate,
@@ -20,7 +20,7 @@ import {
   balanceSchemaNew, balanceSchemaUpdate,
   adjustmentSchemaNew, adjustmentSchemaUpdate,
   recurringAdjustmentSchemaNew, recurringAdjustmentSchemaUpdate,
-  settingSchemaNew, settingSchemaUpdate,
+  settingsSchemaNew, settingsSchemaUpdate,
  } from '@/models/schemas';
 import { Query } from './Query';
 import { withValidatedSchema } from '@/models/schemas/validateSchema';
@@ -97,11 +97,10 @@ interface Database {
   deleteRecurringAdjustments(query: Query): Promise<void>;
 
   // Setting
-  getAllSettings(query?: Query): Promise<Setting[]>;
-  getFirstSetting(query?: Query): Promise<Setting>;
-  getSetting(id: string): Promise<Setting>;
-  addSetting(data: any | any[]): Promise<Setting>;
-  updateSetting(query: Query, data: any): Promise<Setting>;
+  getFirstSettings(query?: Query): Promise<Settings>;
+  getSettings(id: string): Promise<Settings>;
+  addSettings(data: any | any[]): Promise<Settings>;
+  updateSettings(query: Query, data: any): Promise<Settings>;
   deleteSettings(query: Query): Promise<void>;
 }
 
@@ -175,12 +174,11 @@ const db: Database = {
   deleteRecurringAdjustments: (query) => dbAdapter.deleteAll(recurringAdjustmentDisplayName, query),
 
   // Setting
-  getAllSettings: (query) => dbAdapter.getAll(settingDisplayName, query),
-  getFirstSetting: (query) => dbAdapter.getFirst(settingDisplayName, query),
-  getSetting: (id) => dbAdapter.get(settingDisplayName, id),
-  addSetting: (data) => withValidatedSchema(settingSchemaNew, data, () => dbAdapter.add(settingDisplayName, data)),
-  updateSetting: (query, data) => withValidatedSchema(settingSchemaUpdate, data, () => dbAdapter.update(settingDisplayName, query, data)),
-  deleteSettings: (query) => dbAdapter.deleteAll(settingDisplayName, query),
+  getFirstSettings: (query) => dbAdapter.getFirst(settingsDisplayName, query),
+  getSettings: (id) => dbAdapter.get(settingsDisplayName, id),
+  addSettings: (data) => withValidatedSchema(settingsSchemaNew, data, () => dbAdapter.add(settingsDisplayName, data)),
+  updateSettings: (query, data) => withValidatedSchema(settingsSchemaUpdate, data, () => dbAdapter.update(settingsDisplayName, query, data)),
+  deleteSettings: (query) => dbAdapter.deleteAll(settingsDisplayName, query),
 };
 
 export default db;

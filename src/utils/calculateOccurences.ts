@@ -72,13 +72,13 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
     }, []);
 };
 
-const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ): string[] => {
-  const { calculateStartDate, calculateEndDate, limit } = propsInternal;
-  const actualInitialDate = isFirstHalfOfMonth(calculateStartDate) ?
-    dayjs(calculateStartDate).date(15).hour(6).minute(0).second(0).millisecond(0) :
-    dayjs(calculateStartDate).add(1, 'month').date(1).hour(6).minute(0).second(0).millisecond(0);
+const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ): string[] | null => {
+  const { initialDate, calculateEndDate, limit } = propsInternal;
+  const actualInitialDate = isFirstHalfOfMonth(initialDate) ?
+    dayjs(initialDate).date(15).second(0).millisecond(0) :
+    dayjs(initialDate).add(1, 'month').date(1).second(0).millisecond(0);
 
-  if (actualInitialDate.isAfter(calculateEndDate)) return [];
+  if (calculateEndDate && actualInitialDate.isAfter(calculateEndDate)) return [];
 
   return Array(limit)
     .fill(undefined)
@@ -100,7 +100,7 @@ const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ):
 };
 
 export const calculateOccurences = ({ interval, initialDate, calculateStartDate, calculateEndDate, limit, intervalType }: CalculateOccurencesProps): string[] | null => {
-  if (!intervalType || (intervalType !== 'semiMonthly' && !initialDate) || (intervalType !== 'semiMonthly' && interval <= 0)) {
+  if (!intervalType || !initialDate || (intervalType !== 'semiMonthly' && interval <= 0)) {
     return null;
   }
 

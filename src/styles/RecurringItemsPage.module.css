@@ -9,4 +9,5 @@
   padding: 4rem 6rem;
   min-height: 100vh;
   flex-grow: 1;
+  max-width: calc(100vw - var(--tools-bar-width));
 }

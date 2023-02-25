@@ -11,6 +11,6 @@ export * from './RecurringTransaction';
 export * from './Balance';
 export * from './Adjustment';
 export * from './RecurringAdjustment';
-export * from './Setting';
+export * from './Settings';
 
 export * from './BucketDisplayData';

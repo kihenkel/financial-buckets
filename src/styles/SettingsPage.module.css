@@ -1,0 +1,9 @@
+.page {
+  display: flex;
+  width: 100vw;
+}
+
+.main {
+  margin: auto;
+  padding: 1rem 1rem;
+}

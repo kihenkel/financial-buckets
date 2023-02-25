@@ -1,17 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { DeleteDataRequest, PartialData } from '@/models';
+import { DeleteDataRequest, ImportData, PartialData } from '@/models';
 
-type UpdateDataType = (newData: PartialData) => void;
-type DeleteDataType = (deleteData: DeleteDataRequest) => void;
-type ResetDataType = () => void;
+type UpdateDataHandlerType = (newData: PartialData) => Promise<void>;
+type DeleteDataHandlerType = (deleteData: DeleteDataRequest) => Promise<void>;
+type ImportDataHandlerType = (importData: ImportData) => Promise<void>;
 
 interface DataContext {
-  updateData: UpdateDataType;
-  setUpdateData(handler: UpdateDataType): void;
-  deleteData: DeleteDataType;
-  setDeleteData(handler: DeleteDataType): void;
-  resetData: ResetDataType;
-  setResetData(handler: ResetDataType): void;
+  updateData: UpdateDataHandlerType;
+  setUpdateData(handler: UpdateDataHandlerType): void;
+  deleteData: DeleteDataHandlerType;
+  setDeleteData(handler: DeleteDataHandlerType): void;
+  importData: ImportDataHandlerType;
+  setImportData(handler: ImportDataHandlerType): void;
 }
 
 interface DataContextProviderProps {
@@ -19,28 +19,28 @@ interface DataContextProviderProps {
 }
 
 const initialData = {
-  updateData: () => {},
+  updateData: () => Promise.resolve(),
   setUpdateData: () => {},
-  deleteData: () => {},
+  deleteData: () => Promise.resolve(),
   setDeleteData: () => {},
-  resetData: () => {},
-  setResetData: () => {},
+  importData: () => Promise.resolve(),
+  setImportData: () => {},
 };
 
 export const DataContext = React.createContext<DataContext>(initialData);
 
 export const DataContextProvider = ({ children }: DataContextProviderProps) => {
-  const [updateData, setUpdateData] = useState<UpdateDataType>(() => {});
-  const [deleteData, setDeleteData] = useState<DeleteDataType>(() => {});
-  const [resetData, setResetData] = useState<ResetDataType>(() => {});
+  const [updateData, setUpdateDataInternal] = useState<UpdateDataHandlerType>(() => Promise.resolve());
+  const [deleteData, setDeleteDataInternal] = useState<DeleteDataHandlerType>(() => Promise.resolve());
+  const [importData, setImportDataInternal] = useState<ImportDataHandlerType>(() => Promise.resolve());
 
   const value: DataContext = {
     updateData,
-    setUpdateData,
+    setUpdateData: (handler) => setUpdateDataInternal(() => handler),
     deleteData,
-    setDeleteData,
-    resetData,
-    setResetData,
+    setDeleteData: (handler) => setDeleteDataInternal(() => handler),
+    importData,
+    setImportData: (handler) => setImportDataInternal(() => handler),
   };
   return (
     <DataContext.Provider value={value}>

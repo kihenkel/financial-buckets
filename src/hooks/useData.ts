@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Data, DeleteDataRequest, PartialData } from '@/models';
+import { Data, DeleteDataRequest, ImportData, PartialData } from '@/models';
 import http from '@/utils/http';
 import { merge, mergeDeletion } from '@/utils/merge';
 import { useRouter } from 'next/router';
@@ -10,9 +10,9 @@ interface UseDataProps {
 
 interface UseDataReturn {
   isLoading: boolean;
-  update(newData: PartialData): void;
-  remove(deleteData: DeleteDataRequest): void;
-  reset(): void;
+  update(newData: PartialData): Promise<void>;
+  remove(deleteData: DeleteDataRequest): Promise<void>;
+  importData(importData: ImportData): Promise<void>;
   data?: Data;
   error?: Error;
 }
@@ -25,65 +25,55 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
 
   const { accountId } = router.query;
 
-  const fetchData = useCallback(() => {
+  const doRequest = useCallback((method: 'get' | 'put' | 'post' | 'remove', path: string, data?: any) => {
     setIsLoading(true);
-
-    const path = accountId ? `/api/data?accountId=${accountId}` : '/api/data';
-    http.get<Data>(path)
+    return http[method](path, data)
       .then((response) => {
         setIsLoading(false);
-        setData(response);
+        return response as any;
       })
       .catch((error) => {
         setIsLoading(false);
-        console.error('Fetching data failed with error', error);
+        console.error(`Requesting ${method} on path ${path} failed with error`, error);
         setError(error);
       });
-  }, [accountId, setData, setIsLoading, setError]);
+  }, [setIsLoading, setError]);
 
-  const update = useCallback((newData: PartialData) => {
+  const fetchData = useCallback(() => {
+    const path = accountId ? `/api/data?accountId=${accountId}` : '/api/data';
+    return doRequest('get', path)
+      .then((response) => {
+        setData(response);
+      });
+  }, [accountId, doRequest, setData]);
+
+  const update = useCallback((newData: PartialData): Promise<void> => {
     const mergedData = merge({}, data, newData) as Data;
     setData(mergedData);
 
-    setIsLoading(true);
-
-    http.put<Partial<Data>>('/api/data', newData)
+    return doRequest('put', '/api/data', newData)
       .then((response) => {
-        setIsLoading(false);
         const serverMergedData = merge({}, data, response) as Data;
         setData(serverMergedData);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error('Putting data failed with error', error);
-        setError(error);
       });
-  }, [data, setData, setIsLoading, setError]);
+  }, [data, doRequest, setData]);
 
-  const remove = useCallback((deleteData: DeleteDataRequest) => {
-    if (!data) return;
+  const remove = useCallback((deleteData: DeleteDataRequest): Promise<void> => {
+    if (!data) return Promise.resolve();
     const mergedData = mergeDeletion(data, deleteData);
     setData(mergedData);
 
-    setIsLoading(true);
+    return doRequest('put', '/api/data', deleteData);
+  }, [data, doRequest, setData]);
 
-    http.remove('/api/data', deleteData)
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error('Deleting data failed with error', error);
-        setError(error);
-      });
-  }, [data, setData, setIsLoading, setError]);
-
-  const reset = useCallback(() => {
+  const importData = useCallback((importData: ImportData): Promise<void> => {
     setData(undefined);
-    if (shouldLoad) {
-      fetchData();
-    }
-  }, [shouldLoad, setData, fetchData]);
+
+    return doRequest('post', '/api/import', importData)
+      .then(() => {
+        fetchData();
+      });
+  }, [data, doRequest, setData, fetchData]);
 
   useEffect(() => {
     if (shouldLoad) {
@@ -97,6 +87,6 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     error,
     update,
     remove,
-    reset,
+    importData,
   };
 };

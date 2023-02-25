@@ -3,13 +3,13 @@ import { Adjustment } from './Adjustment';
 import { Bucket } from './Bucket';
 import { RecurringAdjustment } from './RecurringAdjustment';
 import { RecurringTransaction } from './RecurringTransaction';
-import { Setting } from './Setting';
+import { Settings } from './Settings';
 import { Transaction } from './Transaction';
 import { User } from './User';
 
 export interface Data {
   user: User;
-  settings: Setting[];
+  settings: Settings;
   accounts: Account[];
   buckets: Bucket[];
   transactions: Transaction[];
@@ -20,7 +20,7 @@ export interface Data {
 
 export interface PartialData {
   user?: Partial<User>;
-  settings?: Partial<Setting>[];
+  settings?: Partial<Settings>;
   accounts?: Partial<Account>[];
   buckets?: Partial<Bucket>[];
   transactions?: Partial<Transaction>[];

@@ -4,7 +4,7 @@
   align-items: center;
   padding-top: 8px;
   gap: 8px;
-  width: 64px;
+  width: var(--tools-bar-width);
   border-right: 1px solid #ccc;
   background-color: rgb(var(--background-start-rgb));
 }

@@ -12,7 +12,7 @@ export default function RecurringItemsPage({ data }: PageProps) {
     <div className={styles.page}>
       <ToolsBar />
       <div className={styles.main}>
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <RecurringAdjustmentList recurringAdjustments={data.recurringAdjustments} />
           {data.buckets?.length > 0 && <RecurringTransactionList buckets={data.buckets} recurringTransactions={data.recurringTransactions} />}
         </Space>

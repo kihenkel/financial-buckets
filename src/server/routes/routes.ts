@@ -8,7 +8,7 @@ import { deleteTransactions, getTransactions, updateTransactions } from './trans
 import { deleteAdjustments, getAdjustments, updateAdjustments } from './adjustment';
 import { createNewTransactions, deleteRecurringTransactions, getRecurringTransactions, updateRecurringTransactions } from './recurringTransaction';
 import { deleteRecurringAdjustments, getRecurringAdjustments, syncAdjustments, updateRecurringAdjustments } from './recurringAdjustment';
-import { getSettings, updateSettings } from './setting';
+import { getSettings, updateSettings } from './settings';
 
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';

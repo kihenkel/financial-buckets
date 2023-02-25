@@ -9,7 +9,6 @@ import { convertCsvToJson } from '@/utils/convertCsvToJson';
 import { Bucket } from '@/components/bucket/Bucket';
 import { Bucket as BucketModel, ImportData, Transaction } from '@/models';
 import { ImportBucket } from '@/models';
-import http from '@/utils/http';
 import { useAccountContext, useDataContext } from '@/context';
 import { useRouter } from 'next/router';
 
@@ -20,7 +19,7 @@ export default function ImportPage() {
   const { account } = useAccountContext();
   const [delimiter, setDelimiter] = useState<string>(',');
   const [parsedCsv, setParsedCsv] = useState<ImportBucket[]>();
-  const { resetData } = useDataContext();
+  const { importData } = useDataContext();
 
   const handleBeforeUpload = useCallback((file: RcFile) => {
     const reader = new FileReader();
@@ -36,16 +35,15 @@ export default function ImportPage() {
     if (!account.id || !parsedCsv) {
       return;
     }
-    const importData: ImportData = {
+    const data: ImportData = {
       accountId: account.id,
       buckets: parsedCsv,
     };
-    http.post('/api/import', importData)
+    importData(data)
       .then(() => {
-        resetData();
         router.push(`/accounts/${account.id}`);
       });
-  }, [account, parsedCsv, router, resetData]);
+  }, [account, parsedCsv, router, importData]);
 
   const handleDelimiterChange = useCallback((e: any) => {
     setDelimiter(e.target.value);
