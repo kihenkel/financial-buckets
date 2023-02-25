@@ -10,7 +10,6 @@ export async function getSettings(user: User): Promise<Settings> {
     await db.addSettings({
       userId: user.id,
       shouldAutosave: true,
-      autosaveInterval: 0,
     });
     settings = await db.getFirstSettings(query);
   }

@@ -77,3 +77,12 @@
   transform: translateX(12px) rotate(-45deg);
   transform-origin: left bottom;
 }
+
+.staleButton {
+  padding: 0 !important;
+}
+
+.staleIcon {
+  font-size: 40px;
+  color: #dc7000;
+}

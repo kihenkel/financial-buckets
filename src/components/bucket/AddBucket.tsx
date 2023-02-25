@@ -20,7 +20,7 @@ export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
       name: `My Bucket ${amountBuckets + 1}`,
     };
 
-    updateData({ buckets: [newBucket] });
+    updateData({ buckets: [newBucket] }, true);
   }, [user, account.id, amountBuckets, updateData]);
 
   return (

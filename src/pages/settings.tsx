@@ -1,4 +1,4 @@
-import { Button, Form,  InputNumber,  Switch, Typography } from 'antd';
+import { Button, Form, Switch, Typography } from 'antd';
 import { useCallback } from 'react';
 import { PageProps } from '@/components/AppContainer';
 import { ToolsBar } from '@/components/toolsBar/ToolsBar';
@@ -21,10 +21,9 @@ export default function SettingsPage({ data }: PageProps) {
         ...formData
       }
     };
-    updateData(submitData);
+    updateData(submitData, true);
   }, [settings, updateData]);
 
-  const shouldAutosave = Form.useWatch('shouldAutosave', form);
   return (
     <div className={styles.page}>
       <ToolsBar />
@@ -42,19 +41,6 @@ export default function SettingsPage({ data }: PageProps) {
             valuePropName="checked"
           >
             <Switch />
-          </Form.Item>
-          <Form.Item
-            name="autosaveInterval"
-            label="Autosave seconds (0 = immediately)"
-            rules={[({ getFieldValue }) => ({
-              validator(_, value) {
-                return value >= 0 || !getFieldValue('shouldAutosave') ? Promise.resolve() : Promise.reject(new Error('Please enter seconds'));
-              },
-            })]}
-            initialValue={settings.autosaveInterval}
-            hidden={shouldAutosave === false}
-          >
-            <InputNumber min={0} controls={false} />
           </Form.Item>
           <Form.Item style={{ textAlign: 'center' }}>
             <Button type="primary" htmlType="submit">

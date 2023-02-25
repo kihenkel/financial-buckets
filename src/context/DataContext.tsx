@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { DeleteDataRequest, ImportData, PartialData } from '@/models';
 
-type UpdateDataHandlerType = (newData: PartialData) => Promise<void>;
-type DeleteDataHandlerType = (deleteData: DeleteDataRequest) => Promise<void>;
+type UpdateDataHandlerType = (newData: PartialData, force?: boolean) => Promise<void>;
+type DeleteDataHandlerType = (deleteData: DeleteDataRequest, force?: boolean) => Promise<void>;
 type ImportDataHandlerType = (importData: ImportData) => Promise<void>;
 
 interface DataContext {

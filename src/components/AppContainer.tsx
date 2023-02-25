@@ -22,7 +22,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const [messageApi, messageApiContext] = message.useMessage();
   const { status } = useSession({ required: true });
   const router = useRouter();
-  const { data, isLoading, error, update, remove, importData } = useData({ shouldLoad: status === 'authenticated' });
+  const { data, isLoading, isStale, error, update, remove, importData, forceUpdate } = useData({ shouldLoad: status === 'authenticated' });
   const { user, setUser } = useUserContext();
   const { setUpdateData, setDeleteData, setImportData } = useDataContext();
   const { account, setAccount } = useAccountContext();
@@ -52,6 +52,18 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   }, [user, data, setUser]);
 
   useEffect(() => {
+    if (!isStale) {
+      window.onbeforeunload = function() {};
+      return;
+    }
+    window.onbeforeunload = function() { return 'You have unsaved changes!'; };
+
+    return () => {
+      window.onbeforeunload = function() {};
+    };
+  }, [isStale]);
+
+  useEffect(() => {
     setUpdateData(update);
     setDeleteData(remove);
     setImportData(importData);
@@ -70,7 +82,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
         {messageApiContext}
         { isLoading && !data && <div className={styles.spinner}><Spin size="large" /></div>}
         { data && <Component {...pageProps} data={data} />}
-        <LoadingIndicator isLoading={isLoading} />
+        <LoadingIndicator isLoading={isLoading} isStale={isStale} onStaleClicked={forceUpdate} />
       </main>
     </>
   );
