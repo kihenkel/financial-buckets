@@ -63,7 +63,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     const mergedData = mergeDeletion(data, deleteData);
     setData(mergedData);
 
-    return doRequest('put', '/api/data', deleteData);
+    return doRequest('remove', '/api/data', deleteData);
   }, [data, doRequest, setData]);
 
   const importData = useCallback((importData: ImportData): Promise<void> => {
