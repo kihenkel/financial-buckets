@@ -6,7 +6,7 @@ import logger from '../logger';
 
 const PROVIDERS = ['auth0'];
 
-export async function getUserFromSession(session: Session): Promise<User> {
+export async function getFromSession(session: Session): Promise<User> {
   if (!session.user) {
     throw new Error('No session user found!');
   }
@@ -28,7 +28,7 @@ export async function getUserFromSession(session: Session): Promise<User> {
   return user;
 }
 
-export async function updateUser(user: Partial<User>, sessionUser: User): Promise<User> {
+export async function update(user: Partial<User>, sessionUser: User): Promise<User> {
   logger.info(`Updating user ${sessionUser.id} ...`);
   if (user.id !== sessionUser.id) {
     throw new Error(`User id ${user.id} and signed in user ${sessionUser.id} dont match. Aborting!`);
@@ -38,3 +38,8 @@ export async function updateUser(user: Partial<User>, sessionUser: User): Promis
 
   return updatedUser;
 }
+
+export const userService = {
+  getFromSession,
+  update,
+};

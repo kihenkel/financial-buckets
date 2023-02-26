@@ -45,12 +45,28 @@ const adapter: DatabaseAdapter = {
     const doc = (await model.save()).toObject();
     return mongoToDomainModel(doc);
   },
+  addAll: async (modelName, dataList) => {
+    const MongooseModel = models[modelName];
+    const docs = await MongooseModel.insertMany(dataList);
+    return docs.map(mongoToDomainModel);
+  },
   update: async (modelName, query, data) => {
     const MongooseModel = models[modelName];
     const filter = query.toMongooseFilterQuery();
     const mongoData = domainToMongoModel(data);
     const doc = await MongooseModel.findOneAndUpdate(filter, mongoData, { new: true }).exec();
     return mongoToDomainModel(doc);
+  },
+  updateAll: async (modelName, queries, dataList) => {
+    const MongooseModel = models[modelName];
+    const bulkOperations = queries.map((query, index) => ({
+      updateOne: {
+        filter: query.toMongooseFilterQuery(),
+        update: domainToMongoModel(dataList[index]),
+      }
+    }));
+    await MongooseModel.bulkWrite(bulkOperations);
+    return dataList;
   },
   deleteAll: async (modelName, query) => {
     const MongooseModel = models[modelName];
