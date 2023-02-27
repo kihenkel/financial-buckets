@@ -1,4 +1,4 @@
-import { Button, List } from 'antd';
+import { Button, List, Space, Typography } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { RecurringTransaction } from '@/models';
 import { useUserConfigContext } from '@/context';
@@ -6,6 +6,8 @@ import { toCurrency } from '@/utils/toCurrency';
 import { useCallback } from 'react';
 import { ButtonDelete } from '../ButtonDelete';
 import { RecurringItemAvatar } from '../RecurringItemAvatar';
+
+const { Text } = Typography;
 
 interface RecurringTransactionItemProps {
   recurringTransaction: RecurringTransaction;
@@ -35,9 +37,10 @@ export const RecurringTransactionItem = ({ recurringTransaction, onClickedEdit, 
         avatar={<RecurringItemAvatar intervalType={recurringTransaction.intervalType} interval={recurringTransaction.interval} date={recurringTransaction.initialDate} />}
         title={recurringTransaction.description}
       />
-      <div>
+      <Space>
+        {recurringTransaction.isLimited && <Text type="warning">({recurringTransaction.amountLeft} occurences left)</Text>}
         {toCurrency(recurringTransaction.amount, locale, currency)}
-      </div>
+      </Space>
     </List.Item>
   );
 };
