@@ -48,7 +48,7 @@ export default function IntroductionPage() {
         cycle: formData.accountCycle,
       }]
     };
-    updateData(submitData);
+    updateData(submitData, true);
     setTimeout(() => router.push(`/accounts/${account.id}`), 0);
   }, [user, account, router, updateData]);
 

@@ -24,13 +24,21 @@ export async function fetchData(session: Session, accountId?: string) {
   }
   const user = await userService.getFromSession(session);
   const settings = await settingsService.getByUser(user);
-  const account = accountId ? await accountService.get(accountId, user) : (await accountService.getAll(user))[0];
-  const buckets = await bucketService.getAllBy('accountId', [account], user);
+  const accounts = accountId ? [await accountService.get(accountId, user)] : await accountService.getAll(user);
+  if (accounts.length > 1) {
+    return {
+      user,
+      settings,
+      accounts,
+    };
+  }
+  const account = accounts[0];
+  const buckets = await bucketService.getAllBy('accountId', accounts, user);
   const transactions = await transactionService.getAllBy('bucketId', buckets, user);
   const recurringTransactions = await recurringTransactionService.getAllBy('bucketId', buckets, user);
   const newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, account);
-  const existingAdjustments = await adjustmentService.getAllBy('accountId', [account], user);
-  const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', [account], user);
+  const existingAdjustments = await adjustmentService.getAllBy('accountId', accounts, user);
+  const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', accounts, user);
   const adjustments = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
 
   await accountService.refreshAccountAccess(account.id, user);
@@ -38,7 +46,7 @@ export async function fetchData(session: Session, accountId?: string) {
   return {
     user,
     settings,
-    accounts: [account],
+    accounts,
     buckets,
     transactions: [...transactions, ...newTransactions],
     recurringTransactions,
