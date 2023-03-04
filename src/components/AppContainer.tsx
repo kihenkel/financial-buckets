@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import type { AppProps } from 'next/app';
 import { useSession } from 'next-auth/react';
 import isEqual from 'lodash/isEqual';
-import { useAccountContext, useDataContext, useUserContext } from '@/context';
+import { useAccountContext, useDataContext, useNotificationContext, useUserContext } from '@/context';
 import { useData } from '@/hooks/useData';
 import { LoadingIndicator } from '@/components/LoadingIndicator';
 import { Header } from './Header';
@@ -25,6 +25,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const { data, isLoading, isStale, error, update, remove, importData, forceUpdate } = useData({ shouldLoad: status === 'authenticated' });
   const { user, setUser } = useUserContext();
   const { setUpdateData, setDeleteData, setImportData } = useDataContext();
+  const { error: errorMessage, setError: setErrorMessage, warning: warningMessage, info: infoMessage } = useNotificationContext();
   const { account, setAccount } = useAccountContext();
   const { accountId } = router.query;
 
@@ -71,9 +72,27 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
     if (error) {
-      messageApi.error(String(error), 60);
+      setErrorMessage(String(error));
     }
-  }, [messageApi, error]);
+  }, [error, setErrorMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      messageApi.error(errorMessage, Math.ceil(errorMessage.length / 3));
+    }
+  }, [messageApi, errorMessage]);
+
+  useEffect(() => {
+    if (warningMessage) {
+      messageApi.warning(warningMessage, Math.ceil(warningMessage.length / 3));
+    }
+  }, [messageApi, warningMessage]);
+
+  useEffect(() => {
+    if (infoMessage) {
+      messageApi.error(infoMessage, Math.ceil(infoMessage.length / 3));
+    }
+  }, [messageApi, infoMessage]);
 
   return (
     <>

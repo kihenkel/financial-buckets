@@ -9,11 +9,12 @@ interface EditableTextProps {
   placeholder?: string;
   textProps?: TextProps;
   inputProps?: InputProps;
+  clearOnSelect?: boolean;
   onEdit(newText: string): void;
   validate?(input: string): boolean;
 }
 
-export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit, validate }: EditableTextProps) => {
+export const EditableText = ({ text, placeholder, textProps, inputProps, clearOnSelect, onEdit, validate }: EditableTextProps) => {
   const [isEditMode, setIsEditMode] = useState(!text);
 
   const handleTextClick = useCallback((e: MouseEvent) => {
@@ -39,6 +40,7 @@ export const EditableText = ({ text, placeholder, textProps, inputProps, onEdit,
         <Input
           autoFocus={!!text}
           placeholder={text || placeholder}
+          defaultValue={clearOnSelect ? undefined : text}
           bordered={false}
           size="small"
           {...inputProps}

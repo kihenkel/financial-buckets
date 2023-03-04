@@ -48,7 +48,7 @@ const adapter: DatabaseAdapter = {
   addAll: async (modelName, dataList) => {
     const MongooseModel = models[modelName];
     const docs = await MongooseModel.insertMany(dataList);
-    return docs.map(mongoToDomainModel);
+    return docs.map((doc) => mongoToDomainModel(doc.toObject()));
   },
   update: async (modelName, query, data) => {
     const MongooseModel = models[modelName];

@@ -53,7 +53,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     await putPromise;
     requestDataCached.put = null;
 
-    const removePromise = requestDataCached.put ? doRequest('remove', '/api/data', requestDataCached.remove) : Promise.resolve();
+    const removePromise = requestDataCached.remove ? doRequest('remove', '/api/data', requestDataCached.remove) : Promise.resolve();
     await removePromise;
     requestDataCached.remove = null;
   }, [doRequest]);

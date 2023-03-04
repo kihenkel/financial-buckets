@@ -1,4 +1,10 @@
-import { AccountContextProvider, UserContextProvider, UserConfigContextProvider, DataContextProvider } from '@/context';
+import {
+  AccountContextProvider,
+  UserContextProvider,
+  UserConfigContextProvider,
+  DataContextProvider,
+  NotificationContextProvider,
+} from '@/context';
 
 interface ContextProvidersProps {
   children: React.ReactNode;
@@ -10,7 +16,9 @@ export const ContextProviders = ({ children }: ContextProvidersProps) => {
       <AccountContextProvider>
         <UserContextProvider>
           <DataContextProvider>
-            {children}
+            <NotificationContextProvider>
+              {children}
+            </NotificationContextProvider>
           </DataContextProvider>
         </UserContextProvider>
       </AccountContextProvider>
