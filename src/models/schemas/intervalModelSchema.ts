@@ -11,6 +11,7 @@ export const intervalModelSchemaNew = databaseModelNew.append({
   isLimited: Joi.boolean().required(),
   amountLeft: Joi.number().positive()
     .when('isLimited', { is: true, then: Joi.required(), otherwise: Joi.optional() }),
+  counter: Joi.number().min(0).required(),
 });
 
 export const intervalModelSchemaUpdate = databaseModelSchemaUpdate.append({
@@ -19,4 +20,5 @@ export const intervalModelSchemaUpdate = databaseModelSchemaUpdate.append({
   initialDate: Joi.string().isoDate(),
   isLimited: Joi.boolean(),
   amountLeft: Joi.number().positive(),
+  counter: Joi.number().min(0),
 });

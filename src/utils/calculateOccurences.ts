@@ -22,10 +22,17 @@ interface CalculateOccurencesProps {
 
 const DAY_IN_MS = 1 * 24 * 60 * 60 * 1000;
 const WEEK_IN_MS = DAY_IN_MS * 7;
-const SEMI_MONTHLY_HOUR = 6;
 
-const isFirstHalfOfMonth = (date: dayjs.Dayjs) =>
-  date.date() <= 15 && date.hour() < SEMI_MONTHLY_HOUR;
+const isFirstHalfOfMonth = (date: dayjs.Dayjs, timeDate: dayjs.Dayjs) => {
+  const dayOfMonth = date.date();
+  if (dayOfMonth > 1 && dayOfMonth < 15) return true;
+
+  const minutesIntoDay = (date.hour() * 60) + date.minute();
+  const minuteLimit = (timeDate.hour() * 60) + timeDate.minute();
+
+  return (dayOfMonth === 1 && minutesIntoDay >= minuteLimit) ||
+    (dayOfMonth === 15 && minutesIntoDay < minuteLimit);
+};
 
 const getRealStartDate = (dayjsIntervalType: DayjsIntervalType, { interval, initialDate, calculateStartDate }: CalculateOccurencesPropsInternal): dayjs.Dayjs => {
   if (initialDate.isAfter(calculateStartDate)) {
@@ -74,7 +81,7 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
 
 const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ): string[] | null => {
   const { initialDate, calculateStartDate, calculateEndDate, limit } = propsInternal;
-  const actualInitialDate = isFirstHalfOfMonth(calculateStartDate) ?
+  const actualInitialDate = isFirstHalfOfMonth(calculateStartDate, initialDate) ?
     dayjs(calculateStartDate).date(15).hour(initialDate.hour()).minute(initialDate.minute()).second(0).millisecond(0) :
     dayjs(calculateStartDate).add(1, 'month').date(1).hour(initialDate.hour()).minute(initialDate.minute()).second(0).millisecond(0);
 

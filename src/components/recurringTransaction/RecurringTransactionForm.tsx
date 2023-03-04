@@ -27,7 +27,7 @@ export const RecurringTransactionForm = ({ ...formProps }: FormProps) => {
         <InputNumber placeholder={currency} controls={false} />
       </Form.Item>
       <Form.Item name="description" label="Enter descripton">
-        <Input.TextArea placeholder="Description" />
+        <Input.TextArea placeholder="Description (Tip: Use %c as counter)" />
       </Form.Item>
       <IntervalFormPart initialValues={formProps.initialValues as Partial<RecurringTransaction>} changedValues={changedValues} />
     </Form>

@@ -16,4 +16,5 @@ export interface IntervalModel {
   initialDate: string;
   isLimited: boolean;
   amountLeft: number;
+  counter: number;
 }

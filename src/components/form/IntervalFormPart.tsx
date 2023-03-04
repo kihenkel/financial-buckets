@@ -126,6 +126,7 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
       >
         <InputNumber min={1} controls={false} />
       </Form.Item>
+      <Form.Item name="counter" initialValue={0} hidden />
       <Alert message="Next occurences:" description={<Space direction="vertical">{displayNextOccurences}</Space>} type="info" />
     </>
   );

@@ -1,4 +1,4 @@
-import { message, List, Tooltip } from 'antd';
+import { List, Tooltip } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Adjustment } from '@/models';
 import { useDataContext, useNotificationContext, useUserConfigContext } from '@/context';
