@@ -50,13 +50,18 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
 
   const forceUpdate = useCallback(async () => {
     const putPromise = requestDataCached.put ? doRequest('put', '/api/data', requestDataCached.put) : Promise.resolve();
-    await putPromise;
+    const updateReponse = await putPromise;
     requestDataCached.put = null;
 
     const removePromise = requestDataCached.remove ? doRequest('remove', '/api/data', requestDataCached.remove) : Promise.resolve();
     await removePromise;
     requestDataCached.remove = null;
-  }, [doRequest]);
+
+    if (updateReponse) {
+      const serverMergedData = merge({}, data, updateReponse) as Data;
+      setData(serverMergedData);
+    }
+  }, [data, doRequest, setData]);
 
   const doRequestThrottled = useCallback((method: HttpMethod, path: string, force: boolean, newData?: any) => {
     if (!force && (method === 'put' || method === 'remove') && !data?.settings.shouldAutosave) {

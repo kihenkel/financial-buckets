@@ -8,7 +8,7 @@ export const merge = (...args: any[]): object => {
       // Array START
       if (Array.isArray(objectA) && Array.isArray(objectB)) {
         return objectA.map((itemA) => {
-          const foundItemB = objectB.find(itemB => itemA.id === itemB.id);
+          const foundItemB = objectB.find(itemB => itemA.id !== undefined && itemA.id === itemB.id);
           if (foundItemB) {
             return merge(itemA, foundItemB);
           }
