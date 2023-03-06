@@ -1,7 +1,7 @@
 import { List, Tooltip } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Transaction } from '@/models';
-import { useDataContext, useNotificationContext, useUserConfigContext } from '@/context';
+import { useDataContext, useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
 
 import styles from '@/styles/Transaction.module.css';
@@ -11,8 +11,6 @@ import { ButtonDelete } from '../ButtonDelete';
 interface TransactionItemProps {
   transaction: Transaction;
 }
-
-const SAVE_WARNING_MESSAGE = 'Unable to update item, please save your data first!';
 
 const validateDate = (newDate: string) => {
   return !isNaN(Date.parse(newDate));
@@ -27,6 +25,7 @@ const transactionUpdateWith = (key: keyof Transaction, value: any, transaction: 
     transactions: [{
       id: transaction.id,
       userId: transaction.userId,
+      temporaryId: transaction.temporaryId,
       [key]: value,
     }]
   };
@@ -36,7 +35,6 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   const { locale, currency } = useUserConfigContext();
   const { updateData, deleteData } = useDataContext();
   const [isEditMode, setIsEditMode] = useState(false);
-  const { setWarning } = useNotificationContext();
   const formattedAmount = useMemo(() => toCurrency(transaction.amount, locale, currency), [transaction.amount, locale, currency]);
   const formattedDate = useMemo(() => new Date(transaction.date).toLocaleDateString(), [transaction.date]);
 
@@ -44,31 +42,23 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
     setIsEditMode(!isEditMode);
   }, [isEditMode, setIsEditMode]);
 
-  const tryExecute = useCallback((itemId: string, handler: () => any) => {
-    if (itemId) {
-      handler();
-    } else {
-      setWarning(SAVE_WARNING_MESSAGE);
-    }
-  }, [setWarning]);
-
   const handleDeleteConfirmed = useCallback(() => {
-    tryExecute(transaction.id, () => deleteData({ transactions: [transaction.id] }));
-  }, [transaction.id, deleteData, tryExecute]);
+    deleteData({ transactions: [transaction.id ?? transaction.temporaryId] });
+  }, [transaction.id, transaction.temporaryId, deleteData]);
 
   const handleDateChange = useCallback((newDate: string) => {
     const date = new Date(newDate).toISOString();
-    tryExecute(transaction.id, () => updateData(transactionUpdateWith('date', date, transaction)));
-  }, [transaction, updateData, tryExecute]);
+    updateData(transactionUpdateWith('date', date, transaction));
+  }, [transaction, updateData]);
 
   const handleAmountChange = useCallback((newAmount: string) => {
     const amount = Number.parseFloat(newAmount);
-    tryExecute(transaction.id, () => updateData(transactionUpdateWith('amount', amount, transaction)));
-  }, [transaction, updateData, tryExecute]);
+    updateData(transactionUpdateWith('amount', amount, transaction));
+  }, [transaction, updateData]);
 
   const handleDescriptionChange = useCallback((newDescription: string) => {
-    tryExecute(transaction.id, () => updateData(transactionUpdateWith('description', newDescription, transaction)));
-  }, [transaction, updateData, tryExecute]);
+    updateData(transactionUpdateWith('description', newDescription, transaction));
+  }, [transaction, updateData]);
 
   const itemStyles = transaction.isNew ? `${styles.transactionListItem} ${styles.transactionListItemNew}` : styles.transactionListItem;
   return (

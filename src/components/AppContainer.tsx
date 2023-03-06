@@ -22,7 +22,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const [messageApi, messageApiContext] = message.useMessage();
   const { status } = useSession({ required: true });
   const router = useRouter();
-  const { data, isLoading, isStale, error, update, remove, importData, forceUpdate } = useData({ shouldLoad: status === 'authenticated' });
+  const { data, isLoading, isStale, error, update, remove, importData, forceUpdate, reset } = useData({ shouldLoad: status === 'authenticated' });
   const { user, setUser } = useUserContext();
   const { setUpdateData, setDeleteData, setImportData } = useDataContext();
   const { error: errorMessage, setError: setErrorMessage, warning: warningMessage, info: infoMessage } = useNotificationContext();
@@ -35,8 +35,11 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
       data?.accounts[0];
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
+      if (account.userId && account.id !== serverAccount.id) {
+        reset();
+      }
     }
-  }, [account, accountId, data, router.asPath, setAccount]);
+  }, [account, accountId, data, router.asPath, setAccount, reset]);
 
   useEffect(() => {
     const isIntroductionNeeded = needsIntroduction(data);

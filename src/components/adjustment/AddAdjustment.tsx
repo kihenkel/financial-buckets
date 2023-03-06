@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Button, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAccountContext, useDataContext, useUserConfigContext } from '@/context';
+import { createTempId } from '@/utils/tempId';
 
 import styles from '@/styles/Adjustment.module.css';
 
@@ -22,6 +23,7 @@ export const AddAdjustment = () => {
           label,
           amount: parsedAmount,
           date: new Date().toISOString(),
+          temporaryId: createTempId(),
         }]
       });
       setLabel('');

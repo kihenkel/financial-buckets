@@ -3,6 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useAccountContext, useDataContext, useUserConfigContext } from '@/context';
 import { EventHandler, useCallback, useState } from 'react';
 import { Bucket } from '@/models';
+import { createTempId } from '@/utils/tempId';
 
 import styles from '@/styles/Transaction.module.css';
 
@@ -25,6 +26,7 @@ export const AddTransaction = ({ bucket }: AddTransactionProps) => {
           date: new Date().toISOString(),
           userId: account.userId,
           amount,
+          temporaryId: createTempId(),
         }]
       });
       setValue(null);

@@ -24,21 +24,17 @@ export async function fetchData(session: Session, accountId?: string) {
   }
   const user = await userService.getFromSession(session);
   const settings = await settingsService.getByUser(user);
-  const accounts = accountId ? [await accountService.get(accountId, user)] : await accountService.getAll(user);
-  if (accounts.length > 1) {
-    return {
-      user,
-      settings,
-      accounts,
-    };
+  const accounts = await accountService.getAll(user);
+  const account = accountId ? accounts.find((account) => account.id === accountId) : accounts[0];
+  if (!account) {
+    throw new Error(`Could not find account with id ${accountId}`);
   }
-  const account = accounts[0];
-  const buckets = await bucketService.getAllBy('accountId', accounts, user);
+  const buckets = await bucketService.getAllBy('accountId', [account], user);
   const transactions = await transactionService.getAllBy('bucketId', buckets, user);
   const recurringTransactions = await recurringTransactionService.getAllBy('bucketId', buckets, user);
   const newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, account);
-  const existingAdjustments = await adjustmentService.getAllBy('accountId', accounts, user);
-  const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', accounts, user);
+  const existingAdjustments = await adjustmentService.getAllBy('accountId', [account], user);
+  const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', [account], user);
   const adjustments = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
 
   await accountService.refreshAccountAccess(account.id, user);

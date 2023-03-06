@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Bucket } from '@/components/bucket/Bucket';
 import { BucketDisplayData, Bucket as BucketModel, Transaction, Adjustment } from '@/models';
 import { MainBucket } from '@/components/bucket/MainBucket';
@@ -39,6 +39,12 @@ export default function AccountPage({ data }: PageProps) {
     }
     return getBucketDisplayData(account.balance, data.buckets, data.transactions, data.adjustments);
   }, [data, account]);
+
+  useEffect(() => {
+    if (account.id) {
+      document.cookie = `accountId=${account.id}; path=/;`;
+    }
+  }, [account.id]);
 
   return (
     <div className={styles.accountPage}>

@@ -3,6 +3,8 @@ import { Data, DeleteDataRequest, ImportData, PartialData } from '@/models';
 import http from '@/utils/http';
 import { merge, mergeDeletion } from '@/utils/merge';
 import { useRouter } from 'next/router';
+import { applyServerData } from '@/utils/applyServerData';
+import { prepareRequestData, RequestData } from '@/utils/requestData';
 
 type HttpMethod = 'get' | 'put' | 'post' | 'remove';
 
@@ -17,10 +19,10 @@ interface UseDataReturn {
   remove(deleteData: DeleteDataRequest, force?: boolean): Promise<void>;
   importData(importData: ImportData): Promise<void>;
   forceUpdate(): Promise<void>;
+  reset(): void
   data?: Data;
   error?: Error;
 }
-interface RequestData { put: PartialData | null, remove: DeleteDataRequest | null };
 const requestDataCached: RequestData = { put: null, remove: null };
 
 export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
@@ -49,18 +51,19 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   }, [setIsLoading, setError]);
 
   const forceUpdate = useCallback(async () => {
-    const putPromise = requestDataCached.put ? doRequest('put', '/api/data', requestDataCached.put) : Promise.resolve();
+    const requestData = prepareRequestData(requestDataCached);
+    const putPromise = requestData.put ? doRequest('put', '/api/data', requestData.put) : Promise.resolve();
     const updateReponse = await putPromise;
-    requestDataCached.put = null;
 
-    const removePromise = requestDataCached.remove ? doRequest('remove', '/api/data', requestDataCached.remove) : Promise.resolve();
+    const removePromise = requestData.remove ? doRequest('remove', '/api/data', requestData.remove) : Promise.resolve();
     await removePromise;
-    requestDataCached.remove = null;
 
     if (updateReponse) {
-      const serverMergedData = merge({}, data, updateReponse) as Data;
-      setData(serverMergedData);
+      const mergedData = applyServerData(data, requestData.put, updateReponse);
+      setData(mergedData);
     }
+    requestDataCached.put = null;
+    requestDataCached.remove = null;
   }, [data, doRequest, setData]);
 
   const doRequestThrottled = useCallback((method: HttpMethod, path: string, force: boolean, newData?: any) => {
@@ -87,8 +90,8 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     return doRequestThrottled('put', '/api/data', force, newData)
       .then((response) => {
         if (response) {
-          const serverMergedData = merge({}, data, response) as Data;
-          setData(serverMergedData);
+          const mergedData = applyServerData(data, newData, response);
+          setData(mergedData);
         }
       });
   }, [data, doRequestThrottled, setData]);
@@ -110,6 +113,10 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
       });
   }, [doRequestThrottled, setData, fetchData]);
 
+  const reset = useCallback(() => {
+    setData(undefined);
+  }, [setData]);
+
   useEffect(() => {
     if (shouldLoad && !data) {
       fetchData();
@@ -125,5 +132,6 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     remove,
     importData,
     forceUpdate,
+    reset,
   };
 };

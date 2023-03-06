@@ -5,6 +5,7 @@ export const databaseModelNew = Joi.object({
   userId: Joi.string().required(),
   created: Joi.date(),
   modified: Joi.date(),
+  temporaryId: Joi.string().strip(),
 });
 
 export const databaseModelSchemaUpdate = Joi.object({
@@ -12,4 +13,5 @@ export const databaseModelSchemaUpdate = Joi.object({
   userId: Joi.string(),
   created: Joi.date(),
   modified: Joi.date(),
+  temporaryId: Joi.string().strip(),
 });
