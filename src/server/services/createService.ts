@@ -23,8 +23,8 @@ export const createService = <T extends DatabaseModel>(modelName: string, handle
     return handlers.getAll(query);
   };
 
-  const getAllBy = (refIdName: string, refs: DatabaseModel[], user: User) => {
-    const refIds = refs.map((ref) => ref.id);
+  const getAllBy = (refIdName: string, refs: DatabaseModel[] | string[], user: User) => {
+    const refIds = refs.map((ref) => typeof ref === 'string' ? ref : ref.id);
     const query = new Query<T>().findBy('userId', user.id).findBy(refIdName as keyof DatabaseModel, refIds);
     return handlers.getAll(query);
   };

@@ -1,13 +1,12 @@
 import { Button, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { ExperimentOutlined } from '@ant-design/icons';
 import { MouseEvent, useCallback, useState } from 'react';
 
-interface ButtonDeleteProps {
-  itemName: string;
+interface ButtonOptimizeBucketProps {
   onConfirm(): void;
 }
 
-export const ButtonDelete = ({ itemName, onConfirm }: ButtonDeleteProps) => {
+export const ButtonOptimizeBucket = ({ onConfirm }: ButtonOptimizeBucketProps) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleConfirmed = useCallback(() => {
@@ -22,15 +21,15 @@ export const ButtonDelete = ({ itemName, onConfirm }: ButtonDeleteProps) => {
 
   return (
     <Popconfirm
-      title={`Delete ${itemName}`}
-      description={`Are you sure you want to delete this ${itemName}?`}
+      title={'Optimize Bucket'}
+      description={'Are you sure you want to optimize this bucket?'}
       onConfirm={handleConfirmed}
       onCancel={handleClicked}
       open={isConfirmOpen}
       okText="Yes"
       cancelText="No"
     >
-      <Button onClick={handleClicked} size="small" type="text"><DeleteOutlined /></Button>
+      <Button onClick={handleClicked} size="small" type="text"><ExperimentOutlined /></Button>
     </Popconfirm>
     );
 };

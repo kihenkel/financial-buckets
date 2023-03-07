@@ -11,6 +11,7 @@ import { AddTransaction } from '../transaction/AddTransaction';
 
 import styles from '@/styles/Bucket.module.css';
 import { ButtonDelete } from '../ButtonDelete';
+import { ButtonOptimizeBucket } from '../ButtonOptimizeBucket';
 
 const { Text } = Typography;
 
@@ -22,7 +23,7 @@ interface BucketProps {
 
 export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
   const { locale, currency } = useUserConfigContext();
-  const { updateData, deleteData } = useDataContext();
+  const { updateData, deleteData, optimizeBucket } = useDataContext();
   const [isEditMode, setIsEditMode] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +40,10 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
   const handleTitleClicked = useCallback(() => {
     setIsEditMode(!isEditMode);
   }, [isEditMode, setIsEditMode]);
+
+  const handleOptimizeConfirmed = useCallback(() => {
+    optimizeBucket(bucket.id);
+  }, [bucket.id, optimizeBucket]);
 
   const handleDeleteConfirmed = useCallback(() => {
     deleteData({
@@ -65,10 +70,13 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
       <EditableText text={bucket.name} onEdit={handleNameChange} />
       <Text strong>{formattedBalance}</Text>
       {isEditMode &&
-        <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
+        <Space align="end" style={{ gap: '0px' }}>
+          <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
+          <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
+        </Space>
       }
     </Space>
-  ), [bucket.name, formattedBalance, isEditMode, handleDeleteConfirmed, handleNameChange, handleTitleClicked]);
+  ), [bucket.name, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked]);
 
   return (
     <BucketShell title={titleComponent} style={{ height: 350 }}>

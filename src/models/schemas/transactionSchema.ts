@@ -7,6 +7,8 @@ export const transactionSchemaNew = databaseModelNew.append({
   date: Joi.string().isoDate().required(),
   description: Joi.string(),
   recurringTransactionId: Joi.string(),
+  mergedTransactionId: Joi.string(),
+  isMergedTransaction: Joi.bool(),
 });
 
 export const transactionSchemaUpdate = databaseModelSchemaUpdate.append({  
@@ -15,6 +17,8 @@ export const transactionSchemaUpdate = databaseModelSchemaUpdate.append({
   date: Joi.string().isoDate(),
   description: Joi.string(),
   recurringTransactionId: Joi.string(),
+  mergedTransactionId: Joi.string(),
+  isMergedTransaction: Joi.bool(),
 });
 
-export const transactionOptimizeKeys = ['userId'];
+export const transactionOptimizeKeys = ['userId', 'mergedTransactionId'];

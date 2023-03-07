@@ -30,7 +30,7 @@ export async function fetchData(session: Session, accountId?: string) {
     throw new Error(`Could not find account with id ${accountId}`);
   }
   const buckets = await bucketService.getAllBy('accountId', [account], user);
-  const transactions = await transactionService.getAllBy('bucketId', buckets, user);
+  const transactions = await transactionService.getAllByBuckets(buckets, user);
   const recurringTransactions = await recurringTransactionService.getAllBy('bucketId', buckets, user);
   const newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, account);
   const existingAdjustments = await adjustmentService.getAllBy('accountId', [account], user);
@@ -85,7 +85,7 @@ export async function deleteData(session: Session, data: DeleteDataRequest) {
   data.recurringAdjustments && await recurringAdjustmentService.deleteAll(data.recurringAdjustments, sessionUser);
 
   return;
-}
+};
 
 export async function importData(session: Session, importData: ImportData) {
   const isConnected = await db.isConnected();
@@ -101,4 +101,16 @@ export async function importData(session: Session, importData: ImportData) {
   const transactions = await transactionService.updateOrAdd(newTransactions, sessionUser);
 
   return { buckets, transactions };
+};
+
+export async function optimize(session: Session, bucketId: string) {
+  const isConnected = await db.isConnected();
+  if (!isConnected) {
+    await db.connect();
+  }
+
+  const sessionUser = await userService.getFromSession(session);
+  await bucketService.optimize(bucketId, sessionUser);
+
+  return { success: true };
 }

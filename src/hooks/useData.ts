@@ -18,6 +18,7 @@ interface UseDataReturn {
   update(newData: PartialData, force?: boolean): Promise<void>;
   remove(deleteData: DeleteDataRequest, force?: boolean): Promise<void>;
   importData(importData: ImportData): Promise<void>;
+  optimizeBucket(bucketId: string): Promise<void>;
   forceUpdate(): Promise<void>;
   reset(): void
   data?: Data;
@@ -113,6 +114,13 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
       });
   }, [doRequestThrottled, setData, fetchData]);
 
+  const optimizeBucket = useCallback((bucketId: string): Promise<void> => {
+    return doRequestThrottled('post', `/api/optimize?bucketId=${bucketId}`, true)
+      .then(() => {
+        fetchData();
+      });
+  }, [doRequestThrottled, fetchData]);
+
   const reset = useCallback(() => {
     setData(undefined);
   }, [setData]);
@@ -131,6 +139,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     update,
     remove,
     importData,
+    optimizeBucket,
     forceUpdate,
     reset,
   };

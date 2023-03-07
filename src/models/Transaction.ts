@@ -8,5 +8,7 @@ export interface Transaction extends DatabaseModel {
   date: string;
   description: string;
   recurringTransactionId: string;
+  mergedTransactionId: string;
+  isMergedTransaction: boolean;
   isNew: boolean;
 }

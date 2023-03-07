@@ -37,7 +37,7 @@ const createNewTransactions = async (user: User, recurringTransactions: Recurrin
       bucketId: recurringTransaction.bucketId,
       amount: recurringTransaction.amount,
       date: new Date(occurence).toISOString(),
-      description: recurringTransaction.description.replace(/%c/g, String(counter + index)),
+      description: recurringTransaction.description.replace(/%c/g, String(counter + index + 1)),
       recurringTransactionId: recurringTransaction.id,
     }));
     if (occurences.length > 0) {

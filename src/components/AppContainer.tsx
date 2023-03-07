@@ -22,9 +22,9 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const [messageApi, messageApiContext] = message.useMessage();
   const { status } = useSession({ required: true });
   const router = useRouter();
-  const { data, isLoading, isStale, error, update, remove, importData, forceUpdate, reset } = useData({ shouldLoad: status === 'authenticated' });
+  const { data, isLoading, isStale, error, update, remove, importData, optimizeBucket, forceUpdate, reset } = useData({ shouldLoad: status === 'authenticated' });
   const { user, setUser } = useUserContext();
-  const { setUpdateData, setDeleteData, setImportData } = useDataContext();
+  const { setUpdateData, setDeleteData, setImportData, setOptimizeBucket } = useDataContext();
   const { error: errorMessage, setError: setErrorMessage, warning: warningMessage, info: infoMessage } = useNotificationContext();
   const { account, setAccount } = useAccountContext();
   const { accountId } = router.query;
@@ -70,8 +70,12 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     setUpdateData(update);
     setDeleteData(remove);
+  }, [update, remove, setUpdateData, setDeleteData]);
+
+  useEffect(() => {
     setImportData(importData);
-  }, [update, remove, importData, setUpdateData, setDeleteData, setImportData]);
+    setOptimizeBucket(optimizeBucket);
+  }, [importData, optimizeBucket, setImportData, setOptimizeBucket]);
 
   useEffect(() => {
     if (error) {

@@ -5,11 +5,13 @@ export class Query<T = DatabaseModel> {
   protected ids: string[];
   protected fields: Record<string, string>;
   protected fieldsMultipleOr: Record<string, string[]> | null;
+  protected emptyFields: string[];
 
   constructor() {
     this.ids = [];
     this.fields = {};
     this.fieldsMultipleOr = null;
+    this.emptyFields = [];
   }
 
   findByIds(ids: string[]) {
@@ -33,6 +35,11 @@ export class Query<T = DatabaseModel> {
     return this;
   }
 
+  doesNotHave(key: keyof T) {
+    this.emptyFields.push(key as string);
+    return this;
+  }
+
   toMongooseFilterQuery(): FilterQuery<any> {
     const filterMultipleOr = this.fieldsMultipleOr &&
       Object.entries(this.fieldsMultipleOr).reduce((currentFilter, [key, value]) => {
@@ -41,9 +48,11 @@ export class Query<T = DatabaseModel> {
           [key]: { '$in': value }
         };
       }, {});
+    const notExistFilter = this.emptyFields.reduce((currentFilter, key) => ({ ...currentFilter, [key]: { '$exists': false } }), {});
     let filter: FilterQuery<any> = {
       ...this.fields,
       ...filterMultipleOr,
+      ...notExistFilter,
     };
     if (this.ids.length > 0) {
       filter._id = this.ids.length === 1 ? this.ids[0] : { '$in': this.ids };
