@@ -1,7 +1,7 @@
 import { List, Tooltip } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Transaction } from '@/models';
-import { useDataContext, useUserConfigContext } from '@/context';
+import { useDataContext, useNotificationContext, useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
 
 import styles from '@/styles/Transaction.module.css';
@@ -34,27 +34,40 @@ const transactionUpdateWith = (key: keyof Transaction, value: any, transaction: 
 export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   const { locale, currency } = useUserConfigContext();
   const { updateData, deleteData } = useDataContext();
+  const { setInfo } = useNotificationContext();
   const [isEditMode, setIsEditMode] = useState(false);
   const formattedAmount = useMemo(() => toCurrency(transaction.amount, locale, currency), [transaction.amount, locale, currency]);
   const formattedDate = useMemo(() => new Date(transaction.date).toLocaleDateString(), [transaction.date]);
 
   const handleItemClicked = useCallback(() => {
+    if (transaction.isMergedTransaction) {
+      setInfo('Cannot edit merged transactions!');
+      return;
+    }
     setIsEditMode(!isEditMode);
-  }, [isEditMode, setIsEditMode]);
+  }, [transaction, isEditMode, setIsEditMode, setInfo]);
 
   const handleDeleteConfirmed = useCallback(() => {
     deleteData({ transactions: [transaction.id ?? transaction.temporaryId] });
   }, [transaction.id, transaction.temporaryId, deleteData]);
 
   const handleDateChange = useCallback((newDate: string) => {
+    if (transaction.isMergedTransaction) {
+      setInfo('Cannot edit merged transactions!');
+      return;
+    }
     const date = new Date(newDate).toISOString();
     updateData(transactionUpdateWith('date', date, transaction));
-  }, [transaction, updateData]);
+  }, [transaction, updateData, setInfo]);
 
   const handleAmountChange = useCallback((newAmount: string) => {
+    if (transaction.isMergedTransaction) {
+      setInfo('Cannot edit merged transactions!');
+      return;
+    }
     const amount = Number.parseFloat(newAmount);
     updateData(transactionUpdateWith('amount', amount, transaction));
-  }, [transaction, updateData]);
+  }, [transaction, updateData, setInfo]);
 
   const handleDescriptionChange = useCallback((newDescription: string) => {
     updateData(transactionUpdateWith('description', newDescription, transaction));
