@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Data, DeleteDataRequest, ImportData, PartialData } from '@/models';
 import http from '@/utils/http';
-import { merge, mergeDeletion } from '@/utils/merge';
+import { mergeUniversal, mergeData, mergeDeletion } from '@/utils/merge';
 import { useRouter } from 'next/router';
 import { applyServerData } from '@/utils/applyServerData';
 import { prepareRequestData, RequestData } from '@/utils/requestData';
@@ -25,6 +25,7 @@ interface UseDataReturn {
   error?: Error;
 }
 const requestDataCached: RequestData = { put: null, remove: null };
+let hasPrefetched = false;
 
 export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   const router = useRouter();
@@ -69,12 +70,25 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
 
   const doRequestThrottled = useCallback((method: HttpMethod, path: string, force: boolean, newData?: any) => {
     if (!force && (method === 'put' || method === 'remove') && !data?.settings.shouldAutosave) {
-      requestDataCached[method] = merge(requestDataCached[method], newData);
+      if (method === 'put') {
+        console.log('Merging 2');
+        requestDataCached.put = mergeData(requestDataCached.put, newData);
+      } else if (method === 'remove') {
+        requestDataCached.remove = mergeUniversal(requestDataCached.remove, newData);
+      }
       setIsStale(true);
       return Promise.resolve();
     }
     return doRequest(method, path, newData);
   }, [data?.settings.shouldAutosave, doRequest]);
+
+  const doPrefetch = useCallback(() => {
+    if (hasPrefetched) {
+      return;
+    }
+    hasPrefetched = true;
+    return doRequest('get', '/api/prefetch');
+  }, [doRequest]);
 
   const fetchData = useCallback(() => {
     const path = accountId ? `/api/data?accountId=${accountId}` : '/api/data';
@@ -85,7 +99,8 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   }, [accountId, doRequestThrottled, setData]);
 
   const update = useCallback((newData: PartialData, force: boolean = false): Promise<void> => {
-    const mergedData = merge({}, data, newData) as Data;
+    console.log('Merging 1');
+    const mergedData = mergeData(data, newData) as Data;
     setData(mergedData);
 
     return doRequestThrottled('put', '/api/data', force, newData)
@@ -124,6 +139,12 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   const reset = useCallback(() => {
     setData(undefined);
   }, [setData]);
+
+  useEffect(() => {
+    if (!shouldLoad && !hasPrefetched) {
+      doPrefetch();
+    }
+  }, [shouldLoad, doPrefetch]);
 
   useEffect(() => {
     if (shouldLoad && !data) {

@@ -1,9 +1,9 @@
 import { Data, DatabaseModel, DeleteDataRequest, PartialData } from '@/models';
-import { merge, mergeDeletion } from '@/utils/merge';
+import { mergeData, mergeDeletion } from '@/utils/merge';
 
 export const applyServerData = (currentData: Data | undefined, localData: PartialData | null, serverData: PartialData): Data => {
   if (!localData) {
-    return merge({}, currentData, serverData) as Data;
+    return mergeData(currentData, serverData) as Data;
   }
   const deleteDataRequestLocal: DeleteDataRequest = Object.keys(localData).reduce((currentRequest, localKey) => {
     const key = localKey as keyof DeleteDataRequest;
@@ -23,7 +23,7 @@ export const applyServerData = (currentData: Data | undefined, localData: Partia
     };
   }, {} as DeleteDataRequest);
 
-  const withoutLocalData = currentData ? mergeDeletion(currentData, deleteDataRequestLocal) : {};
-  const withServerData = merge({}, withoutLocalData, serverData) as Data;
+  const withoutLocalData = currentData ? mergeDeletion(currentData, deleteDataRequestLocal) : {} as Data;
+  const withServerData = mergeData(withoutLocalData, serverData) as Data;
   return withServerData;
 };
