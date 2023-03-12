@@ -35,7 +35,11 @@ export async function fetchData(session: Session, accountId?: string) {
   const newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, account);
   const existingAdjustments = await adjustmentService.getAllBy('accountId', [account], user);
   const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', [account], user);
-  const adjustments = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
+  const {
+    adjustments,
+    created: createdAdjustments,
+    removed: removedAdjustments
+  } = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
 
   await accountService.refreshAccountAccess(account.id, user);
 
@@ -48,6 +52,11 @@ export async function fetchData(session: Session, accountId?: string) {
     recurringTransactions,
     adjustments,
     recurringAdjustments,
+    changes: {
+      createdTransactions: newTransactions.length,
+      createdAdjustments,
+      removedAdjustments,
+    }
   };
 }
 

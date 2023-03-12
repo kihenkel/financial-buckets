@@ -5,6 +5,8 @@ import { mergeUniversal, mergeData, mergeDeletion } from '@/utils/merge';
 import { useRouter } from 'next/router';
 import { applyServerData } from '@/utils/applyServerData';
 import { prepareRequestData, RequestData } from '@/utils/requestData';
+import { useNotificationContext } from '@/context';
+import { getChangeMessage } from '@/utils/getChangeMessage';
 
 type HttpMethod = 'get' | 'put' | 'post' | 'remove';
 
@@ -33,6 +35,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   const [isLoading, setIsLoading] = useState(true);
   const [isStale, setIsStale] = useState(false);
   const [error, setError] = useState<Error>();
+  const { setInfo } = useNotificationContext();
 
   const { accountId } = router.query;
 
@@ -71,7 +74,6 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   const doRequestThrottled = useCallback((method: HttpMethod, path: string, force: boolean, newData?: any) => {
     if (!force && (method === 'put' || method === 'remove') && !data?.settings.shouldAutosave) {
       if (method === 'put') {
-        console.log('Merging 2');
         requestDataCached.put = mergeData(requestDataCached.put, newData);
       } else if (method === 'remove') {
         requestDataCached.remove = mergeUniversal(requestDataCached.remove, newData);
@@ -92,14 +94,17 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
 
   const fetchData = useCallback(() => {
     const path = accountId ? `/api/data?accountId=${accountId}` : '/api/data';
-    return doRequestThrottled('get', path, true)
+    return doRequest('get', path)
       .then((response) => {
         setData(response);
+        const changeMessage = getChangeMessage(response.changes);
+        if (changeMessage) {
+          setInfo(changeMessage);
+        }
       });
-  }, [accountId, doRequestThrottled, setData]);
+  }, [accountId, doRequest, setData, setInfo]);
 
   const update = useCallback((newData: PartialData, force: boolean = false): Promise<void> => {
-    console.log('Merging 1');
     const mergedData = mergeData(data, newData) as Data;
     setData(mergedData);
 

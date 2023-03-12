@@ -28,21 +28,15 @@ export const mergeUniversal = (...args: any[]): object => {
 // This merge function isn't the most readable, but it has been optimized to handle large arrays
 // Limits: Merging nested objects or arrays currently is not supported
 export const mergeData = (objectA: Data | PartialData | null | undefined, objectB: PartialData | undefined): PartialData => {
-  console.log('*** MERGING ***');
   if (!objectA) {
-    console.log('objectA does not exist, returning objectB');
     return objectB ?? {};
   }
   if (!objectB) {
-    console.log('objectB does not exist, returning objectA');
     return objectA ?? {};
   }
-  console.log('+++ 37 +++ objectA', objectA);
-  console.log('+++ 38 +++ objectB', objectB);
   const newObjectA = { ...objectA };
 
   Object.keys(objectB).forEach((rawKey: string) => {
-    console.log(`  Processing ${rawKey} ...`);
     const key = rawKey as keyof PartialData;
     if (key === 'user') {
       newObjectA[key] = { ...newObjectA[key], ...objectB[key] };
@@ -52,19 +46,15 @@ export const mergeData = (objectA: Data | PartialData | null | undefined, object
       const itemsA = newObjectA[key] as Partial<DatabaseModel>[];
       const itemsB = objectB[key] as Partial<DatabaseModel>[];
       itemsB.forEach((itemB) => {
-        console.log(`    Processing item ${itemB.id || itemB.temporaryId} ...`);
         const foundExistingIndex = itemsA.findIndex((itemA) => hasEqualIds(itemA, itemB));
         if (foundExistingIndex >= 0) {
-          console.log(`      Item ${itemB.id || itemB.temporaryId} found in existing data, updating ...`);
           // Updating item
           itemsA[foundExistingIndex] = { ...itemsA[foundExistingIndex], ...itemB };
         } else {
-          console.log(`      Item ${itemB.id || itemB.temporaryId} not found in existing data, creating ...`);
           // New item
           itemsA.push(itemB);
         }
       });
-      console.log(`  New ${rawKey} list length is`, itemsA.length);
       newObjectA[key] = itemsA;
     }
   });

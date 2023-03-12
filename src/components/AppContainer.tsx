@@ -97,7 +97,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
     if (infoMessage) {
-      messageApi.error(infoMessage, Math.ceil(infoMessage.length / 3));
+      messageApi.info(infoMessage, Math.ceil(infoMessage.length / 3));
     }
   }, [messageApi, infoMessage]);
 

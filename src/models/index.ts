@@ -12,5 +12,3 @@ export * from './Balance';
 export * from './Adjustment';
 export * from './RecurringAdjustment';
 export * from './Settings';
-
-export * from './BucketDisplayData';

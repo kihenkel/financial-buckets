@@ -46,7 +46,13 @@ const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustm
   return [validAdjustments, newAdjustments, obsoleteAdjustments] as const;
 };
 
-const syncAdjustments = async (existingAdjustments: Adjustment[], recurringAdjustments: RecurringAdjustment[], account: Account, user: User): Promise<Adjustment[]> => {
+interface AdjustmentSyncResult {
+  adjustments: Adjustment[];
+  created: number;
+  removed: number;
+}
+
+const syncAdjustments = async (existingAdjustments: Adjustment[], recurringAdjustments: RecurringAdjustment[], account: Account, user: User): Promise<AdjustmentSyncResult> => {
   const [allManualAdjustments, allAutoAdjustments] = existingAdjustments.reduce((currentList: Adjustment[][], existingAdjustment) => {
     if (existingAdjustment.recurringAdjustmentId) {
       currentList[1].push(existingAdjustment);
@@ -70,7 +76,11 @@ const syncAdjustments = async (existingAdjustments: Adjustment[], recurringAdjus
   const addedAdjustments: Adjustment[] = (await adjustmentService.updateOrAdd(newAdjustments, user))
     .map(adjustment => ({ ...adjustment, isNew: true }));
 
-  return [...allManualAdjustments, ...validAdjustments, ...addedAdjustments];
+  return {
+    adjustments: [...allManualAdjustments, ...validAdjustments, ...addedAdjustments],
+    created: addedAdjustments.length,
+    removed: obsoleteAdjustments.length,
+  };
 };
 
 export const recurringAdjustmentService = {
