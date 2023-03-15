@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { message, Spin } from 'antd';
+import { notification, Spin } from 'antd';
 import { useRouter } from 'next/router';
 import type { AppProps } from 'next/app';
 import { useSession } from 'next-auth/react';
@@ -19,7 +19,7 @@ export interface PageProps {
 }
 
 export const AppContainer = ({ Component, pageProps }: AppProps) => {
-  const [messageApi, messageApiContext] = message.useMessage();
+  const [notificationApi, notificationApiContext] = notification.useNotification();
   const { status } = useSession({ required: true });
   const router = useRouter();
   const { data, isLoading, isStale, error, update, remove, importData, optimizeBucket, forceUpdate, reset } = useData({ shouldLoad: status === 'authenticated' });
@@ -85,27 +85,39 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
     if (errorMessage) {
-      messageApi.error(errorMessage, Math.ceil(errorMessage.length / 3));
+      notificationApi.error({
+        message: 'Error',
+        description: errorMessage,
+        duration: 0,
+      });
     }
-  }, [messageApi, errorMessage]);
+  }, [notificationApi, errorMessage]);
 
   useEffect(() => {
     if (warningMessage) {
-      messageApi.warning(warningMessage, Math.ceil(warningMessage.length / 3));
+      notificationApi.warning({
+        message: 'Warning',
+        description: warningMessage,
+        duration: 0,
+      });
     }
-  }, [messageApi, warningMessage]);
+  }, [notificationApi, warningMessage]);
 
   useEffect(() => {
     if (infoMessage) {
-      messageApi.info(infoMessage, Math.ceil(infoMessage.length / 3));
+      notificationApi.info({
+        message: 'Info',
+        description: infoMessage,
+        duration: 0,
+      });
     }
-  }, [messageApi, infoMessage]);
+  }, [notificationApi, infoMessage]);
 
   return (
     <>
       <Header data={data} />
       <main className={styles.main}>
-        {messageApiContext}
+        {notificationApiContext}
         { isLoading && !data && <div className={styles.spinner}><Spin size="large" /></div>}
         { data && <Component {...pageProps} data={data} />}
         <LoadingIndicator isLoading={isLoading} isStale={isStale} onStaleClicked={forceUpdate} />

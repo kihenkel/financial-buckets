@@ -39,7 +39,7 @@ export default function AccountPage({ data }: PageProps) {
   const bucketTransactions = useMemo(() => getBucketTransactions(data.buckets, data.transactions), [data]);
   const bucketBalances = useMemo(() => getBucketBalances(bucketTransactions), [bucketTransactions]);
   const bucketsTotalBalance = useMemo(() => getBucketsTotal(bucketBalances), [bucketBalances]);
-  const adjustmentsTotalBalance = useMemo(() => getAdjustmentsTotal(data.adjustments), [data.adjustments]);
+  const adjustmentsTotalBalance = useMemo(() => getAdjustmentsTotal(data.adjustments), [data]);
   const mainBalance = useMemo(() => getMainBalance(account.balance ?? 0, bucketsTotalBalance, adjustmentsTotalBalance), [account.balance, bucketsTotalBalance, adjustmentsTotalBalance]);
 
   useEffect(() => {
