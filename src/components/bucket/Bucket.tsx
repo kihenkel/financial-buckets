@@ -67,8 +67,12 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
 
   const titleComponent = useMemo(() => (
     <Space onClick={handleTitleClicked} style={{ justifyContent: 'space-between', width: '100%', cursor: 'pointer' }} className={styles.bucketTitle}>
-      <EditableText text={bucket.name} onEdit={handleNameChange} />
-      <Text strong>{formattedBalance}</Text>
+      {!isEditMode &&
+        <>
+          <EditableText text={bucket.name} onEdit={handleNameChange} />
+          <Text strong>{formattedBalance}</Text>
+        </>
+      }
       {isEditMode &&
         <Space align="end" style={{ gap: '0px' }}>
           <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />

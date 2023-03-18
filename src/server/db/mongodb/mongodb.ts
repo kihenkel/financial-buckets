@@ -14,8 +14,9 @@ const mongoToDomainModel = (data: LeanDocument<any> | undefined) => {
 };
 
 const domainToMongoModel = (data: any) => {
-  delete data.id;
-  return data;
+  const mongoModel = { ...data };
+  delete mongoModel.id;
+  return mongoModel;
 };
 
 const adapter: DatabaseAdapter = {

@@ -3,6 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Bucket } from '@/models';
 import { useCallback } from 'react';
 import { useAccountContext, useDataContext, useUserContext } from '@/context';
+import { createTempId } from '@/utils/tempId';
 
 interface AddBucketProps {
   amountBuckets: number;
@@ -18,6 +19,7 @@ export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
       userId: user?.id,
       accountId: account.id,
       name: `My Bucket ${amountBuckets + 1}`,
+      temporaryId: createTempId(),
     };
 
     updateData({ buckets: [newBucket] }, true);

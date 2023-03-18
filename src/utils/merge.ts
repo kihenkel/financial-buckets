@@ -43,7 +43,7 @@ export const mergeData = (objectA: Data | PartialData | null | undefined, object
     } else if (key === 'settings') {
       newObjectA[key] = { ...newObjectA[key], ...objectB[key] };
     } else {
-      const itemsA = newObjectA[key] as Partial<DatabaseModel>[];
+      const itemsA = (newObjectA[key] ?? []) as Partial<DatabaseModel>[];
       const itemsB = objectB[key] as Partial<DatabaseModel>[];
       itemsB.forEach((itemB) => {
         const foundExistingIndex = itemsA.findIndex((itemA) => hasEqualIds(itemA, itemB));
