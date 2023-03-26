@@ -98,22 +98,24 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
   ), [bucket.target, locale, currency, handleTargetChanged]);
 
   const titleComponent = useMemo(() => (
-    <Space onClick={handleTitleClicked} style={{ justifyContent: 'space-between', width: '100%', cursor: 'pointer' }} className={styles.bucketTitle}>
-      {!isEditMode &&
-        <>
-          <EditableText text={bucket.name} onEdit={handleNameChange} />
-          <Text strong>{formattedBalance}</Text>
-        </>
-      }
-      {isEditMode &&
-        <Space align="end" style={{ gap: '0px' }}>
-          <Button onClick={() => handleTargetChanged('0')} size="small" type="text"><AimOutlined /></Button>
-          <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
-          <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
-        </Space>
-      }
+    <>
+      <Space onClick={handleTitleClicked} style={{ justifyContent: 'space-between', width: '100%', cursor: 'pointer' }} className={styles.bucketTitle}>
+        {!isEditMode &&
+          <>
+            <EditableText text={bucket.name} onEdit={handleNameChange} />
+            <Text strong>{formattedBalance}</Text>
+          </>
+        }
+        {isEditMode &&
+          <Space align="end" style={{ gap: '0px' }}>
+            <Button onClick={() => handleTargetChanged('0')} size="small" type="text"><AimOutlined /></Button>
+            <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
+            <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
+          </Space>
+        }
+      </Space>
       {bucketTarget}
-    </Space>
+    </>
   ), [bucket.name, bucketTarget, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked, handleTargetChanged]);
 
   return (
