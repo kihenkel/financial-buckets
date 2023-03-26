@@ -10,11 +10,12 @@ interface EditableTextProps {
   textProps?: TextProps;
   inputProps?: InputProps;
   clearOnSelect?: boolean;
+  allowEmpty?: boolean;
   onEdit(newText: string): void;
   validate?(input: string): boolean;
 }
 
-export const EditableText = ({ text, placeholder, textProps, inputProps, clearOnSelect, onEdit, validate }: EditableTextProps) => {
+export const EditableText = ({ text, placeholder, textProps, inputProps, clearOnSelect, allowEmpty, onEdit, validate }: EditableTextProps) => {
   const [isEditMode, setIsEditMode] = useState(!text);
 
   const handleTextClick = useCallback((e: MouseEvent) => {
@@ -29,10 +30,10 @@ export const EditableText = ({ text, placeholder, textProps, inputProps, clearOn
   const handleInputFinish = useCallback<EventHandler<any>>((event) => {
     const newText = String(event.target.value);
     setIsEditMode(false);
-    if (newText && newText !== text && (!validate || validate(newText))) {
+    if ((newText || allowEmpty) && newText !== text && (!validate || validate(newText))) {
       onEdit(newText);
     }
-  }, [text, onEdit, setIsEditMode, validate]);
+  }, [text, allowEmpty, onEdit, setIsEditMode, validate]);
   return (
     <>
       {!isEditMode && <Text {...textProps} onClick={handleTextClick} style={{ cursor: 'text', ...textProps?.style }}>{text}</Text>}

@@ -7,3 +7,10 @@
 .bucketTitle:hover {
   background-color: rgba(0, 0, 0, 0.06);
 }
+
+.bucketTarget {
+  position: absolute;
+  top: 36px;
+  left: 24px;
+  font-size: 10px;
+}

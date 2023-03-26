@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Space, Typography } from 'antd';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Space, Typography } from 'antd';
+import { AimOutlined } from '@ant-design/icons';
 import { useDataContext, useUserConfigContext } from '@/context';
 import { Bucket as BucketModel, Transaction } from '@/models';
 import { toCurrency } from '@/utils/toCurrency';
@@ -20,6 +21,10 @@ interface BucketProps {
   transactions: Transaction[];
   balance: number;
 }
+
+const validateTarget = (newAmount: string) => {
+  return !isNaN(Number.parseFloat(newAmount)) || newAmount === '';
+};
 
 export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
   const { locale, currency } = useUserConfigContext();
@@ -61,9 +66,36 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
     });
   }, [bucket, updateData]);
 
+  const handleTargetChanged = useCallback((targetString: string) => {
+    const newTarget = targetString === '' ? -1 : Number.parseFloat(targetString);
+    updateData({
+      buckets: [{
+        id: bucket.id,
+        userId: bucket.userId,
+        target: newTarget,
+      }]
+    });
+  }, [bucket, updateData]);
+
   const formattedBalance = useMemo(() =>
     toCurrency(balance, locale, currency),
   [balance, locale, currency]);
+
+  const bucketTarget = useMemo(() => (
+    bucket.target >= 0 ?
+    <div className={styles.bucketTarget}>
+      Target:&nbsp;
+      <EditableText
+        text={toCurrency(bucket.target, locale, currency)}
+        textProps={{ style: { fontSize: 10 } }}
+        inputProps={{ style: { fontSize: 10 } }}
+        onEdit={handleTargetChanged}
+        validate={validateTarget}
+        clearOnSelect
+        allowEmpty
+      />
+    </div> : null
+  ), [bucket.target, locale, currency, handleTargetChanged]);
 
   const titleComponent = useMemo(() => (
     <Space onClick={handleTitleClicked} style={{ justifyContent: 'space-between', width: '100%', cursor: 'pointer' }} className={styles.bucketTitle}>
@@ -75,12 +107,14 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
       }
       {isEditMode &&
         <Space align="end" style={{ gap: '0px' }}>
+          <Button onClick={() => handleTargetChanged('0')} size="small" type="text"><AimOutlined /></Button>
           <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
           <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
         </Space>
       }
+      {bucketTarget}
     </Space>
-  ), [bucket.name, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked]);
+  ), [bucket.name, bucketTarget, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked, handleTargetChanged]);
 
   return (
     <BucketShell title={titleComponent} style={{ height: 350 }}>
