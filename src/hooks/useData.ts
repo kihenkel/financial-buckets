@@ -5,7 +5,7 @@ import { mergeUniversal, mergeData, mergeDeletion } from '@/utils/merge';
 import { useRouter } from 'next/router';
 import { applyServerData } from '@/utils/applyServerData';
 import { prepareRequestData, RequestData } from '@/utils/requestData';
-import { useNotificationContext } from '@/context';
+import { useNotificationContext, useUserConfigContext } from '@/context';
 import { getChangeMessage } from '@/utils/getChangeMessage';
 
 type HttpMethod = 'get' | 'put' | 'post' | 'remove';
@@ -35,6 +35,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   const [isLoading, setIsLoading] = useState(true);
   const [isStale, setIsStale] = useState(false);
   const [error, setError] = useState<Error>();
+  const { locale, currency } = useUserConfigContext();
   const { setInfo } = useNotificationContext();
 
   const { accountId } = router.query;
@@ -97,7 +98,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     return doRequest('get', path)
       .then((response) => {
         setData(response);
-        const changeMessage = getChangeMessage(response.changes);
+        const changeMessage = getChangeMessage(response.changes, response.buckets, locale, currency);
         if (changeMessage) {
           setInfo(changeMessage);
         }

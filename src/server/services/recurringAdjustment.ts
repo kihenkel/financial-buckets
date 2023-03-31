@@ -48,8 +48,8 @@ const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustm
 
 interface AdjustmentSyncResult {
   adjustments: Adjustment[];
-  created: number;
-  removed: number;
+  created: Adjustment[];
+  removed: Adjustment[];
 }
 
 const syncAdjustments = async (existingAdjustments: Adjustment[], recurringAdjustments: RecurringAdjustment[], account: Account, user: User): Promise<AdjustmentSyncResult> => {
@@ -78,8 +78,8 @@ const syncAdjustments = async (existingAdjustments: Adjustment[], recurringAdjus
 
   return {
     adjustments: [...allManualAdjustments, ...validAdjustments, ...addedAdjustments],
-    created: addedAdjustments.length,
-    removed: obsoleteAdjustments.length,
+    created: addedAdjustments,
+    removed: obsoleteAdjustments,
   };
 };
 

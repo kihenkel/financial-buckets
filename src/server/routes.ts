@@ -53,7 +53,7 @@ export async function fetchData(session: Session, accountId?: string) {
     adjustments,
     recurringAdjustments,
     changes: {
-      createdTransactions: newTransactions.length,
+      createdTransactions: newTransactions,
       createdAdjustments,
       removedAdjustments,
     }
