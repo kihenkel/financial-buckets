@@ -3,7 +3,7 @@ import db from '@/server/db';
 import { createService, ServiceHandlers } from './createService';
 import { transactionService } from './transaction';
 
-const OPTIMIZE_OLDER_THAN_MS = 2 * 31 * 24 * 60 * 60 * 1000; // 2 months
+const OPTIMIZE_OLDER_THAN_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 const KEEP_MIN_ITEMS = 5;
 
 const serviceHandlers: ServiceHandlers<Bucket> = {
