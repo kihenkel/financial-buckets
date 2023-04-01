@@ -103,7 +103,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
           setInfo(changeMessage);
         }
       });
-  }, [accountId, doRequest, setData, setInfo]);
+  }, [accountId, locale, currency, doRequest, setData, setInfo]);
 
   const update = useCallback((newData: PartialData, force: boolean = false): Promise<void> => {
     const mergedData = mergeData(data, newData) as Data;
