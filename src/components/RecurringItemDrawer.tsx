@@ -55,7 +55,7 @@ export const RecurringItemDrawer = ({ itemName, isOpen, formComponent: FormCompo
         <Space>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} type="primary">
-            Submit
+            Save
           </Button>
         </Space>
       }

@@ -23,17 +23,6 @@ interface CalculateOccurencesProps {
 const DAY_IN_MS = 1 * 24 * 60 * 60 * 1000;
 const WEEK_IN_MS = DAY_IN_MS * 7;
 
-const isFirstHalfOfMonth = (date: dayjs.Dayjs, timeDate: dayjs.Dayjs) => {
-  const dayOfMonth = date.date();
-  if (dayOfMonth > 1 && dayOfMonth < 15) return true;
-
-  const minutesIntoDay = (date.hour() * 60) + date.minute();
-  const minuteLimit = (timeDate.hour() * 60) + timeDate.minute();
-
-  return (dayOfMonth === 1 && minutesIntoDay >= minuteLimit) ||
-    (dayOfMonth === 15 && minutesIntoDay < minuteLimit);
-};
-
 const getRealStartDate = (dayjsIntervalType: DayjsIntervalType, { interval, initialDate, calculateStartDate }: CalculateOccurencesPropsInternal): dayjs.Dayjs => {
   if (initialDate.isAfter(calculateStartDate)) {
     return initialDate;
@@ -80,30 +69,10 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
 };
 
 const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ): string[] | null => {
-  const { initialDate, calculateStartDate, calculateEndDate, limit } = propsInternal;
-  const actualInitialDate = isFirstHalfOfMonth(calculateStartDate, initialDate) ?
-    dayjs(calculateStartDate).date(15).hour(initialDate.hour()).minute(initialDate.minute()).second(0).millisecond(0) :
-    dayjs(calculateStartDate).add(1, 'month').date(1).hour(initialDate.hour()).minute(initialDate.minute()).second(0).millisecond(0);
+  const monthlyOnFirst = calculateWith('months', { ...propsInternal, interval: 1, initialDate: dayjs(propsInternal.initialDate).date(1) });
+  const monthlyOnFifteenth = calculateWith('months', { ...propsInternal, interval: 1, initialDate: dayjs(propsInternal.initialDate).date(15) });
 
-  if (calculateEndDate && actualInitialDate.isAfter(calculateEndDate)) return [];
-
-  return Array(limit)
-    .fill(undefined)
-    .reduce((currentOccurences: dayjs.Dayjs[], _, index) => {
-      if (index === 0) {
-        return [actualInitialDate];
-      }
-      const lastDate = currentOccurences[currentOccurences.length - 1];
-      const newDate = lastDate.date() === 1 ? dayjs(lastDate).date(15) : dayjs(lastDate).add(1, 'month').date(1);
-      if (calculateEndDate && newDate.isAfter(calculateEndDate)) {
-        return currentOccurences;
-      }
-      return [
-        ...currentOccurences,
-        newDate
-      ];
-    }, [])
-    .map((date) => date.format());
+  return [...monthlyOnFirst, ...monthlyOnFifteenth];
 };
 
 export const calculateOccurences = ({ interval, initialDate, calculateStartDate, calculateEndDate, limit, intervalType }: CalculateOccurencesProps): string[] | null => {

@@ -98,7 +98,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     return doRequest('get', path)
       .then((response) => {
         setData(response);
-        const changeMessage = getChangeMessage(response.changes, response.buckets, locale, currency);
+        const changeMessage = response && getChangeMessage(response.changes, response.buckets, locale, currency);
         if (changeMessage) {
           setInfo(changeMessage);
         }
