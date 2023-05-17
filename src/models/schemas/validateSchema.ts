@@ -1,29 +1,36 @@
 import Joi from 'joi';
 import logger from '@/server/logger';
 
-type Handler = () => Promise<any>;
+type Handler = (data: any) => Promise<any>;
 
-const validate = (schema: Joi.Schema, data: any): string => {
+interface ValidationResult {
+  data?: any;
+  errorMessage?: string;
+}
+
+const validate = (schema: Joi.Schema, data: any): ValidationResult => {
   const validationResult = schema.validate(data);
   if (validationResult.error) {
-    const message = `Schema validation failed: ${validationResult.error.message}`;
-    logger.error(message);
-    return message;
+    const errorMessage = `Schema validation failed: ${validationResult.error.message}`;
+    logger.error(errorMessage);
+    return { errorMessage };
   }
-  return '';
+  return { data: validationResult.value };
 };
 
 export const withValidatedSchema = (schema: Joi.Schema, data: any | any[], handler: Handler): Promise<any> => {
   if (Array.isArray(data)) {
-    const errorMessages = data.map((entry) => validate(schema, entry)).filter(value => value);
-    if (errorMessages.length > 0) {
-      return Promise.reject(`ERROR: ${errorMessages.length} out of ${data.length} validations failed.`);
+    const validationResults = data.map((entry) => validate(schema, entry));
+    const failedValidations = validationResults.filter((validationResult) => validationResult.errorMessage);
+    if (failedValidations.length > 0) {
+      return Promise.reject(`ERROR: ${failedValidations.length} out of ${validationResults.length} validations failed.`);
     }
-  } else {
-    const errorMessage = validate(schema, data);
-    if (errorMessage) {
-      return Promise.reject(errorMessage);
-    }
+    return handler(validationResults.map((validationResult) => validationResult.data));
   }
-  return handler();
+
+  const validationResult = validate(schema, data);
+  if (validationResult.errorMessage) {
+    return Promise.reject(validationResult.errorMessage);
+  }
+  return handler(validationResult.data);
 };
