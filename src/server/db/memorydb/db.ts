@@ -50,7 +50,6 @@ const save = (modelName: string, newData: any) => {
     data[modelName] = [];
   }
   const doc = createDbDoc(newData);
-  console.log('+++ 53 +++ saving', doc);
   data[modelName].push(doc);
   return doc;
 };

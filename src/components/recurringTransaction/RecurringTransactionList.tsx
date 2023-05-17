@@ -7,6 +7,7 @@ import { RecurringItemDrawer } from '../RecurringItemDrawer';
 import { useDataContext, useUserContext } from '@/context';
 import { RecurringTransactionForm } from './RecurringTransactionForm';
 import { sortIntervalItems } from '@/utils/sortIntervalItems';
+import { createTempId } from '@/utils/tempId';
 
 interface RecurringTransactionMap {
   [key: string]: RecurringTransaction[];
@@ -31,6 +32,7 @@ export const RecurringTransactionList = ({ buckets, recurringTransactions }: Rec
         id: existingRecurringTransaction?.id,
         userId: user?.id,
         bucketId: activeTabKey,
+        temporaryId: createTempId(),
         ...recurringTransaction,
       }]
     });

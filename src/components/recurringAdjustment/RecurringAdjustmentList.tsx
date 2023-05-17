@@ -7,6 +7,7 @@ import { RecurringItemDrawer } from '../RecurringItemDrawer';
 import { useAccountContext, useDataContext, useUserContext } from '@/context';
 import { RecurringAdjustmentForm } from './RecurringAdjustmentForm';
 import { sortIntervalItems } from '@/utils/sortIntervalItems';
+import { createTempId } from '@/utils/tempId';
 
 interface AdjustmentListProps {
   recurringAdjustments: RecurringAdjustment[];
@@ -26,6 +27,7 @@ export const RecurringAdjustmentList = ({ recurringAdjustments }: AdjustmentList
         id: existingRecurringAdjustment?.id,
         userId: user?.id,
         accountId: account.id,
+        temporaryId: createTempId(),
         ...recurringAdjustment,
       }]
     });
