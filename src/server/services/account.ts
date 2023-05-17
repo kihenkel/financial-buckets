@@ -20,7 +20,18 @@ const refreshAccountAccess = async (accountId: string, user: User): Promise<void
   await service.updateOrAdd([{ id: accountId, lastAccess: new Date().toISOString() }], user);
 };
 
+const getAllOrDefault = async (user: User): Promise<Account[]> => {
+  const accounts = await service.getAll(user);
+  if (accounts.length <= 0) {
+    logger.info(`No accounts found for user ${user.id} creating new default account ...`);
+    await service.add({ userId: user.id, balance: 0 }, user);
+    return service.getAll(user);
+  }
+  return accounts;
+};
+
 export const accountService = {
   ...service,
   refreshAccountAccess,
+  getAllOrDefault,
 };

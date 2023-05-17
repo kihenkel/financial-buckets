@@ -43,7 +43,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
     const isIntroductionNeeded = needsIntroduction(data);
-    if (isIntroductionNeeded) {
+    if (isIntroductionNeeded && router.asPath !== '/introduction') {
       router.push('/introduction');
     }
   }, [data, router]);

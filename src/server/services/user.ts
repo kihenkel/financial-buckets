@@ -21,6 +21,7 @@ export async function getFromSession(session: Session): Promise<User> {
   let user = await db.getFirstUser(query);
 
   if (!user) {
+    logger.info(`No user ${userId} found for provider ${providerField}, creating new one ...`);
     await db.addUser({ [providerField]: userId });
     user = await db.getFirstUser(query);
   }

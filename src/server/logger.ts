@@ -17,16 +17,16 @@ const logger = {
   },
   info: (...args: any[]) => {
     if (shouldLogInfo) {
-      console.log(...args);
+      console.log('[Info]', ...args);
     }
   },
   warning: (...args: any[]) => {
     if (shouldLogWarn) {
-      console.warn(...args);
+      console.warn('[Warning]', ...args);
     }
   },
   error: (...args: any[]) => {
-    console.error(...args);
+    console.error('[Error]', ...args);
   },
 };
 

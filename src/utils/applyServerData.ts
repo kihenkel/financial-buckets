@@ -8,7 +8,7 @@ export const applyServerData = (currentData: Data | undefined, localData: Partia
   const deleteDataRequestLocal: DeleteDataRequest = Object.keys(localData).reduce((currentRequest, localKey) => {
     const key = localKey as keyof DeleteDataRequest;
     const items = localData[key] ?? [] as Partial<DatabaseModel>[];
-    const temporaryIds = items.filter((item) => {
+    const temporaryIds = Array.isArray(items) ? items.filter((item) => {
       if (!item.id) {
         if (!item.temporaryId) {
           console.warn(`${key} item does neither have an id nor a temporaryId!`);
@@ -16,7 +16,7 @@ export const applyServerData = (currentData: Data | undefined, localData: Partia
         }
         return true;
       }
-    }).map((item) => item.temporaryId ?? '');
+    }).map((item) => item.temporaryId ?? '') : [];
     return {
       ...currentRequest,
       [key]: temporaryIds,
