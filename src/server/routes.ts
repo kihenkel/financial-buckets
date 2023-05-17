@@ -17,17 +17,22 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { parseBuckets, parseTransactions } from '@/utils/importBucketsUtils';
 dayjs.extend(weekOfYear);
 
-export async function fetchData(session: Session, accountId?: string) {
+interface RouteResult {
+  status: number;
+  data?: any;
+}
+
+export async function fetchData(session: Session, accountId?: string): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
   }
   const user = await userService.getFromSession(session);
   const settings = await settingsService.getByUser(user);
-  const accounts = await accountService.getAll(user);
+  const accounts = await accountService.getAllOrDefault(user);
   const account = accountId ? accounts.find((account) => account.id === accountId) : accounts[0];
   if (!account) {
-    throw new Error(`Could not find account with id ${accountId}`);
+    return { status: 404, data: `Could not find account with id ${accountId}` };
   }
   const buckets = await bucketService.getAllBy('accountId', [account], user);
   const transactions = await transactionService.getAllByBuckets(buckets, user);
@@ -44,23 +49,26 @@ export async function fetchData(session: Session, accountId?: string) {
   await accountService.refreshAccountAccess(account.id, user);
 
   return {
-    user,
-    settings,
-    accounts,
-    buckets,
-    transactions: [...transactions, ...newTransactions],
-    recurringTransactions,
-    adjustments,
-    recurringAdjustments,
-    changes: {
-      createdTransactions: newTransactions,
-      createdAdjustments,
-      removedAdjustments,
-    }
+    status: 200,
+    data: {
+      user,
+      settings,
+      accounts,
+      buckets,
+      transactions: [...transactions, ...newTransactions],
+      recurringTransactions,
+      adjustments,
+      recurringAdjustments,
+      changes: {
+        createdTransactions: newTransactions,
+        createdAdjustments,
+        removedAdjustments,
+      },
+    },
   };
 }
 
-export async function updateData(session: Session, data: PartialData) {
+export async function updateData(session: Session, data: PartialData): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
@@ -76,10 +84,13 @@ export async function updateData(session: Session, data: PartialData) {
   const adjustments = data.adjustments && await adjustmentService.updateOrAdd(data.adjustments, sessionUser);
   const recurringAdjustments = data.recurringAdjustments && await recurringAdjustmentService.updateOrAdd(data.recurringAdjustments, sessionUser);
 
-  return { user, settings, accounts, buckets, transactions, recurringTransactions, adjustments, recurringAdjustments };
+  return {
+    status: 200,
+    data: { user, settings, accounts, buckets, transactions, recurringTransactions, adjustments, recurringAdjustments }
+  };
 }
 
-export async function deleteData(session: Session, data: DeleteDataRequest) {
+export async function deleteData(session: Session, data: DeleteDataRequest): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
@@ -93,10 +104,10 @@ export async function deleteData(session: Session, data: DeleteDataRequest) {
   data.adjustments && await adjustmentService.deleteAll(data.adjustments, sessionUser);
   data.recurringAdjustments && await recurringAdjustmentService.deleteAll(data.recurringAdjustments, sessionUser);
 
-  return;
+  return { status: 200 };
 };
 
-export async function importData(session: Session, importData: ImportData) {
+export async function importData(session: Session, importData: ImportData): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
@@ -109,10 +120,10 @@ export async function importData(session: Session, importData: ImportData) {
   const newTransactions = parseTransactions(importData.buckets, buckets, sessionUser);
   const transactions = await transactionService.updateOrAdd(newTransactions, sessionUser);
 
-  return { buckets, transactions };
+  return { status: 200, data: { buckets, transactions } };
 };
 
-export async function optimize(session: Session, bucketId: string) {
+export async function optimize(session: Session, bucketId: string): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
@@ -121,5 +132,5 @@ export async function optimize(session: Session, bucketId: string) {
   const sessionUser = await userService.getFromSession(session);
   await bucketService.optimize(bucketId, sessionUser);
 
-  return { success: true };
+  return { status: 200, data: { success: true } };
 }
