@@ -1,4 +1,5 @@
 import mongodbAdapter from '@/server/db/mongodb';
+import memorydbAdapter from '@/server/db/memorydb';
 import {
   DatabaseModelNoUserId,
   User, userDisplayName,
@@ -25,7 +26,7 @@ import {
 import { Query } from './Query';
 import { withValidatedSchema } from '@/models/schemas/validateSchema';
 
-const dbAdapter = mongodbAdapter;
+const dbAdapter = memorydbAdapter;
 
 interface Database {
   connect(): Promise<void>;

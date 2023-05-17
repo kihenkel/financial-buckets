@@ -59,4 +59,11 @@ export class Query<T = DatabaseModel> {
     }
     return filter;
   }
+
+  toMemorydbFilterQuery(): FilterQuery<any> {
+    const filter = this.toMongooseFilterQuery();
+    filter.id = filter._id;
+    delete filter._id;
+    return filter;
+  }
 }
