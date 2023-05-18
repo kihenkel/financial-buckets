@@ -15,8 +15,8 @@ if (process.env.NODE_ENV === 'development') {
   const LocalTestProvider = CredentialsProvider({
     name: 'Credentials',
     credentials: {
-      username: { label: "Username", type: "text", placeholder: "jsmith" },
-      password: { label: "Password", type: "password" }
+      username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
+      password: { label: 'Password', type: 'password' }
     },
     async authorize() {
       return {

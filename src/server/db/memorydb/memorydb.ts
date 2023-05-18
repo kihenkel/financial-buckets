@@ -53,7 +53,7 @@ const adapter: DatabaseAdapter = {
     const newDataList = dataList.map((dataEntry, index) => {
       const filter = queries[index].toMemorydbFilterQuery();
       const dbModelData = domainToDbModel(dataEntry);
-      return db.updateOne(modelName, filter, dbModelData)
+      return db.updateOne(modelName, filter, dbModelData);
     });
     return newDataList;
   },

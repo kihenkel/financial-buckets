@@ -80,7 +80,7 @@ const updateOne = (modelName: string, filter: FilterQuery<any>, newData: any): D
     ...data[modelName][index],
     ...newData,
     modifiedAt: new Date().toISOString(),
-  }
+  };
   data[modelName] = data[modelName].slice(0, index).concat(newEntry, data[modelName].slice(index + 1));
   return newEntry;
 };
