@@ -1,11 +1,11 @@
 import { FilterQuery } from 'mongoose';
 import { DatabaseModel } from '@/models';
-import testData from '../../../../testData.json';
+// import testData from '../../../../testData.json';
 
 type FilterOperatorHandler = { [key: string]: (entry: any, filterKey: string, filterValue: any) => boolean };
 
 // This memory db mostly mirrors MongoDb filters and operators
-const data: any = testData;
+const data: any = {};
 
 const filterOperatorHandler: FilterOperatorHandler = {
   '$in': (entry: any, filterKey: string, filterValue: any[]) => filterValue.includes(entry[filterKey]),
