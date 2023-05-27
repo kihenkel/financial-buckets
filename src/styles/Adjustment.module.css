@@ -26,6 +26,12 @@
   transition: background-color .1s ease-in;
 }
 
+.recurringIcon {
+  position: absolute;
+  left: -4px;
+  top: 8px;
+}
+
 @keyframes highlight {
   from {
       background-color: #ffffda;

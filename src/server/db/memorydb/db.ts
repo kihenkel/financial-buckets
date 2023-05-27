@@ -6,6 +6,7 @@ type FilterOperatorHandler = { [key: string]: (entry: any, filterKey: string, fi
 
 // This memory db mostly mirrors MongoDb filters and operators
 const data: any = {};
+// const data: any = testData;
 
 const filterOperatorHandler: FilterOperatorHandler = {
   '$in': (entry: any, filterKey: string, filterValue: any[]) => filterValue.includes(entry[filterKey]),
@@ -39,7 +40,7 @@ const isFilterMatch = (entry: any, filter: FilterQuery<any> | undefined) => {
       if (!handler) {
         throw new Error(`Filter operator ${operator} not supported!`);
       }
-      return filterOperatorHandler[filterValue](entry, filterKey, filterValue);
+      return handler(entry, filterKey, filterValue[operator]);
     }
     return entry[filterKey] === filterValue;
   });

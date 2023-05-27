@@ -1,12 +1,15 @@
-import { List, Tooltip } from 'antd';
+import { List, Tooltip, Typography } from 'antd';
+import { FileSyncOutlined } from '@ant-design/icons';
 import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Transaction } from '@/models';
 import { useDataContext, useNotificationContext, useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
-
-import styles from '@/styles/Transaction.module.css';
 import { EditableText } from '../EditableText';
 import { ButtonDelete } from '../ButtonDelete';
+
+import styles from '@/styles/Transaction.module.css';
+
+const { Text } = Typography;
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -74,11 +77,15 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   }, [transaction, updateData]);
 
   const itemStyles = transaction.isNew ? `${styles.transactionListItem} ${styles.transactionListItemNew}` : styles.transactionListItem;
+  const tooltipTitle = transaction.recurringTransactionId ? `${transaction.description} (Recurring)` : transaction.description;
   return (
     <>
-      <Tooltip placement="right" title={transaction.description}>
+      <Tooltip placement="right" title={tooltipTitle}>
         <List.Item onClick={handleItemClicked}  className={itemStyles}>
           <div className={styles.transactionItem}>
+            {transaction.recurringTransactionId && <div className={styles.recurringIcon}>
+              <Text type="secondary"><FileSyncOutlined /></Text>
+            </div>}
             <EditableText
               text={formattedDate}
               textProps={{ type: 'secondary' }}

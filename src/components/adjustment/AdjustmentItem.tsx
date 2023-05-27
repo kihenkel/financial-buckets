@@ -1,4 +1,5 @@
-import { List, Tooltip } from 'antd';
+import { List, Tooltip, Typography } from 'antd';
+import { FileSyncOutlined } from '@ant-design/icons';
 import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Adjustment } from '@/models';
 import { useDataContext, useUserConfigContext } from '@/context';
@@ -8,6 +9,9 @@ import { EditableText } from '../EditableText';
 import { ButtonDelete } from '../ButtonDelete';
 
 import styles from '@/styles/Adjustment.module.css';
+
+const { Text } = Typography;
+
 
 interface AdjustmentItemProps {
   adjustment: Adjustment;
@@ -56,11 +60,15 @@ export const AdjustmentItem = ({ adjustment }: AdjustmentItemProps) => {
   }, [adjustment, updateData]);
 
   const itemStyles = adjustment.isNew ? `${styles.adjustmentListItem} ${styles.adjustmentListItemNew}` : styles.adjustmentListItem;
+  const tooltipTitle = adjustment.recurringAdjustmentId ? `${adjustment.description} (Recurring)` : adjustment.description;
   return (
     <>
-      <Tooltip placement="right" title={adjustment.description}>
+      <Tooltip placement="right" title={tooltipTitle}>
         <List.Item onClick={handleItemClicked} className={itemStyles}>
           <div className={styles.adjustmentItem}>
+            {adjustment.recurringAdjustmentId && <div className={styles.recurringIcon}>
+              <Text type="secondary"><FileSyncOutlined /></Text>
+            </div>}
             <EditableText
               text={adjustment.label}
               textProps={{ type: 'secondary' }}
