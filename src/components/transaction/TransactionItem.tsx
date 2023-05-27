@@ -77,7 +77,7 @@ export const TransactionItem = ({ transaction }: TransactionItemProps) => {
   }, [transaction, updateData]);
 
   const itemStyles = transaction.isNew ? `${styles.transactionListItem} ${styles.transactionListItemNew}` : styles.transactionListItem;
-  const tooltipTitle = transaction.recurringTransactionId ? `${transaction.description} (Recurring)` : transaction.description;
+  const tooltipTitle = transaction.recurringTransactionId ? (transaction.description ? `${transaction.description} (Recurring)` : 'Recurring Item') : transaction.description;
   return (
     <>
       <Tooltip placement="right" title={tooltipTitle}>

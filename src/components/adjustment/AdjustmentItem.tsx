@@ -60,7 +60,7 @@ export const AdjustmentItem = ({ adjustment }: AdjustmentItemProps) => {
   }, [adjustment, updateData]);
 
   const itemStyles = adjustment.isNew ? `${styles.adjustmentListItem} ${styles.adjustmentListItemNew}` : styles.adjustmentListItem;
-  const tooltipTitle = adjustment.recurringAdjustmentId ? `${adjustment.description} (Recurring)` : adjustment.description;
+  const tooltipTitle = adjustment.recurringAdjustmentId ? (adjustment.description ? `${adjustment.description} (Recurring)` : 'Recurring Item') : adjustment.description;
   return (
     <>
       <Tooltip placement="right" title={tooltipTitle}>

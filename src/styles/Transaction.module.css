@@ -4,6 +4,7 @@
 }
 
 .transactionListItem {
+  position: relative;
   flex-direction: column;
   align-items: flex-start;
 }
