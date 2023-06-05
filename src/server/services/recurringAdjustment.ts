@@ -15,6 +15,8 @@ const serviceHandlers: ServiceHandlers<RecurringAdjustment> = {
   deleteAll: db.deleteRecurringAdjustments,
 };
 
+const isSameDate = (dateA: string, dateB: string) => Date.parse(dateA) === Date.parse(dateB);
+
 const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustment: RecurringAdjustment, account: Account, user: User) => {
   const activeAdjustmentDates = getActiveAdjustmentDates(recurringAdjustment, account);
   if (!activeAdjustmentDates) {
@@ -25,7 +27,7 @@ const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustm
   const validAdjustments: Adjustment[] = [];
   const obsoleteAdjustments: Adjustment[] = [];
   existingAdjustments.forEach((existingAdjustment) => {
-    const isValidAdjustment = activeAdjustmentDates.some((date) => existingAdjustment.date === date);
+    const isValidAdjustment = activeAdjustmentDates.some((date) => isSameDate(existingAdjustment.date, date));
     if (isValidAdjustment) {
       validAdjustments.push(existingAdjustment);
     } else {
@@ -33,7 +35,7 @@ const allocateAdjustments = (existingAdjustments: Adjustment[], recurringAdjustm
     }
   });
   const newAdjustments: Partial<Adjustment>[] = activeAdjustmentDates
-    .filter((date) => !validAdjustments.some((validAdjustment) => validAdjustment.date === date))
+    .filter((date) => !validAdjustments.some((validAdjustment) => isSameDate(validAdjustment.date, date)))
     .map((date) => ({
       userId: user.id,
       accountId: account.id,
