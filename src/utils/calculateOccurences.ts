@@ -1,5 +1,6 @@
 import dayjs, { ManipulateType } from 'dayjs';
 import { IntervalType } from '@/models';
+import { isBankHoliday } from './isBankHoliday';
 
 type DayjsIntervalType = Extract<ManipulateType, 'days' | 'weeks' | 'months' | 'years'>;
 
@@ -57,7 +58,15 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
     .fill(interval)
     .map((currentInterval, index) => currentInterval * index)
     .reduce((currentOccurences: string[], offset) => {
-      const newDate = actualInitialDate.add(offset, dayjsIntervalType);
+      let newDate = actualInitialDate.add(offset, dayjsIntervalType);
+      let counter = 0;
+      while (isBankHoliday(newDate)) {
+        if (counter > 10) {
+          throw new Error(`Infinite loop detected while checking for bank holidays for date ${newDate.toString()}, aborting ...`);
+        }
+        newDate = newDate.add(1, 'day');
+        counter++;
+      }
       if (calculateEndDate && newDate.isAfter(calculateEndDate)) {
         return currentOccurences;
       }
