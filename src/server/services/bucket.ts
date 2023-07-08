@@ -3,8 +3,7 @@ import db from '@/server/db';
 import { createService, ServiceHandlers } from './createService';
 import { transactionService } from './transaction';
 
-const OPTIMIZE_OLDER_THAN_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
-const KEEP_MIN_ITEMS = 5;
+const MAX_MERGED_DESCRIPTION_LENGTH = 256;
 
 const serviceHandlers: ServiceHandlers<Bucket> = {
   get: db.getBucket,
@@ -21,24 +20,26 @@ const generateTransactionSummary = (transaction: Transaction) =>
 
 export const bucketService = {
   ...createService('bucket', serviceHandlers),
-  optimize: async (bucketId: string, user: User) => {
+  optimize: async (bucketId: string, maxTransactions: number, user: User) => {
     const transactions = (await transactionService.getAllBy('bucketId', [bucketId], user))
       .sort((transactionA, transactionB) => Date.parse(transactionA.date) - Date.parse(transactionB.date));
     const foundMergedTransaction = transactions.find((transaction) => transaction.isMergedTransaction);
     if (foundMergedTransaction) {
       await transactionService.deleteAll([foundMergedTransaction.id], user);
     }
-    const mergeOlderThanMs = Date.now() - OPTIMIZE_OLDER_THAN_MS;
     const toBeMergedTransactions = transactions.filter((transaction, index) => {
-      const date = Date.parse(transaction.date);
-      return index < transactions.length - KEEP_MIN_ITEMS && date <= mergeOlderThanMs && !transaction.isMergedTransaction;
+      return index < transactions.length - maxTransactions && !transaction.isMergedTransaction;
     });
+    const fullDescription = toBeMergedTransactions.map((transaction) => generateTransactionSummary(transaction)).join('; ');
+    const description = fullDescription.length > MAX_MERGED_DESCRIPTION_LENGTH ?
+      `${fullDescription.substring(0, MAX_MERGED_DESCRIPTION_LENGTH / 2)} [...] ${fullDescription.substring(fullDescription.length - (MAX_MERGED_DESCRIPTION_LENGTH / 2))}` :
+      fullDescription;
     const newMergedTransaction: Partial<Transaction> = {
       bucketId,
       userId: user.id,
       amount: toBeMergedTransactions.reduce((currentAmount, transaction) => currentAmount + transaction.amount, 0),
       date: toBeMergedTransactions[0].date,
-      description: toBeMergedTransactions.map((transaction) => generateTransactionSummary(transaction)).join('; '),
+      description,
       isMergedTransaction: true,
     };
     const savedMergedTransaction = await transactionService.add(newMergedTransaction, user);

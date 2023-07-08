@@ -1,5 +1,5 @@
 import { Button, Popconfirm } from 'antd';
-import { ExperimentOutlined } from '@ant-design/icons';
+import { DashboardOutlined } from '@ant-design/icons';
 import { MouseEvent, useCallback, useState } from 'react';
 
 interface ButtonOptimizeBucketProps {
@@ -29,7 +29,7 @@ export const ButtonOptimizeBucket = ({ onConfirm }: ButtonOptimizeBucketProps) =
       okText="Yes"
       cancelText="No"
     >
-      <Button onClick={handleClicked} size="small" type="text"><ExperimentOutlined /></Button>
+      <Button onClick={handleClicked} size="small" type="text"><DashboardOutlined /></Button>
     </Popconfirm>
     );
 };

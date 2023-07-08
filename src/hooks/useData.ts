@@ -20,7 +20,8 @@ interface UseDataReturn {
   update(newData: PartialData, force?: boolean): Promise<void>;
   remove(deleteData: DeleteDataRequest, force?: boolean): Promise<void>;
   importData(importData: ImportData): Promise<void>;
-  optimizeBucket(bucketId: string): Promise<void>;
+  optimizeBucket(bucketId: string, maxTransactions?: number): Promise<void>;
+  optimizeAllBuckets(accountId: string, maxTransactions?: number): Promise<void>;
   forceUpdate(): Promise<void>;
   reset(): void
   data?: Data;
@@ -135,8 +136,23 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
       });
   }, [doRequestThrottled, setData, fetchData]);
 
-  const optimizeBucket = useCallback((bucketId: string): Promise<void> => {
-    return doRequestThrottled('post', `/api/optimize?bucketId=${bucketId}`, true)
+  const optimizeBucket = useCallback((bucketId: string, maxTransactions?: number): Promise<void> => {
+    const params = new URLSearchParams({
+      bucketId,
+      maxTransactions: String(maxTransactions ?? 5),
+    });
+    return doRequestThrottled('post', `/api/optimize?${params.toString()}`, true)
+      .then(() => {
+        fetchData();
+      });
+  }, [doRequestThrottled, fetchData]);
+
+  const optimizeAllBuckets = useCallback((accountId: string, maxTransactions?: number): Promise<void> => {
+    const params = new URLSearchParams({
+      accountId,
+      maxTransactions: String(maxTransactions ?? 5),
+    });
+    return doRequestThrottled('post', `/api/optimize?${params.toString()}`, true)
       .then(() => {
         fetchData();
       });
@@ -167,6 +183,7 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
     remove,
     importData,
     optimizeBucket,
+    optimizeAllBuckets,
     forceUpdate,
     reset,
   };

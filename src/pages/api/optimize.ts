@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { optimize } from '@/server/routes';
+import { optimize, optimizeAll } from '@/server/routes';
 import { validateSession } from '@/utils/validateSession';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
@@ -10,12 +10,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   if (req.method === 'POST') {
-    if (!req.query.bucketId) {
+    const bucketId = req.query.bucketId && String(req.query.bucketId);
+    const accountId = req.query.accountId && String(req.query.accountId);
+    const maxTransactions = Number.parseInt(String(req.query.maxTransactions)) || 5;
+    if ((bucketId && accountId) || (!bucketId && !accountId)) {
       res.status(400).end();
       return;
     }
-    const bucketId = String(req.query.bucketId);
-    const data = await optimize(validationResult.session, bucketId);
+    const data = bucketId ?
+      await optimize(validationResult.session, bucketId, maxTransactions) :
+      await optimizeAll(validationResult.session, accountId ?? '', maxTransactions);
     res.status(200).json(data);
     return;
   }

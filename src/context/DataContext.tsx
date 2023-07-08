@@ -4,7 +4,8 @@ import { DeleteDataRequest, ImportData, PartialData } from '@/models';
 type UpdateDataHandlerType = (newData: PartialData, force?: boolean) => Promise<void>;
 type DeleteDataHandlerType = (deleteData: DeleteDataRequest, force?: boolean) => Promise<void>;
 type ImportDataHandlerType = (importData: ImportData) => Promise<void>;
-type OptimizeBucketHandlerType = (bucketId: string) => Promise<void>;
+type OptimizeBucketHandlerType = (bucketId: string, maxTransactions?: number) => Promise<void>;
+type OptimizeAllBucketsHandlerType = (accountId: string, maxTransactions?: number) => Promise<void>;
 
 interface DataContext {
   updateData: UpdateDataHandlerType;
@@ -15,6 +16,8 @@ interface DataContext {
   setImportData(handler: ImportDataHandlerType): void;
   optimizeBucket: OptimizeBucketHandlerType;
   setOptimizeBucket(handler: OptimizeBucketHandlerType): void;
+  optimizeAllBuckets: OptimizeAllBucketsHandlerType;
+  setOptimizeAllBuckets(handler: OptimizeAllBucketsHandlerType): void;
 }
 
 interface DataContextProviderProps {
@@ -30,6 +33,8 @@ const initialData = {
   setImportData: () => {},
   optimizeBucket: () => Promise.resolve(),
   setOptimizeBucket: () => {},
+  optimizeAllBuckets: () => Promise.resolve(),
+  setOptimizeAllBuckets: () => {},
 };
 
 export const DataContext = React.createContext<DataContext>(initialData);
@@ -39,6 +44,7 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
   const [deleteData, setDeleteDataInternal] = useState<DeleteDataHandlerType>(() => Promise.resolve());
   const [importData, setImportDataInternal] = useState<ImportDataHandlerType>(() => Promise.resolve());
   const [optimizeBucket, setOptimizeBucketInternal] = useState<OptimizeBucketHandlerType>(() => Promise.resolve());
+  const [optimizeAllBuckets, setOptimizeAllBucketsInternal] = useState<OptimizeAllBucketsHandlerType>(() => Promise.resolve());
 
   const value: DataContext = {
     updateData,
@@ -49,6 +55,8 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
     setImportData: (handler) => setImportDataInternal(() => handler),
     optimizeBucket,
     setOptimizeBucket: (handler) => setOptimizeBucketInternal(() => handler),
+    optimizeAllBuckets,
+    setOptimizeAllBuckets: (handler) => setOptimizeAllBucketsInternal(() => handler),
   };
   return (
     <DataContext.Provider value={value}>

@@ -15,6 +15,7 @@ import {
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { parseBuckets, parseTransactions } from '@/utils/importBucketsUtils';
+import { chainPromises } from '@/utils/chainPromises';
 dayjs.extend(weekOfYear);
 
 interface RouteResult {
@@ -123,14 +124,28 @@ export async function importData(session: Session, importData: ImportData): Prom
   return { status: 200, data: { buckets, transactions } };
 };
 
-export async function optimize(session: Session, bucketId: string): Promise<RouteResult> {
+export async function optimize(session: Session, bucketId: string, maxTransactions: number): Promise<RouteResult> {
   const isConnected = await db.isConnected();
   if (!isConnected) {
     await db.connect();
   }
 
   const sessionUser = await userService.getFromSession(session);
-  await bucketService.optimize(bucketId, sessionUser);
+  await bucketService.optimize(bucketId, maxTransactions, sessionUser);
+
+  return { status: 200, data: { success: true } };
+}
+
+export async function optimizeAll(session: Session, accountId: string, maxTransactions: number): Promise<RouteResult> {
+  const isConnected = await db.isConnected();
+  if (!isConnected) {
+    await db.connect();
+  }
+
+  const sessionUser = await userService.getFromSession(session);
+  const account = await accountService.get(accountId, sessionUser);
+  const buckets = await bucketService.getAllBy('accountId', [account], sessionUser);
+  await chainPromises(buckets, (bucket) => bucketService.optimize(bucket.id, maxTransactions, sessionUser));
 
   return { status: 200, data: { success: true } };
 }

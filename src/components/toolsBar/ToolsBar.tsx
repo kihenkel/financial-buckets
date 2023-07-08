@@ -1,7 +1,7 @@
 import { Divider } from 'antd';
 import { CSSProperties } from 'react';
 import { useRouter } from 'next/router';
-import { HomeOutlined, FileSyncOutlined, SettingOutlined, ImportOutlined } from '@ant-design/icons';
+import { HomeOutlined, FileSyncOutlined, SettingOutlined, ImportOutlined, DashboardOutlined } from '@ant-design/icons';
 
 import styles from '@/styles/ToolsBar.module.css';
 import { ToolsBarButton } from './ToolsBarButton';
@@ -14,15 +14,23 @@ const dividerStyle: CSSProperties = {
 const buttons = [{
   id: '1',
   getHref: (account: any) => `/accounts/${account?.id}`,
-  icon: <HomeOutlined />
+  icon: <HomeOutlined />,
+  title: 'Home',
 }, {
   id: '2',
   getHref: (account: any) => `/accounts/${account?.id}/recurring`,
-  icon: <FileSyncOutlined />
+  icon: <FileSyncOutlined />,
+  title: 'Recurring items',
 }, {
   id: '3',
   getHref: (account: any) => `/accounts/${account?.id}/import`,
-  icon: <ImportOutlined />
+  icon: <ImportOutlined />,
+  title: 'Import',
+}, {
+  id: '4',
+  getHref: (account: any) => `/accounts/${account?.id}/optimize`,
+  icon: <DashboardOutlined />,
+  title: 'Optimize',
 }];
 
 export const ToolsBar = () => {
@@ -34,7 +42,7 @@ export const ToolsBar = () => {
         const href = button.getHref(account);
         const isCurrentPath = href === router.asPath;
         return (
-          <ToolsBarButton key={button.id} linkHref={isCurrentPath ? undefined : href} type={isCurrentPath ? 'default' : 'text'}>
+          <ToolsBarButton key={button.id} linkHref={isCurrentPath ? undefined : href} type={isCurrentPath ? 'default' : 'text'} title={button.title}>
             { button.icon }
           </ToolsBarButton>
         );
