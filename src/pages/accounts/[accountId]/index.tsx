@@ -1,37 +1,14 @@
 import { useEffect, useMemo } from 'react';
 import { Bucket } from '@/components/bucket/Bucket';
-import { Bucket as BucketModel, Transaction, Adjustment } from '@/models';
 import { MainBucket } from '@/components/bucket/MainBucket';
 import { useAccountContext } from '@/context';
 import { AddBucket } from '@/components/bucket/AddBucket';
 import { AccountBalance } from '@/components/AccountBalance';
 import { PageProps } from '@/components/AppContainer';
 import { ToolsBar } from '@/components/toolsBar/ToolsBar';
+import { getBucketTransactions, getBucketBalances, getBucketsTotal, getAdjustmentsTotal, getMainBalance } from '@/utils/bucketUtils';
 
 import styles from '@/styles/AccountPage.module.css';
-
-const getMainBalance = (accountBalance: number, bucketTotalBalance: number, adjustmentsTotalBalance: number): number => {
-  return accountBalance - bucketTotalBalance - adjustmentsTotalBalance;
-};
-
-const getAdjustmentsTotal = (adjustments: Adjustment[]) => adjustments.reduce((currentBalance, adjustment) => currentBalance + adjustment.amount, 0);
-
-const getBucketsTotal = (bucketBalances: number[]) => bucketBalances.reduce((currentBalance, balance) => currentBalance + balance, 0);
-
-const getBucketBalances = (bucketTransactions: Transaction[][]): number[] => {
-  return bucketTransactions.map((currentTransactions) => {
-    return currentTransactions.reduce((currentBalance, transaction) => {
-      return currentBalance + transaction.amount;
-    }, 0);
-  });
-};
-
-const getBucketTransactions = (buckets: BucketModel[], transactions: Transaction[]): Transaction[][] => {
-  return buckets.map((bucket) =>
-    transactions.filter((transaction) => transaction.bucketId === bucket.id)
-      .sort((transactionA, transactionB) => Date.parse(transactionA.date) - Date.parse(transactionB.date))
-  );
-};
 
 export default function AccountPage({ data }: PageProps) {
   const { account } = useAccountContext();

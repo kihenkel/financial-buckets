@@ -1,6 +1,6 @@
 import { Session } from 'next-auth';
 import db from '@/server/db';
-import { DeleteDataRequest, ImportData, PartialData } from '@/models';
+import { Account, Adjustment, DeleteDataRequest, ImportData, PartialData, Transaction } from '@/models';
 import {
   accountService,
   adjustmentService,
@@ -29,32 +29,52 @@ export async function fetchData(session: Session, accountId?: string): Promise<R
     await db.connect();
   }
   const user = await userService.getFromSession(session);
-  const settings = await settingsService.getByUser(user);
-  const accounts = await accountService.getAllOrDefault(user);
-  const account = accountId ? accounts.find((account) => account.id === accountId) : accounts[0];
-  if (!account) {
+  const [settings, allAccounts] = await Promise.all([
+    settingsService.getByUser(user),
+    accountService.getAllOrDefault(user),
+  ]);
+  const selectedAccount = accountId ? allAccounts.find((account) => account.id === accountId) : undefined;
+  const accounts = accountId ? [selectedAccount].filter((acc): acc is Account => !!acc) : allAccounts;
+  if (accounts.length <= 0) {
     return { status: 404, data: `Could not find account with id ${accountId}` };
   }
-  const buckets = await bucketService.getAllBy('accountId', [account], user);
-  const transactions = await transactionService.getAllByBuckets(buckets, user);
-  const recurringTransactions = await recurringTransactionService.getAllBy('bucketId', buckets, user);
-  const newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, account);
-  const existingAdjustments = await adjustmentService.getAllBy('accountId', [account], user);
-  const recurringAdjustments = await recurringAdjustmentService.getAllBy('accountId', [account], user);
-  const {
-    adjustments,
-    created: createdAdjustments,
-    removed: removedAdjustments
-  } = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, account, user);
+  const [[buckets, transactions, recurringTransactions], existingAdjustments, recurringAdjustments] = await Promise.all([
+    bucketService.getAllBy('accountId', accounts, user)
+      .then((theBuckets) => {
+        return Promise.all([
+          transactionService.getAllByBuckets(theBuckets, user),
+          recurringTransactionService.getAllBy('bucketId', theBuckets, user),
+        ])
+          .then(([theTransactions, theRecurringTransactions]) => {
+            return [theBuckets, theTransactions, theRecurringTransactions] as const;
+          });
+      }),
+      adjustmentService.getAllBy('accountId', accounts, user),
+      recurringAdjustmentService.getAllBy('accountId', accounts, user),
+  ]);
 
-  await accountService.refreshAccountAccess(account.id, user);
+  // Only when specific account is selected
+  let newTransactions: Transaction[] = [];
+  let adjustments: Adjustment[] = [];
+  let createdAdjustments: Adjustment[] = [];
+  let removedAdjustments: Adjustment[] = [];
+  if (selectedAccount) {
+    newTransactions = await recurringTransactionService.createNewTransactions(user, recurringTransactions, selectedAccount);
+    ({
+      adjustments,
+      created: createdAdjustments,
+      removed: removedAdjustments
+    } = await recurringAdjustmentService.syncAdjustments(existingAdjustments, recurringAdjustments, selectedAccount, user));
+
+    await accountService.refreshAccountAccess(selectedAccount.id, user);
+  }
 
   return {
     status: 200,
     data: {
       user,
       settings,
-      accounts,
+      accounts: allAccounts,
       buckets,
       transactions: [...transactions, ...newTransactions],
       recurringTransactions,

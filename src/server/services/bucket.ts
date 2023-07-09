@@ -30,6 +30,10 @@ export const bucketService = {
     const toBeMergedTransactions = transactions.filter((transaction, index) => {
       return index < transactions.length - maxTransactions && !transaction.isMergedTransaction;
     });
+    if (toBeMergedTransactions.length <= 0) {
+      // Nothing to optimize
+      return;
+    }
     const fullDescription = toBeMergedTransactions.map((transaction) => generateTransactionSummary(transaction)).join('; ');
     const description = fullDescription.length > MAX_MERGED_DESCRIPTION_LENGTH ?
       `${fullDescription.substring(0, MAX_MERGED_DESCRIPTION_LENGTH / 2)} [...] ${fullDescription.substring(fullDescription.length - (MAX_MERGED_DESCRIPTION_LENGTH / 2))}` :

@@ -10,7 +10,7 @@ import { LoadingIndicator } from '@/components/LoadingIndicator';
 import { Header } from './Header';
 
 import styles from '@/styles/AppContainer.module.css';
-import { Data } from '@/models';
+import { Account, Data } from '@/models';
 
 const needsIntroduction = (data?: Data) => data && (!data.user.name || !data.accounts[0]?.name);
 
@@ -44,7 +44,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     const serverAccount = router.asPath.startsWith('/accounts') ?
       data?.accounts.find(account => account.id === accountId) :
-      data?.accounts[0];
+      {} as Account;
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
       if (account.userId && account.id !== serverAccount.id) {

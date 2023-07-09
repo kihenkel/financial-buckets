@@ -1,0 +1,15 @@
+.page {
+  display: flex;
+  width: 100vw;
+}
+
+.main {
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.spinner {
+  text-align: center;
+  width: 100vw;
+}
