@@ -38,18 +38,23 @@ export const Header = ({ data }: HeaderProps) => {
           label: (<Link href={`/accounts/${currentAccount.id}`}>{currentAccount.name}</Link>)
         };
       });
-
-    return [
-      !isSummaryPage && {
-        key: 'summary',
-        label: (<Link href="/summary"><PieChartOutlined /> Summary</Link>),
-      },
+    
+    const items = [
       ...existingAccounts,
       {
         key: String(data.accounts.length),
         label: (<Link href="/new-account"><PlusOutlined /> Add account</Link>),
       }
     ];
+
+    if (!isSummaryPage) {
+      items.unshift({
+        key: 'summary',
+        label: (<Link href="/summary"><PieChartOutlined /> Summary</Link>),
+      });
+    }
+
+    return items;
   }, [account, router.pathname, data?.accounts, isSummaryPage]);
   
   return (
