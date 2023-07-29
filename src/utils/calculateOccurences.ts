@@ -10,6 +10,7 @@ interface CalculateOccurencesPropsInternal {
   calculateStartDate: dayjs.Dayjs;
   calculateEndDate?: dayjs.Dayjs;
   limit: number;
+  considerBankHolidays: boolean;
 }
 
 interface CalculateOccurencesProps {
@@ -19,6 +20,7 @@ interface CalculateOccurencesProps {
   calculateEndDate?: dayjs.Dayjs | string | number;
   limit: number;
   intervalType: IntervalType;
+  considerBankHolidays?: boolean;
 }
 
 const DAY_IN_MS = 1 * 24 * 60 * 60 * 1000;
@@ -53,19 +55,21 @@ const getRealStartDate = (dayjsIntervalType: DayjsIntervalType, { interval, init
 const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: CalculateOccurencesPropsInternal ): string[] => {
   const actualInitialDate = getRealStartDate(dayjsIntervalType, propsInternal);
 
-  const { interval, calculateEndDate, limit } = propsInternal;
+  const { interval, calculateEndDate, limit, considerBankHolidays } = propsInternal;
   return Array(limit)
     .fill(interval)
     .map((currentInterval, index) => currentInterval * index)
     .reduce((currentOccurences: string[], offset) => {
       let newDate = actualInitialDate.add(offset, dayjsIntervalType);
-      let counter = 0;
-      while (isBankHoliday(newDate)) {
-        if (counter > 10) {
-          throw new Error(`Infinite loop detected while checking for bank holidays for date ${newDate.toString()}, aborting ...`);
+      if (considerBankHolidays) {
+        let counter = 0;
+        while (isBankHoliday(newDate)) {
+          if (counter > 10) {
+            throw new Error(`Infinite loop detected while checking for bank holidays for date ${newDate.toString()}, aborting ...`);
+          }
+          newDate = newDate.add(1, 'day');
+          counter++;
         }
-        newDate = newDate.add(1, 'day');
-        counter++;
       }
       if (calculateEndDate && newDate.isAfter(calculateEndDate)) {
         return currentOccurences;
@@ -81,10 +85,10 @@ const calculateSemiMonthly = (propsInternal: CalculateOccurencesPropsInternal ):
   const monthlyOnFirst = calculateWith('months', { ...propsInternal, interval: 1, initialDate: dayjs(propsInternal.initialDate).date(1) });
   const monthlyOnFifteenth = calculateWith('months', { ...propsInternal, interval: 1, initialDate: dayjs(propsInternal.initialDate).date(15) });
 
-  return [...monthlyOnFirst, ...monthlyOnFifteenth];
+  return [...monthlyOnFirst, ...monthlyOnFifteenth].sort((dateA, dateB) => Date.parse(dateA) - Date.parse(dateB));
 };
 
-export const calculateOccurences = ({ interval, initialDate, calculateStartDate, calculateEndDate, limit, intervalType }: CalculateOccurencesProps): string[] | null => {
+export const calculateOccurences = ({ interval, initialDate, calculateStartDate, calculateEndDate, limit, intervalType, considerBankHolidays }: CalculateOccurencesProps): string[] | null => {
   if (!intervalType || !initialDate || (intervalType !== 'semiMonthly' && interval <= 0)) {
     return null;
   }
@@ -95,6 +99,7 @@ export const calculateOccurences = ({ interval, initialDate, calculateStartDate,
     initialDate: dayjs.isDayjs(initialDate) ? initialDate : dayjs(initialDate),
     calculateStartDate: dayjs.isDayjs(calculateStartDate) ? calculateStartDate : dayjs(calculateStartDate),
     calculateEndDate: calculateEndDate ? (dayjs.isDayjs(calculateEndDate) ? calculateEndDate : dayjs(calculateEndDate)) : undefined,
+    considerBankHolidays: !!considerBankHolidays,
   };
   switch(intervalType) {
     case 'daily': return calculateWith('days', propsInternal);

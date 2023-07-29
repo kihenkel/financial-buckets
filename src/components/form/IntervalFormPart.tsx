@@ -22,9 +22,10 @@ const localeStringOptions: Intl.DateTimeFormatOptions = {
 interface IntervalFormPartProps {
   initialValues: Partial<RecurringTransaction | RecurringAdjustment>;
   changedValues: Partial<RecurringTransaction | RecurringAdjustment>;
+  considerBankHolidays?: boolean;
 }
 
-export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormPartProps) => {
+export const IntervalFormPart = ({ initialValues, changedValues, considerBankHolidays }: IntervalFormPartProps) => {
   const form = Form.useFormInstance();
   const { locale } = useUserConfigContext();
   const [isLimit, setIsLimit] = useState(false);
@@ -50,7 +51,14 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
   const initialDate = Form.useWatch('initialDate', form);
   const amountLeft = Form.useWatch('amountLeft', form);
   const intervalType = Form.useWatch('intervalType', form);
-  const nextOccurences = calculateOccurences({ interval, initialDate, calculateStartDate: Date.now(), limit: Math.min(amountLeft ?? MAX_NEXT_OCCURENCES, MAX_NEXT_OCCURENCES), intervalType });
+  const nextOccurences = calculateOccurences({
+    interval,
+    initialDate,
+    calculateStartDate: Date.now(),
+    limit: Math.min(amountLeft ?? MAX_NEXT_OCCURENCES, MAX_NEXT_OCCURENCES),
+    intervalType,
+    considerBankHolidays,
+  });
   const displayNextOccurences = nextOccurences ? nextOccurences.map((occurence) => new Date(occurence).toLocaleString(locale, localeStringOptions)) : 'Please enter valid interval';
 
   const isSemiMonthly = intervalType === 'semiMonthly';
@@ -127,7 +135,7 @@ export const IntervalFormPart = ({ initialValues, changedValues }: IntervalFormP
         <InputNumber min={1} controls={false} />
       </Form.Item>
       <Form.Item name="counter" initialValue={0} hidden />
-      <Alert message="Next occurences (only work days):" description={<Space direction="vertical">{displayNextOccurences}</Space>} type="info" />
+      <Alert message={`Next occurences${considerBankHolidays ? ' (only work days)' : ''}:`} description={<Space direction="vertical">{displayNextOccurences}</Space>} type="info" />
     </>
   );
 };

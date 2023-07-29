@@ -37,7 +37,11 @@ export const RecurringAdjustmentForm = ({ ...formProps }: FormProps) => {
       <Form.Item name="description" label="Enter descripton">
         <Input.TextArea placeholder="Description" />
       </Form.Item>
-      <IntervalFormPart initialValues={formProps.initialValues as Partial<RecurringAdjustment>} changedValues={changedValues} />
+      <IntervalFormPart
+        initialValues={formProps.initialValues as Partial<RecurringAdjustment>}
+        changedValues={changedValues}
+        considerBankHolidays={true}
+      />
     </Form>
   );
 };

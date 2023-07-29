@@ -44,5 +44,6 @@ export const getActiveAdjustmentDates = (recurringAdjustment: RecurringAdjustmen
     calculateEndDate: currentAccountPeriod.end,
     limit: recurringAdjustment.amountLeft,
     intervalType: recurringAdjustment.intervalType,
+    considerBankHolidays: true,
   });
 };
