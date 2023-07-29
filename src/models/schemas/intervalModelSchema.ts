@@ -9,8 +9,7 @@ export const intervalModelSchemaNew = databaseModelNew.append({
   initialDate: Joi.string().isoDate()
     .when('intervalType', { is: 'semiMonthly', then: Joi.optional(), otherwise: Joi.required() }),
   isLimited: Joi.boolean().required(),
-  amountLeft: Joi.number().positive()
-    .when('isLimited', { is: true, then: Joi.required(), otherwise: Joi.optional() }),
+  amountLeft: Joi.when('isLimited', { is: true, then: Joi.number().positive().required(), otherwise: Joi.number().positive().optional() }),
   counter: Joi.number().min(0).required(),
 });
 
@@ -19,6 +18,6 @@ export const intervalModelSchemaUpdate = databaseModelSchemaUpdate.append({
   interval: Joi.number().positive(),
   initialDate: Joi.string().isoDate(),
   isLimited: Joi.boolean(),
-  amountLeft: Joi.number().positive(),
+  amountLeft: Joi.when('isLimited', { is: true, then: Joi.number().positive(), otherwise: Joi.number().positive().optional() }),
   counter: Joi.number().min(0),
 });
