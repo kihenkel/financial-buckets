@@ -43,7 +43,11 @@ const getRealStartDate = (dayjsIntervalType: DayjsIntervalType, { interval, init
   } else if (dayjsIntervalType === 'months') {
     const diff = calculateStartDate.diff(initialDate, dayjsIntervalType, true);
     const offset = Math.ceil(diff / interval) * interval;
-    return initialDate.add(offset, dayjsIntervalType);
+    const realStartDate = initialDate.add(offset, dayjsIntervalType);
+    if (realStartDate.month() !== calculateStartDate.month()) {
+      return realStartDate.subtract(1, dayjsIntervalType);
+    }
+    return realStartDate;
   } else if (dayjsIntervalType === 'years') {
     const diff = calculateStartDate.diff(initialDate, dayjsIntervalType, true);
     const offset = Math.ceil(diff / interval) * interval;
@@ -55,7 +59,7 @@ const getRealStartDate = (dayjsIntervalType: DayjsIntervalType, { interval, init
 const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: CalculateOccurencesPropsInternal ): string[] => {
   const actualInitialDate = getRealStartDate(dayjsIntervalType, propsInternal);
 
-  const { interval, calculateEndDate, limit, considerBankHolidays } = propsInternal;
+  const { interval, calculateStartDate, calculateEndDate, limit, considerBankHolidays } = propsInternal;
   return Array(limit)
     .fill(interval)
     .map((currentInterval, index) => currentInterval * index)
@@ -71,7 +75,7 @@ const calculateWith = (dayjsIntervalType: DayjsIntervalType, propsInternal: Calc
           counter++;
         }
       }
-      if (calculateEndDate && newDate.isAfter(calculateEndDate)) {
+      if (calculateStartDate.isAfter(newDate) || (calculateEndDate && newDate.isAfter(calculateEndDate))) {
         return currentOccurences;
       }
       return [
