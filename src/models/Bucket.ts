@@ -6,4 +6,5 @@ export interface Bucket extends DatabaseModel {
   name: string;
   accountId: string;
   target: number;
+  order: number;
 }

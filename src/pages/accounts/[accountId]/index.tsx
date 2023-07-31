@@ -13,7 +13,8 @@ import styles from '@/styles/AccountPage.module.css';
 export default function AccountPage({ data }: PageProps) {
   const { account } = useAccountContext();
 
-  const bucketTransactions = useMemo(() => getBucketTransactions(data.buckets, data.transactions), [data]);
+  const sortedBuckets = useMemo(() => [...data.buckets].sort((bucketA, bucketB) => bucketA.order - bucketB.order), [data]);
+  const bucketTransactions = useMemo(() => getBucketTransactions(sortedBuckets, data.transactions), [data, sortedBuckets]);
   const bucketBalances = useMemo(() => getBucketBalances(bucketTransactions), [bucketTransactions]);
   const bucketsTotalBalance = useMemo(() => getBucketsTotal(bucketBalances), [bucketBalances]);
   const adjustmentsTotalBalance = useMemo(() => getAdjustmentsTotal(data.adjustments), [data]);
@@ -39,15 +40,15 @@ export default function AccountPage({ data }: PageProps) {
             />
           </div>
           <div className={styles.right}>
-            {data.buckets.map((bucket, index) =>
+            {sortedBuckets.map((bucket, index) =>
               <Bucket
-                key={bucket.id || index}
+                key={bucket.id || bucket.temporaryId}
                 bucket={bucket}
                 balance={bucketBalances[index]}
                 transactions={bucketTransactions[index]}
               />
             )}
-            <AddBucket amountBuckets={data.buckets.length} />
+            <AddBucket amountBuckets={sortedBuckets.length} />
           </div>
         </div>
       }

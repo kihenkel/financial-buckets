@@ -20,6 +20,7 @@ export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
       accountId: account.id,
       name: `My Bucket ${amountBuckets + 1}`,
       temporaryId: createTempId(),
+      order: (amountBuckets * 10) + 10,
     };
 
     updateData({ buckets: [newBucket] }, true);
