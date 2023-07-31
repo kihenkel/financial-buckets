@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Space, Typography, List } from 'antd';
-import { useAccountContext, useUserConfigContext } from '@/context';
+import { useUserConfigContext } from '@/context';
 import { PageProps } from '@/components/AppContainer';
 import { ToolsBar } from '@/components/toolsBar/ToolsBar';
 import { getBucketTransactions, getBucketBalances, getBucketsTotal, getAdjustmentsTotal, getMainBalance } from '@/utils/bucketUtils';
@@ -17,14 +17,14 @@ interface CombinedBucket {
 }
 
 export default function AccountSummaryPage({ data }: PageProps) {
-  const { account } = useAccountContext();
   const { locale, currency } = useUserConfigContext();
 
+  const totalAccountBalance = useMemo(() => data.accounts.reduce((currentValue, account) => currentValue + account.balance, 0), [data]);
   const bucketTransactions = useMemo(() => getBucketTransactions(data.buckets, data.transactions), [data]);
   const bucketBalances = useMemo(() => getBucketBalances(bucketTransactions), [bucketTransactions]);
   const bucketsTotalBalance = useMemo(() => getBucketsTotal(bucketBalances), [bucketBalances]);
   const adjustmentsTotalBalance = useMemo(() => getAdjustmentsTotal(data.adjustments), [data]);
-  const mainBalance = useMemo(() => getMainBalance(account.balance ?? 0, bucketsTotalBalance, adjustmentsTotalBalance), [account.balance, bucketsTotalBalance, adjustmentsTotalBalance]);
+  const mainBalance = useMemo(() => getMainBalance(totalAccountBalance, bucketsTotalBalance, adjustmentsTotalBalance), [totalAccountBalance, bucketsTotalBalance, adjustmentsTotalBalance]);
 
   const formattedMainBalance = useMemo(() => toCurrency(mainBalance, locale, currency), [mainBalance, locale, currency]);
   const titleComponent = useMemo(() => (
