@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { notification, Spin } from 'antd';
+import { notification, Spin, Typography } from 'antd';
 import { useRouter } from 'next/router';
 import type { AppProps } from 'next/app';
 import { useSession } from 'next-auth/react';
@@ -12,6 +12,8 @@ import { Header } from './Header';
 import styles from '@/styles/AppContainer.module.css';
 import { Account, Data } from '@/models';
 
+const { Text } = Typography;
+
 const needsIntroduction = (data?: Data) => data && (!data.user.name || !data.accounts[0]?.name);
 
 export interface PageProps {
@@ -21,6 +23,8 @@ export interface PageProps {
 export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const [notificationApi, notificationApiContext] = notification.useNotification();
   const { status } = useSession({ required: true });
+  console.log('status', status);
+  const isAuthenticated = status === 'authenticated';
   const router = useRouter();
   const {
     data,
@@ -34,7 +38,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
     optimizeAllBuckets,
     forceUpdate,
     reset,
-  } = useData({ shouldLoad: status === 'authenticated' });
+  } = useData({ shouldLoad: isAuthenticated });
   const { user, setUser } = useUserContext();
   const { setUpdateData, setDeleteData, setImportData, setOptimizeBucket, setOptimizeAllBuckets } = useDataContext();
   const { error: errorMessage, setError: setErrorMessage, warning: warningMessage, info: infoMessage } = useNotificationContext();
@@ -131,7 +135,14 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
       <Header data={data} />
       <main className={styles.main}>
         {notificationApiContext}
-        { isLoading && !data && <div className={styles.spinner}><Spin size="large" /></div>}
+        { isLoading && !data && (
+          <div className={styles.spinner}>
+            <Spin size="large" />
+            <div className={styles.spinnerText}>
+              <Text type="secondary">{!isAuthenticated ? 'Authenticating ...' : 'Loading data ...'}</Text>
+            </div>
+          </div>
+        )}
         { data && <Component {...pageProps} data={data} />}
         <LoadingIndicator isLoading={isLoading} isStale={isStale} onStaleClicked={forceUpdate} />
       </main>
