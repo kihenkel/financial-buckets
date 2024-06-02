@@ -23,7 +23,6 @@ export interface PageProps {
 export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const [notificationApi, notificationApiContext] = notification.useNotification();
   const { status } = useSession({ required: true });
-  console.log('status', status);
   const isAuthenticated = status === 'authenticated';
   const router = useRouter();
   const {
@@ -51,7 +50,7 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
       {} as Account;
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
-      if (account.userId && account.id !== serverAccount.id) {
+      if ((account.userId || serverAccount.userId) && account.id !== serverAccount.id) {
         reset();
       }
     }
