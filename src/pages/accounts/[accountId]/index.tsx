@@ -48,7 +48,10 @@ export default function AccountPage({ data }: PageProps) {
                 transactions={bucketTransactions[index]}
               />
             )}
-            <AddBucket amountBuckets={sortedBuckets.length} />
+            <AddBucket
+              amountBuckets={sortedBuckets.length}
+              lastBucketOrder={sortedBuckets[sortedBuckets.length - 1]?.order ?? 0}
+            />
           </div>
         </div>
       }

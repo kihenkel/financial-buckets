@@ -7,9 +7,10 @@ import { createTempId } from '@/utils/tempId';
 
 interface AddBucketProps {
   amountBuckets: number;
+  lastBucketOrder: number;
 }
 
-export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
+export const AddBucket = ({ amountBuckets, lastBucketOrder }: AddBucketProps) => {
   const { user } = useUserContext();
   const { account } = useAccountContext();
   const { updateData } = useDataContext();
@@ -20,7 +21,7 @@ export const AddBucket = ({ amountBuckets }: AddBucketProps) => {
       accountId: account.id,
       name: `My Bucket ${amountBuckets + 1}`,
       temporaryId: createTempId(),
-      order: (amountBuckets * 10) + 10,
+      order: lastBucketOrder + 10,
     };
 
     updateData({ buckets: [newBucket] }, true);
