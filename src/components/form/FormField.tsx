@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form, Select } from 'antd';
+import { Input, InputNumber, Form, Select, DatePicker } from 'antd';
 
 const { Option } = Select;
 
@@ -13,6 +13,30 @@ export const FormFieldText = ({ name, label, required }: FormFieldTextProps) => 
   return (
     <Form.Item name={name} label={label} rules={[{ required }]}>
       <Input />
+    </Form.Item>
+  );
+};
+
+export const FormFieldNumber = ({ name, label, required }: FormFieldTextProps) => {
+  return (
+    <Form.Item name={name} label={label} rules={[{ required }]}>
+      <InputNumber />
+    </Form.Item>
+  );
+};
+
+export const FormFieldPercentage = ({ name, label, required }: FormFieldTextProps) => {
+  return (
+    <Form.Item name={name} label={label} rules={[{ required }]}>
+      <InputNumber<number> min={0} formatter={(value) => `${(value ?? 0) * 100}%`} parser={(value) => parseFloat(value?.replace('%', '') ?? '0') / 100} step={0.1} />
+    </Form.Item>
+  );
+};
+
+export const FormFieldDate = ({ name, label, required }: FormFieldTextProps) => {
+  return (
+    <Form.Item name={name} label={label} rules={[{ required }]}>
+      <DatePicker />
     </Form.Item>
   );
 };

@@ -25,7 +25,7 @@ export const AddBucket = ({ amountBuckets, lastBucketOrder }: AddBucketProps) =>
     };
 
     updateData({ buckets: [newBucket] }, true);
-  }, [user, account.id, amountBuckets, updateData]);
+  }, [user, account.id, amountBuckets, updateData, lastBucketOrder]);
 
   return (
     <Button type="dashed" icon={<PlusOutlined />} size="large" onClick={onClickedAddBucket}>

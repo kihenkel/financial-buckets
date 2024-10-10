@@ -7,7 +7,8 @@ import { PlusOutlined, DownOutlined, PieChartOutlined } from '@ant-design/icons'
 import styles from '@/styles/Layout.module.css';
 import { useAccountContext, useUserContext } from '@/context';
 import { useRouter } from 'next/router';
-import { Data } from '@/models';
+import { Account, Data } from '@/models';
+import { AccountTypeMap } from '@/utils/accountUtils';
 
 const isSummaryPath = (pathname: string) => pathname === '/summary';
 const showAccountSelection = (pathname: string) => pathname.startsWith('/accounts') || isSummaryPath(pathname);
@@ -16,6 +17,13 @@ interface HeaderProps {
   data?: Data;
 }
 
+const getAccountName = (account: Account) => {
+  if (!account.type) {
+    return account.name;
+  }
+  return `${account.name} (${AccountTypeMap[account.type]})`;
+};
+
 export const Header = ({ data }: HeaderProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -23,7 +31,7 @@ export const Header = ({ data }: HeaderProps) => {
   const { user } = useUserContext();
 
   const isSummaryPage = isSummaryPath(router.pathname);
-  const dropdownLabel = `${user?.name}'s ${isSummaryPage ? 'Summary' : account.name}`;
+  const dropdownLabel = `${user?.name}'s ${isSummaryPage ? 'Summary' : getAccountName(account)}`;
 
   const dropdownItems = useMemo(() => {
     if (!showAccountSelection(router.pathname) || !data?.accounts) {
@@ -35,7 +43,7 @@ export const Header = ({ data }: HeaderProps) => {
       .map((currentAccount, index) => {
         return {
           key: String(index),
-          label: (<Link href={`/accounts/${currentAccount.id}`}>{currentAccount.name}</Link>)
+          label: (<Link href={`/accounts/${currentAccount.id}`}>{getAccountName(currentAccount)}</Link>)
         };
       });
     

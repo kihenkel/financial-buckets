@@ -6,6 +6,10 @@ export const accountSchemaNew = databaseModelNew.append({
   cycle: Joi.string().valid('weekly', 'biweekly', 'semimonthly', 'monthly'),
   balance: Joi.number().required(),
   lastAccess: Joi.string().isoDate(),
+  type: Joi.string().valid('checking', 'savings', 'cd').required(),
+  interestRate: Joi.number(),
+  openDate: Joi.string().isoDate(),
+  maturityDate: Joi.string().isoDate(),
 });
 
 export const accountSchemaUpdate = databaseModelSchemaUpdate.append({
@@ -13,6 +17,10 @@ export const accountSchemaUpdate = databaseModelSchemaUpdate.append({
   cycle: Joi.string().valid('weekly', 'biweekly', 'semimonthly', 'monthly'),
   balance: Joi.number(),
   lastAccess: Joi.string().isoDate(),
+  type: Joi.string().valid('checking', 'savings', 'cd'),
+  interestRate: Joi.number(),
+  openDate: Joi.string().isoDate(),
+  maturityDate: Joi.string().isoDate(),
 });
 
 export const accountOptimizeKeys = ['userId'];

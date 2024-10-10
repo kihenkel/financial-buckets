@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { Button, Form, Typography } from 'antd';
 import { useRouter } from 'next/router';
-import { AccountCycle } from '@/models';
+import { Account, AccountCycle, AccountType } from '@/models';
 import { useDataContext, useUserContext } from '@/context';
-import { FormFieldSelect, FormFieldText } from '@/components/form';
+import { FormFieldDate, FormFieldPercentage, FormFieldSelect, FormFieldText } from '@/components/form';
 
 import styles from '@/styles/NewAccountPage.module.css';
 
@@ -28,6 +28,17 @@ const cycleOptions: { label: string; value: AccountCycle }[] = [{
   value: 'monthly',
 }];
 
+const accountTypeOptions: { label: string; value: AccountType }[] = [{
+  label: 'Checking',
+  value: 'checking',
+}, {
+  label: 'Savings',
+  value: 'savings',
+}, {
+  label: 'CD',
+  value: 'cd',
+}];
+
 export default function NewAccountPage() {
   const router = useRouter();
   const [form] = Form.useForm();
@@ -35,13 +46,21 @@ export default function NewAccountPage() {
   const { updateData } = useDataContext();
 
   const handleSubmit = useCallback((formData: any) => {
+    if (!user) {
+      throw new Error('Cannot submit. No user data!');
+    }
+    const newAccountData: Partial<Account> = {
+      userId: user?.id,
+      name: formData.accountName,
+      balance: 0,
+      cycle: formData.accountCycle,
+      type: formData.accountType,
+      interestRate: formData.interestRate,
+      openDate: formData.openDate,
+      maturityDate: formData.maturityDate,
+    };
     const submitData = {
-      accounts: [{
-        userId: user?.id,
-        name: formData.accountName,
-        cycle: formData.accountCycle,
-        balance: 0,
-      }]
+      accounts: [newAccountData]
     };
     updateData(submitData, true);
     setTimeout(() => router.push('/'), 0);
@@ -59,6 +78,10 @@ export default function NewAccountPage() {
       >
         <FormFieldText label="Name of the new account?" name="accountName" required />
         <FormFieldSelect label="Account financial cycle?" name="accountCycle" options={cycleOptions} required />
+        <FormFieldSelect label="Account type?" name="accountType" options={accountTypeOptions} required />
+        <FormFieldPercentage label="Interest rate" name="interestRate" />
+        <FormFieldDate label="Open date" name="openDate" />
+        <FormFieldDate label="Maturity date" name="maturityDate" />
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Create
