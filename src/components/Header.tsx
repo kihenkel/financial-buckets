@@ -17,7 +17,10 @@ interface HeaderProps {
   data?: Data;
 }
 
-const getAccountName = (account: Account) => {
+const getAccountName = (account: Partial<Account>) => {
+  if (!account.name) {
+    return 'Unnamed account';
+  }
   if (!account.type) {
     return account.name;
   }
