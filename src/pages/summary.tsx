@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Space, Typography, List } from 'antd';
+import { Space, Typography, List, Table } from 'antd';
 import { useUserConfigContext } from '@/context';
 import { PageProps } from '@/components/AppContainer';
 import { ToolsBar } from '@/components/toolsBar/ToolsBar';
@@ -8,8 +8,14 @@ import { getBucketTransactions, getBucketBalances, getBucketsTotal, getAdjustmen
 import styles from '@/styles/AccountSummaryPage.module.css';
 import { toCurrency } from '@/utils/toCurrency';
 import { BucketShell } from '@/components/bucket/BucketShell';
+import { Account } from '@/models';
+import { calculateCDInterest, toPercentage } from '@/utils/numberUtils';
 
 const { Text } = Typography;
+
+interface CDAccount extends Account {
+  estimatedInterest: number;
+}
 
 interface CombinedBucket {
   name: string;
@@ -46,6 +52,26 @@ export default function AccountSummaryPage({ data }: PageProps) {
     }];
   }, [] as CombinedBucket[]);
 
+  const cdAccounts: CDAccount[] = useMemo(() => {
+    return data.accounts
+      .filter((account) => account.type === 'cd')
+      .map((account) => {
+        const { balance, interestRate, openDate, maturityDate } = account;
+        const estimatedInterest: number = interestRate && openDate && maturityDate ? 
+          calculateCDInterest(balance, interestRate * 100, new Date(openDate), new Date(maturityDate)) :
+          -1;
+        return {
+          ...account,
+          estimatedInterest,
+        };
+      })
+      .sort((a, b) => {
+        if (!a.maturityDate) return 1;
+        if (!b.maturityDate) return -1;
+        return new Date(a.maturityDate).valueOf() - new Date(b.maturityDate).valueOf();
+      });
+  }, [data]);
+
   return (
     <div className={styles.page}>
       <ToolsBar />
@@ -64,6 +90,14 @@ export default function AccountSummaryPage({ data }: PageProps) {
               )}
             />
           </BucketShell>
+          <Table<CDAccount> dataSource={cdAccounts}>
+            <Table.Column title="Name" dataIndex="name" key="name" />
+            <Table.Column title="Initial Deposit" dataIndex="balance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
+            <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={(value: string) => new Date(value).toLocaleDateString()} />
+            <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={(value: string) => new Date(value).toLocaleDateString()} />
+            <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: number) => toPercentage(value)} />
+            <Table.Column title="Estimated Interest" dataIndex="estimatedInterest" key="estimatedInterest" render={(value: number) => value >= 0 ? toCurrency(value, locale, currency) : 'N/A' } />
+          </Table>
         </div>
       }
     </div>

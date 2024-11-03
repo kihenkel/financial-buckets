@@ -1,6 +1,7 @@
 import { DatabaseModel, User } from '@/models';
 import { Query } from '../db/Query';
 import logger from '../logger';
+import { AuthenticatedQuery } from '../db/AuthenticatedQuery';
 
 export interface ServiceHandlers<T> {
   get(id: string): Promise<T>;
@@ -19,13 +20,13 @@ export const createService = <T extends DatabaseModel>(modelName: string, handle
   };
 
   const getAll = (user: User) => {
-    const query = new Query<T>().findBy('userId', user.id);
+    const query = new AuthenticatedQuery<T>(user);
     return handlers.getAll(query);
   };
 
   const getAllBy = (refIdName: string, refs: DatabaseModel[] | string[], user: User) => {
     const refIds = refs.map((ref) => typeof ref === 'string' ? ref : ref.id);
-    const query = new Query<T>().findBy('userId', user.id).findBy(refIdName as keyof DatabaseModel, refIds);
+    const query = new AuthenticatedQuery<T>(user).findBy(refIdName as keyof DatabaseModel, refIds);
     return handlers.getAll(query);
   };
 
@@ -50,7 +51,7 @@ export const createService = <T extends DatabaseModel>(modelName: string, handle
       throw new Error(`Failed to update: Missing ${modelName} id!`);
     }
     logger.info(`Updating ${modelName} ${item.id} for user ${user.id} ...`);
-    const query = new Query<T>().findById(item.id).findBy('userId', user.id);
+    const query = new AuthenticatedQuery<T>(user).findById(item.id);
     const updatedItem = await handlers.update(query, item);
     if (!updatedItem) {
       logger.warning(`Could not find and update ${modelName} with id ${item.id} and userId ${user.id}!`);
@@ -63,7 +64,7 @@ export const createService = <T extends DatabaseModel>(modelName: string, handle
       throw new Error(`At least one of the ${modelName}s is missing an id. Aborting ${modelName} update!`);
     }
     logger.info(`Updating ${items.length} ${modelName}s for user ${user.id} ...`);
-    const updateQueries = items.map((item) => new Query<T>().findById(item.id ?? '').findBy('userId', user.id));
+    const updateQueries = items.map((item) => new AuthenticatedQuery<T>(user).findById(item.id ?? ''));
     return handlers.updateAll(updateQueries, items);
   };
 
@@ -72,7 +73,7 @@ export const createService = <T extends DatabaseModel>(modelName: string, handle
       return;
     }
     logger.info(`Deleting ${ids.length} ${modelName}s ...`);
-    const query = new Query<T>().findByIds(ids).findBy('userId', user.id);
+    const query = new AuthenticatedQuery<T>(user).findByIds(ids);
     return handlers.deleteAll(query);
   };
 

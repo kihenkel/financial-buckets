@@ -1,7 +1,7 @@
 import { FilterQuery } from 'mongoose';
 import { DatabaseModel } from '@/models';
 
-export class Query<T = DatabaseModel> {
+export abstract class Query<T = DatabaseModel> {
   protected ids: string[];
   protected fields: Record<string, string>;
   protected fieldsMultipleOr: Record<string, string[]> | null;

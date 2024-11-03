@@ -96,14 +96,14 @@ export async function updateData(session: Session, data: PartialData): Promise<R
   }
 
   const sessionUser = await userService.getFromSession(session);
-  const user = data.user && await userService.update(data.user, sessionUser);
-  const settings = data.settings && await settingsService.updateOrAdd([data.settings], sessionUser);
-  const accounts = data.accounts && await accountService.updateOrAdd(data.accounts, sessionUser);
-  const buckets = data.buckets && await bucketService.updateOrAdd(data.buckets, sessionUser);
-  const transactions = data.transactions && await transactionService.updateOrAdd(data.transactions, sessionUser);
-  const recurringTransactions = data.recurringTransactions && await recurringTransactionService.updateOrAdd(data.recurringTransactions, sessionUser);
-  const adjustments = data.adjustments && await adjustmentService.updateOrAdd(data.adjustments, sessionUser);
-  const recurringAdjustments = data.recurringAdjustments && await recurringAdjustmentService.updateOrAdd(data.recurringAdjustments, sessionUser);
+  const user = data.user && (await userService.update(data.user, sessionUser));
+  const settings = data.settings && (await settingsService.updateOrAdd([data.settings], sessionUser));
+  const accounts = data.accounts && (await accountService.updateOrAdd(data.accounts, sessionUser));
+  const buckets = data.buckets && (await bucketService.updateOrAdd(data.buckets, sessionUser));
+  const transactions = data.transactions && (await transactionService.updateOrAdd(data.transactions, sessionUser));
+  const recurringTransactions = data.recurringTransactions && (await recurringTransactionService.updateOrAdd(data.recurringTransactions, sessionUser));
+  const adjustments = data.adjustments && (await adjustmentService.updateOrAdd(data.adjustments, sessionUser));
+  const recurringAdjustments = data.recurringAdjustments && (await recurringAdjustmentService.updateOrAdd(data.recurringAdjustments, sessionUser));
 
   return {
     status: 200,
@@ -118,12 +118,12 @@ export async function deleteData(session: Session, data: DeleteDataRequest): Pro
   }
 
   const sessionUser = await userService.getFromSession(session);
-  data.accounts && await accountService.deleteAll(data.accounts, sessionUser);
-  data.buckets && await bucketService.deleteAll(data.buckets, sessionUser);
-  data.transactions && await transactionService.deleteAll(data.transactions, sessionUser);
-  data.recurringTransactions && await recurringTransactionService.deleteAll(data.recurringTransactions, sessionUser);
-  data.adjustments && await adjustmentService.deleteAll(data.adjustments, sessionUser);
-  data.recurringAdjustments && await recurringAdjustmentService.deleteAll(data.recurringAdjustments, sessionUser);
+  data.accounts && (await accountService.deleteAll(data.accounts, sessionUser));
+  data.buckets && (await bucketService.deleteAll(data.buckets, sessionUser));
+  data.transactions && (await transactionService.deleteAll(data.transactions, sessionUser));
+  data.recurringTransactions && (await recurringTransactionService.deleteAll(data.recurringTransactions, sessionUser));
+  data.adjustments && (await adjustmentService.deleteAll(data.adjustments, sessionUser));
+  data.recurringAdjustments && (await recurringAdjustmentService.deleteAll(data.recurringAdjustments, sessionUser));
 
   return { status: 200 };
 };

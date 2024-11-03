@@ -1,8 +1,8 @@
 import { Session } from 'next-auth';
 import db from '@/server/db';
 import { User, UserAuthModel } from '@/models';
-import { Query } from '@/server/db/Query';
 import logger from '../logger';
+import { UnsafeQuery } from '../db/UnsafeQuery';
 
 const PROVIDERS = ['auth0'];
 
@@ -17,7 +17,7 @@ export async function getFromSession(session: Session): Promise<User> {
   }
 
   const providerField = `${provider}Id` as keyof UserAuthModel;
-  const query = new Query<User>().findBy(providerField, userId);
+  const query = new UnsafeQuery<User>().findBy(providerField, userId);
   let user = await db.getFirstUser(query);
 
   if (!user) {
@@ -34,7 +34,7 @@ export async function update(user: Partial<User>, sessionUser: User): Promise<Us
   if (user.id !== sessionUser.id) {
     throw new Error(`User id ${user.id} and signed in user ${sessionUser.id} dont match. Aborting!`);
   }
-  const updateQuery = new Query<User>().findById(sessionUser.id);
+  const updateQuery = new UnsafeQuery<User>().findById(sessionUser.id);
   const updatedUser = await db.updateUser(updateQuery, user);
 
   return updatedUser;

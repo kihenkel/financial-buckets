@@ -4,9 +4,12 @@
 }
 
 .main {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
   margin: 0 auto;
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 3rem 0;
 }
 
 .spinner {
