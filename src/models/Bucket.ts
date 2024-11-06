@@ -7,4 +7,5 @@ export interface Bucket extends DatabaseModel {
   accountId: string;
   target: number;
   order: number;
+  isArchived: boolean;
 }

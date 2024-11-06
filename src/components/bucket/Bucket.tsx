@@ -13,6 +13,7 @@ import { AddTransaction } from '../transaction/AddTransaction';
 import styles from '@/styles/Bucket.module.css';
 import { ButtonDelete } from '../ButtonDelete';
 import { ButtonOptimizeBucket } from '../ButtonOptimizeBucket';
+import { ButtonArchive } from '../ButtonArchive';
 
 const { Text } = Typography;
 
@@ -50,6 +51,16 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
     optimizeBucket(bucket.id);
   }, [bucket.id, optimizeBucket]);
 
+  const handleArchiveConfirmed = useCallback(() => {
+    updateData({
+      buckets: [{
+        id: bucket.id,
+        userId: bucket.userId,
+        isArchived: true,
+      }]
+    }, true);
+  }, [bucket, updateData]);
+
   const handleDeleteConfirmed = useCallback(() => {
     deleteData({
       buckets: [bucket.id]
@@ -79,22 +90,22 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
 
   const formattedBalance = useMemo(() =>
     toCurrency(balance, locale, currency),
-  [balance, locale, currency]);
+    [balance, locale, currency]);
 
   const bucketTarget = useMemo(() => (
-    bucket.target >= 0 ?
-    <div className={styles.bucketTarget}>
-      Target:&nbsp;
-      <EditableText
-        text={toCurrency(bucket.target, locale, currency)}
-        textProps={{ style: { fontSize: 10 } }}
-        inputProps={{ style: { fontSize: 10 } }}
-        onEdit={handleTargetChanged}
-        validate={validateTarget}
-        clearOnSelect
-        allowEmpty
-      />
-    </div> : null
+    bucket.target !== 0 ?
+      <div className={styles.bucketTarget}>
+        Target:&nbsp;
+        <EditableText
+          text={toCurrency(bucket.target, locale, currency)}
+          textProps={{ style: { fontSize: 10 } }}
+          inputProps={{ style: { fontSize: 10 } }}
+          onEdit={handleTargetChanged}
+          validate={validateTarget}
+          clearOnSelect
+          allowEmpty
+        />
+      </div> : null
   ), [bucket.target, locale, currency, handleTargetChanged]);
 
   const titleComponent = useMemo(() => (
@@ -109,6 +120,7 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
         {isEditMode &&
           <Space align="end" style={{ gap: '0px' }}>
             <Button onClick={() => handleTargetChanged('0')} size="small" type="text"><AimOutlined /></Button>
+            <ButtonArchive onConfirm={handleArchiveConfirmed} />
             <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
             <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />
           </Space>
@@ -116,7 +128,7 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
       </Space>
       {bucketTarget}
     </>
-  ), [bucket.name, bucketTarget, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked, handleTargetChanged]);
+  ), [bucket.name, bucketTarget, formattedBalance, isEditMode, handleDeleteConfirmed, handleOptimizeConfirmed, handleNameChange, handleTitleClicked, handleTargetChanged, handleArchiveConfirmed]);
 
   return (
     <BucketShell title={titleComponent} style={{ height: 350 }}>

@@ -25,6 +25,7 @@ const EditablePercentage = ({ text, onEdit, ...rest}: EditablePercentageProps) =
       format={(value) => toPercentage(value, locale)}
       validate={validatePercentage}
       clearOnSelect
+      inputProps={{ style: { width: 50 }}}
       {...rest}
     />
   );

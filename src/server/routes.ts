@@ -39,7 +39,7 @@ export async function fetchData(session: Session, accountId?: string): Promise<R
     return { status: 404, data: `Could not find account with id ${accountId}` };
   }
   const [[buckets, transactions, recurringTransactions], existingAdjustments, recurringAdjustments] = await Promise.all([
-    bucketService.getAllBy('accountId', accounts, user)
+    bucketService.getAllBuckets(accounts, user)
       .then((theBuckets) => {
         return Promise.all([
           transactionService.getAllByBuckets(theBuckets, user),

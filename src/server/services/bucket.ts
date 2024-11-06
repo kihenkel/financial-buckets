@@ -1,7 +1,8 @@
-import { Bucket, Transaction, User } from '@/models';
+import { Account, Bucket, Transaction, User } from '@/models';
 import db from '@/server/db';
 import { createService, ServiceHandlers } from './createService';
 import { transactionService } from './transaction';
+import { AuthenticatedQuery } from '../db/AuthenticatedQuery';
 
 const MAX_MERGED_DESCRIPTION_LENGTH = 256;
 
@@ -20,6 +21,11 @@ const generateTransactionSummary = (transaction: Transaction) =>
 
 export const bucketService = {
   ...createService('bucket', serviceHandlers),
+  getAllBuckets: async (accounts: Account[], user: User) => {
+    const accountIds = accounts.map((account) => account.id);
+    const query = new AuthenticatedQuery<Bucket>(user).findBy('accountId', accountIds).findBy('isArchived', [null, false]);
+    return serviceHandlers.getAll(query);
+  },
   optimize: async (bucketId: string, maxTransactions: number, user: User) => {
     const transactions = (await transactionService.getAllBy('bucketId', [bucketId], user))
       .sort((transactionA, transactionB) => Date.parse(transactionA.date) - Date.parse(transactionB.date));

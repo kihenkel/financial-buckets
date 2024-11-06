@@ -3,7 +3,6 @@ import { Space, Typography, List, Table } from 'antd';
 import { useUserConfigContext } from '@/context';
 import { PageProps } from '@/components/AppContainer';
 import { ToolsBar } from '@/components/toolsBar/ToolsBar';
-import { getBucketTransactions, getBucketBalances, getBucketsTotal, getAdjustmentsTotal, getMainBalance } from '@/utils/bucketUtils';
 
 import styles from '@/styles/AccountSummaryPage.module.css';
 import { toCurrency } from '@/utils/toCurrency';
@@ -12,6 +11,8 @@ import { Account } from '@/models';
 import { calculateCDInterest, toPercentage } from '@/utils/numberUtils';
 import { toLocalDate } from '@/utils/dateUtils';
 import { N_A } from '@/utils/stringUtils';
+import { Row, Stack } from '@/components/layout/Layout';
+import { useAccountValues } from '@/hooks/useAccountValues';
 
 const { Text } = Typography;
 
@@ -27,17 +28,25 @@ interface CombinedBucket {
 export default function AccountSummaryPage({ data }: PageProps) {
   const { locale, currency } = useUserConfigContext();
 
-  const totalAccountBalance = useMemo(() => data.accounts.reduce((currentValue, account) => currentValue + account.balance, 0), [data]);
-  const bucketTransactions = useMemo(() => getBucketTransactions(data.buckets, data.transactions), [data]);
-  const bucketBalances = useMemo(() => getBucketBalances(bucketTransactions), [bucketTransactions]);
-  const bucketsTotalBalance = useMemo(() => getBucketsTotal(bucketBalances), [bucketBalances]);
-  const adjustmentsTotalBalance = useMemo(() => getAdjustmentsTotal(data.adjustments), [data]);
-  const mainBalance = useMemo(() => getMainBalance(totalAccountBalance, bucketsTotalBalance, adjustmentsTotalBalance), [totalAccountBalance, bucketsTotalBalance, adjustmentsTotalBalance]);
+  const { mainBalance, bucketBalances } = useAccountValues({ ...data });
+
+  const { checkingAccounts, savingsAccounts, cdAccounts } = useMemo(() => {
+    return data.accounts.reduce((acc, account) => {
+      if (account.type === 'checking') acc.checkingAccounts.push(account);
+      if (account.type === 'savings') acc.savingsAccounts.push(account);
+      if (account.type === 'cd') acc.cdAccounts.push(account);
+      return acc;
+    }, { checkingAccounts: [], savingsAccounts: [], cdAccounts: [] } as { checkingAccounts: Account[], savingsAccounts: Account[], cdAccounts: Account[] });
+  }, [data]);
+
+  const { mainBalance: checkingBalance } = useAccountValues({ ...data, accounts: checkingAccounts });
+  const totalSavingsBalance = useMemo(() => savingsAccounts.reduce((currentValue, account) => currentValue + account.balance, 0), [savingsAccounts]);
+  const totalCdBalance = useMemo(() => cdAccounts.reduce((currentValue, account) => currentValue + account.balance, 0), [cdAccounts]);
 
   const formattedMainBalance = useMemo(() => toCurrency(mainBalance, locale, currency), [mainBalance, locale, currency]);
   const titleComponent = useMemo(() => (
     <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-      <Text>All Accounts</Text>
+      <Text>All Accounts Total</Text>
       <Text strong>{formattedMainBalance}</Text>
     </Space>
   ), [formattedMainBalance]);
@@ -54,9 +63,8 @@ export default function AccountSummaryPage({ data }: PageProps) {
     }];
   }, [] as CombinedBucket[]);
 
-  const cdAccounts: CDAccount[] = useMemo(() => {
-    return data.accounts
-      .filter((account) => account.type === 'cd')
+  const cdAccountsCustom: CDAccount[] = useMemo(() => {
+    return cdAccounts
       .map((account) => {
         const { balance, interestRate, openDate, maturityDate } = account;
         const estimatedInterest: number = interestRate && openDate && maturityDate ? 
@@ -72,34 +80,52 @@ export default function AccountSummaryPage({ data }: PageProps) {
         if (!b.maturityDate) return -1;
         return new Date(a.maturityDate).valueOf() - new Date(b.maturityDate).valueOf();
       });
-  }, [data]);
+  }, [cdAccounts]);
+
+  const quickSummary = useMemo(() => ([{
+    checking: checkingBalance,
+    savings: totalSavingsBalance,
+    cds: totalCdBalance,
+  }]), [checkingBalance, totalSavingsBalance, totalCdBalance]);
 
   return (
     <div className={styles.page}>
       <ToolsBar />
       {data &&
         <div className={styles.main}>
-          <BucketShell title={titleComponent} style={{ width: 500, maxWidth: '500px' }}>
-            <List
-              dataSource={combinedBuckets}
-              renderItem={(combinedBucket) => (
-                <List.Item>
-                  <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-                    <Text>{combinedBucket.name}</Text>
-                    <Text strong>{toCurrency(combinedBucket.balance, locale, currency)}</Text>
-                  </Space>
-                </List.Item>
-              )}
-            />
-          </BucketShell>
-          <Table<CDAccount> dataSource={cdAccounts}>
-            <Table.Column title="Name" dataIndex="name" key="name" />
-            <Table.Column title="Initial Deposit" dataIndex="balance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
-            <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={toLocalDate} />
-            <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={toLocalDate} />
-            <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: string) => toPercentage(value, locale)} />
-            <Table.Column title="Estimated Interest" dataIndex="estimatedInterest" key="estimatedInterest" render={(value: number) => value >= 0 ? toCurrency(value, locale, currency) : N_A } />
-          </Table>
+          <Stack>
+            <Table dataSource={quickSummary} pagination={false}>
+              <Table.Column title="Checking" dataIndex="checking" key="checking" render={(value) => toCurrency(value, locale, currency)} />
+              <Table.Column title="Savings" dataIndex="savings" key="savings" render={(value) => toCurrency(value, locale, currency)} />
+              <Table.Column title="CDs" dataIndex="cds" key="cds" render={(value) => toCurrency(value, locale, currency)} />
+            </Table>
+            <Row>
+              <BucketShell title={titleComponent} style={{ width: 500, maxWidth: '500px' }}>
+                <List
+                  dataSource={combinedBuckets}
+                  renderItem={(combinedBucket) => (
+                    <List.Item>
+                      <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+                        <Text>{combinedBucket.name}</Text>
+                        <Text strong>{toCurrency(combinedBucket.balance, locale, currency)}</Text>
+                      </Space>
+                    </List.Item>
+                  )}
+                />
+              </BucketShell>
+              <Stack justify="flex-start" gap={0}>
+                <Row><Typography.Title level={4}>CDs</Typography.Title></Row>
+                <Table<CDAccount> dataSource={cdAccountsCustom} pagination={false}>
+                  <Table.Column title="Name" dataIndex="name" key="name" />
+                  <Table.Column title="Initial Deposit" dataIndex="balance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
+                  <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={toLocalDate} />
+                  <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={toLocalDate} />
+                  <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: string) => toPercentage(value, locale)} />
+                  <Table.Column title="Estimated Interest" dataIndex="estimatedInterest" key="estimatedInterest" render={(value: number) => value >= 0 ? toCurrency(value, locale, currency) : N_A } />
+                </Table>
+              </Stack>
+            </Row>
+          </Stack>
         </div>
       }
     </div>

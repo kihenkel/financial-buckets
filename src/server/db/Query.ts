@@ -1,10 +1,11 @@
 import { FilterQuery } from 'mongoose';
 import { DatabaseModel } from '@/models';
 
+type FieldValue = string | number | boolean | null;
 export abstract class Query<T = DatabaseModel> {
   protected ids: string[];
-  protected fields: Record<string, string>;
-  protected fieldsMultipleOr: Record<string, string[]> | null;
+  protected fields: Record<string, FieldValue>;
+  protected fieldsMultipleOr: Record<string, FieldValue[]> | null;
   protected emptyFields: string[];
 
   constructor() {
@@ -23,7 +24,7 @@ export abstract class Query<T = DatabaseModel> {
     return this.findByIds([id]);
   }
 
-  findBy(key: keyof T, value: string | string[]) {
+  findBy(key: keyof T, value: FieldValue | FieldValue[]) {
     if (Array.isArray(value)) {
       if (!this.fieldsMultipleOr) {
         this.fieldsMultipleOr = {};

@@ -6,6 +6,7 @@ export const bucketSchemaNew = databaseModelNew.append({
   name: Joi.string(),
   target: Joi.number(),
   order: Joi.number().positive(),
+  isArchived: Joi.boolean(),
 });
 
 export const bucketSchemaUpdate = databaseModelSchemaUpdate.append({
@@ -13,6 +14,7 @@ export const bucketSchemaUpdate = databaseModelSchemaUpdate.append({
   name: Joi.string(),
   target: Joi.number(),
   order: Joi.number().positive(),
+  isArchived: Joi.boolean(),
 });
 
-export const bucketOptimizeKeys = ['userId', 'accountId'];
+export const bucketOptimizeKeys = ['userId', 'accountId', 'isArchived'];
