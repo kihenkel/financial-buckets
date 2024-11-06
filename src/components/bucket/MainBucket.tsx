@@ -3,7 +3,7 @@ import { Space, Typography } from 'antd';
 import { useAccountContext, useUserConfigContext, useDataContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
 import { BucketShell } from './BucketShell';
-import { EditableText } from '../EditableText';
+import { EditableText } from '../EditableText/EditableText';
 import { AdjustmentList } from '../adjustment/AdjustmentList';
 import { AddAdjustment } from '../adjustment/AddAdjustment';
 import { Adjustment } from '@/models';

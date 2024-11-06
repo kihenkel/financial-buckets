@@ -169,10 +169,10 @@ export const useData = ({ shouldLoad }: UseDataProps): UseDataReturn => {
   }, [shouldLoad, doPrefetch]);
 
   useEffect(() => {
-    if (shouldLoad && !data) {
+    if (shouldLoad && !data && !isLoading) {
       fetchData();
     }
-  }, [shouldLoad, data, fetchData]);
+  }, [shouldLoad, data, isLoading, fetchData]);
 
   return {
     data,

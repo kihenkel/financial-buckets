@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { PartialData, Transaction } from '@/models';
 import { useDataContext, useNotificationContext, useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
-import { EditableText } from '../EditableText';
+import { EditableText } from '../EditableText/EditableText';
 import { ButtonDelete } from '../ButtonDelete';
 
 import styles from '@/styles/Transaction.module.css';

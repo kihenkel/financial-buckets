@@ -50,7 +50,8 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
       {} as Account;
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
-      if ((account.userId || serverAccount.userId) && account.id !== serverAccount.id) {
+      const isDifferentAccountSelected = account.id && account.id !== serverAccount.id;
+      if ((account.userId || serverAccount.userId) && isDifferentAccountSelected) {
         reset();
       }
     }
@@ -84,8 +85,11 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
     setUpdateData(update);
+  }, [update, setUpdateData]);
+
+  useEffect(() => {
     setDeleteData(remove);
-  }, [update, remove, setUpdateData, setDeleteData]);
+  }, [remove, setDeleteData]);
 
   useEffect(() => {
     setImportData(importData);

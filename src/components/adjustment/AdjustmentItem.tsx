@@ -5,7 +5,7 @@ import { PartialData, Adjustment } from '@/models';
 import { useDataContext, useUserConfigContext } from '@/context';
 import { toCurrency } from '@/utils/toCurrency';
 
-import { EditableText } from '../EditableText';
+import { EditableText } from '../EditableText/EditableText';
 import { ButtonDelete } from '../ButtonDelete';
 
 import styles from '@/styles/Adjustment.module.css';

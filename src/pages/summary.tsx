@@ -10,6 +10,8 @@ import { toCurrency } from '@/utils/toCurrency';
 import { BucketShell } from '@/components/bucket/BucketShell';
 import { Account } from '@/models';
 import { calculateCDInterest, toPercentage } from '@/utils/numberUtils';
+import { toLocalDate } from '@/utils/dateUtils';
+import { N_A } from '@/utils/stringUtils';
 
 const { Text } = Typography;
 
@@ -93,10 +95,10 @@ export default function AccountSummaryPage({ data }: PageProps) {
           <Table<CDAccount> dataSource={cdAccounts}>
             <Table.Column title="Name" dataIndex="name" key="name" />
             <Table.Column title="Initial Deposit" dataIndex="balance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
-            <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={(value: string) => new Date(value).toLocaleDateString()} />
-            <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={(value: string) => new Date(value).toLocaleDateString()} />
-            <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: number) => toPercentage(value)} />
-            <Table.Column title="Estimated Interest" dataIndex="estimatedInterest" key="estimatedInterest" render={(value: number) => value >= 0 ? toCurrency(value, locale, currency) : 'N/A' } />
+            <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={toLocalDate} />
+            <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={toLocalDate} />
+            <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: string) => toPercentage(value, locale)} />
+            <Table.Column title="Estimated Interest" dataIndex="estimatedInterest" key="estimatedInterest" render={(value: number) => value >= 0 ? toCurrency(value, locale, currency) : N_A } />
           </Table>
         </div>
       }

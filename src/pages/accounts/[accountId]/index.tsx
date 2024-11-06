@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from 'react';
-import { Descriptions } from 'antd';
 import { Bucket } from '@/components/bucket/Bucket';
 import { MainBucket } from '@/components/bucket/MainBucket';
 import { useAccountContext } from '@/context';
@@ -10,26 +9,7 @@ import { ToolsBar } from '@/components/toolsBar/ToolsBar';
 import { getBucketTransactions, getBucketBalances, getBucketsTotal, getAdjustmentsTotal, getMainBalance } from '@/utils/bucketUtils';
 
 import styles from '@/styles/AccountPage.module.css';
-import { Account } from '@/models';
-import { DescriptionsItemProps } from 'antd/es/descriptions/Item';
-import { AccountTypeMap } from '@/utils/accountUtils';
-
-const getAccountInfoItems = (account: Partial<Account>): (DescriptionsItemProps & { key: string })[] => {
-  const items = [{ key: 'name', label: 'Name', children: account.name }];
-  if (account.type) {
-    items.push({ key: 'type', label: 'Type', children: AccountTypeMap[account.type] });
-  }
-  if (account.interestRate) {
-    items.push({ key: 'interestRate', label: 'Interest', children: `${(account.interestRate * 100)}%` });
-  }
-  if (account.openDate) {
-    items.push({ key: 'openDate', label: 'Opened', children: new Date(account.openDate).toLocaleDateString() });
-  }
-  if (account.maturityDate) {
-    items.push({ key: 'maturityDate', label: 'Matures on', children: new Date(account.maturityDate).toLocaleDateString() });
-  }
-  return items;
-};
+import { AccountInfo } from '@/components/account/AccountInfo';
 
 export default function AccountPage({ data }: PageProps) {
   const { account } = useAccountContext();
@@ -59,9 +39,7 @@ export default function AccountPage({ data }: PageProps) {
               balance={mainBalance}
               adjustments={data.adjustments}
             />
-            <Descriptions title="Account Info" size="small" bordered layout="vertical">
-              {getAccountInfoItems(account).map((item) => <Descriptions.Item {...item} key={item.key} />)}
-            </Descriptions>
+            <AccountInfo account={account} />
           </div>
           <div className={styles.right}>
             {sortedBuckets.map((bucket, index) =>

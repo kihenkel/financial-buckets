@@ -1,10 +1,11 @@
+import { N_A } from '@/utils/stringUtils';
 import { Input, InputProps, Typography } from 'antd';
 import { TextProps } from 'antd/es/typography/Text';
-import { EventHandler,  MouseEvent,  useCallback, useState } from 'react';
+import { EventHandler,  MouseEvent,  useCallback, useMemo, useState } from 'react';
 
 const { Text }= Typography;
 
-interface EditableTextProps {
+export interface EditableTextProps {
   text: string;
   placeholder?: string;
   textProps?: TextProps;
@@ -13,9 +14,10 @@ interface EditableTextProps {
   allowEmpty?: boolean;
   onEdit(newText: string): void;
   validate?(input: string): boolean;
+  format?(value: string): string;
 }
 
-export const EditableText = ({ text, placeholder, textProps, inputProps, clearOnSelect, allowEmpty, onEdit, validate }: EditableTextProps) => {
+export const EditableText = ({ text, placeholder, textProps, inputProps, clearOnSelect, allowEmpty, onEdit, validate, format }: EditableTextProps) => {
   const [isEditMode, setIsEditMode] = useState(!text);
 
   const handleTextClick = useCallback((e: MouseEvent) => {
@@ -34,15 +36,17 @@ export const EditableText = ({ text, placeholder, textProps, inputProps, clearOn
       onEdit(newText);
     }
   }, [text, allowEmpty, onEdit, setIsEditMode, validate]);
+
+  const formattedText = useMemo(() => format && text !== N_A ? format(text) : text, [format, text]);
   return (
     <>
-      {!isEditMode && <Text {...textProps} onClick={handleTextClick} style={{ cursor: 'text', ...textProps?.style }}>{text}</Text>}
+      {!isEditMode && <Text {...textProps} onClick={handleTextClick} style={{ cursor: 'text', ...textProps?.style }}>{formattedText}</Text>}
       {isEditMode &&
         <Input
           autoFocus={!!text}
-          placeholder={text || placeholder}
+          placeholder={format && text && text !== N_A ? format(text) : (text || placeholder)}
           defaultValue={clearOnSelect ? undefined : text}
-          bordered={false}
+          variant="borderless"
           size="small"
           {...inputProps}
           style={{ padding: 0, ...inputProps?.style }}

@@ -5,7 +5,7 @@ import { useDataContext, useUserConfigContext } from '@/context';
 import { Bucket as BucketModel, Transaction } from '@/models';
 import { toCurrency } from '@/utils/toCurrency';
 
-import { EditableText } from '../EditableText';
+import { EditableText } from '../EditableText/EditableText';
 import { BucketShell } from './BucketShell';
 import { TransactionList } from '../transaction/TransactionList';
 import { AddTransaction } from '../transaction/AddTransaction';
