@@ -93,7 +93,7 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
     [balance, locale, currency]);
 
   const bucketTarget = useMemo(() => (
-    bucket.target !== 0 ?
+    bucket.target ?
       <div className={styles.bucketTarget}>
         Target:&nbsp;
         <EditableText
@@ -119,7 +119,7 @@ export const Bucket = ({ bucket, transactions, balance }: BucketProps) => {
         }
         {isEditMode &&
           <Space align="end" style={{ gap: '0px' }}>
-            <Button onClick={() => handleTargetChanged('0')} size="small" type="text"><AimOutlined /></Button>
+            <Button onClick={() => handleTargetChanged('1')} size="small" type="text"><AimOutlined /></Button>
             <ButtonArchive onConfirm={handleArchiveConfirmed} />
             <ButtonOptimizeBucket onConfirm={handleOptimizeConfirmed} />
             <ButtonDelete itemName="bucket" onConfirm={handleDeleteConfirmed} />

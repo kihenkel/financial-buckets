@@ -44,6 +44,7 @@ export const MainBucket = ({ name, balance, adjustments }: MainBucketProps) => {
   return (
     <BucketShell title={titleComponent}>
       <Space direction="vertical" size="middle">
+        <Typography.Text type="secondary">Upcoming Transactions</Typography.Text>
         <AdjustmentList listRef={listRef} adjustments={adjustments} />
         <AddAdjustment />
       </Space>

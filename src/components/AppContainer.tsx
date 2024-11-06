@@ -45,17 +45,21 @@ export const AppContainer = ({ Component, pageProps }: AppProps) => {
   const { accountId } = router.query;
 
   useEffect(() => {
-    const serverAccount = router.asPath.startsWith('/accounts') ?
+    const isDifferentAccountSelected = (router.asPath.startsWith('/accounts') && !router.asPath.includes('[accountId]')) ||
+      router.asPath === '/summary';
+    if (isDifferentAccountSelected) {
+      reset();
+    }
+  }, [router.asPath, reset]);
+
+  useEffect(() => {
+    const serverAccount = accountId ?
       data?.accounts.find(account => account.id === accountId) :
       {} as Account;
     if (serverAccount && !isEqual(account, serverAccount)) {
       setAccount(serverAccount);
-      const isDifferentAccountSelected = account.id && account.id !== serverAccount.id;
-      if ((account.userId || serverAccount.userId) && isDifferentAccountSelected) {
-        reset();
-      }
     }
-  }, [account, accountId, data, router.asPath, setAccount, reset]);
+  }, [account, accountId, data, setAccount]);
 
   useEffect(() => {
     const isIntroductionNeeded = needsIntroduction(data);

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Dropdown } from 'antd';
+import { Dropdown, Tag } from 'antd';
 import { PlusOutlined, DownOutlined, PieChartOutlined } from '@ant-design/icons';
 
 import styles from '@/styles/Layout.module.css';
@@ -17,14 +17,14 @@ interface HeaderProps {
   data?: Data;
 }
 
-const getAccountName = (account: Partial<Account>) => {
+const getAccountName = (account: Partial<Account>): React.ReactNode => {
   if (!account.name) {
     return 'Unnamed account';
   }
-  if (!account.type) {
+  if (account.type !== 'cd' && account.type !== 'savings') {
     return account.name;
   }
-  return `${account.name} (${AccountTypeMap[account.type]})`;
+  return <><Tag>{AccountTypeMap[account.type]}</Tag>{account.name}</>;
 };
 
 export const Header = ({ data }: HeaderProps) => {
@@ -34,7 +34,7 @@ export const Header = ({ data }: HeaderProps) => {
   const { user } = useUserContext();
 
   const isSummaryPage = isSummaryPath(router.pathname);
-  const dropdownLabel = `${user?.name}'s ${isSummaryPage ? 'Summary' : getAccountName(account)}`;
+  const dropdownLabel = `${user?.name}'s ${isSummaryPage ? 'Summary' : account.name}`;
 
   const dropdownItems = useMemo(() => {
     if (!showAccountSelection(router.pathname) || !data?.accounts) {
@@ -43,6 +43,14 @@ export const Header = ({ data }: HeaderProps) => {
 
     const existingAccounts = data?.accounts
       .filter((currentAccount) => isSummaryPage || currentAccount.id !== account.id)
+      .sort((a, b) => {
+        if (a.type === b.type) return 0;
+        if (a.type === 'checking') return 1;
+        if (a.type === 'savings') return 1;
+        if (!a.type) return 1;
+        if (a.type === 'cd') return 1;
+        return 0;
+      })
       .map((currentAccount, index) => {
         return {
           key: String(index),
