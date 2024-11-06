@@ -7,7 +7,7 @@ import { PlusOutlined, DownOutlined, PieChartOutlined } from '@ant-design/icons'
 import styles from '@/styles/Layout.module.css';
 import { useAccountContext, useUserContext } from '@/context';
 import { useRouter } from 'next/router';
-import { Account, Data } from '@/models';
+import { Account, AccountType, Data } from '@/models';
 import { AccountTypeMap } from '@/utils/accountUtils';
 
 const isSummaryPath = (pathname: string) => pathname === '/summary';
@@ -27,6 +27,19 @@ const getAccountName = (account: Partial<Account>): React.ReactNode => {
   return <><Tag>{AccountTypeMap[account.type]}</Tag>{account.name}</>;
 };
 
+
+const ACCOUNT_TYPE_ORDER: (AccountType | undefined)[] = ['checking', 'savings', undefined, 'cd'];
+const sortAccounts = (a: Account, b: Account) => {
+  if (a.type === b.type) {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  }
+  const indexA = ACCOUNT_TYPE_ORDER.indexOf(a.type);
+  const indexB = ACCOUNT_TYPE_ORDER.indexOf(b.type);
+  return indexA - indexB;
+};
+
 export const Header = ({ data }: HeaderProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -43,14 +56,7 @@ export const Header = ({ data }: HeaderProps) => {
 
     const existingAccounts = data?.accounts
       .filter((currentAccount) => isSummaryPage || currentAccount.id !== account.id)
-      .sort((a, b) => {
-        if (a.type === b.type) return 0;
-        if (a.type === 'checking') return 1;
-        if (a.type === 'savings') return 1;
-        if (!a.type) return 1;
-        if (a.type === 'cd') return 1;
-        return 0;
-      })
+      .sort(sortAccounts)
       .map((currentAccount, index) => {
         return {
           key: String(index),

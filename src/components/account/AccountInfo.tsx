@@ -26,20 +26,20 @@ export const AccountInfo = ({ account }: AccountInfoProps) => {
   
   return (
     <Descriptions title="Account Info" size="small" bordered layout="vertical">
-      <Descriptions.Item key="name" label="Name">
+      <Descriptions.Item key="name" label="Name" span={2}>
         <EditableText text={withFallback(account.name)} onEdit={(val) => handleDataEdit(val, 'name')} />
       </Descriptions.Item>
-      <Descriptions.Item key="type" label="Type">
+      <Descriptions.Item key="type" label="Type" span={2}>
         {withFallback(account.type && AccountTypeMap[account.type])}
+      </Descriptions.Item>
+      <Descriptions.Item key="openDate" label="Opened" span={2}>
+        <EditableDate text={account.openDate} onEdit={(val) => handleDataEdit(val, 'openDate')} />
+      </Descriptions.Item>
+      <Descriptions.Item key="maturityDate" label="Matures" span={2}>
+        <EditableDate text={account.maturityDate} onEdit={(val) => handleDataEdit(val, 'maturityDate')} />
       </Descriptions.Item>
       <Descriptions.Item key="interestRate" label="Interest">
         <EditablePercentage text={account.interestRate} onEdit={(val) => handleDataEdit(val, 'interestRate')} />
-      </Descriptions.Item>
-      <Descriptions.Item key="openDate" label="Opened">
-        <EditableDate text={account.openDate} onEdit={(val) => handleDataEdit(val, 'openDate')} />
-      </Descriptions.Item>
-      <Descriptions.Item key="maturityDate" label="Matures">
-        <EditableDate text={account.maturityDate} onEdit={(val) => handleDataEdit(val, 'maturityDate')} />
       </Descriptions.Item>
     </Descriptions>
   );
