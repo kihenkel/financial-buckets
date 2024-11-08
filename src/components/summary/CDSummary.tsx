@@ -33,9 +33,9 @@ const CDSummary = ({ cdAccounts }: CDSummaryProps) => {
   const cdAccountsCustom: CDAccount[] = useMemo(() => {
     return cdAccounts
       .map((account) => {
-        const { balance, interestRate, openDate, maturityDate } = account;
+        const { initialBalance, interestRate, openDate, maturityDate } = account;
         const estimatedInterest: number = interestRate && openDate && maturityDate ? 
-          calculateCDInterest(balance, interestRate * 100, new Date(openDate), new Date(maturityDate)) :
+          calculateCDInterest(initialBalance, interestRate * 100, new Date(openDate), new Date(maturityDate)) :
           -1;
         return {
           ...account,
@@ -54,7 +54,7 @@ const CDSummary = ({ cdAccounts }: CDSummaryProps) => {
       <Row><Typography.Title level={4}>CDs</Typography.Title></Row>
       <Table<CDAccount> dataSource={cdAccountsCustom} pagination={false}>
         <Table.Column title="Name" dataIndex="name" key="name" />
-        <Table.Column title="Initial Deposit" dataIndex="balance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
+        <Table.Column title="Initial Deposit" dataIndex="initialBalance" key="initialDeposit" render={(value: number) => toCurrency(value, locale, currency)} />
         <Table.Column title="Open Date" dataIndex="openDate" key="openDate" render={toLocalDate} />
         <Table.Column title="Maturity Date" dataIndex="maturityDate" key="maturityDate" render={renderMaturityDate} />
         <Table.Column title="Interest Rate" dataIndex="interestRate" key="interestRate" render={(value: string) => toPercentage(value, locale)} />
