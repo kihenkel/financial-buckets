@@ -17,6 +17,9 @@ Currently Auth0 is the only supported authentication provider, but more provider
 The backend is database-agnostic, meaning that any database can be added via an adapter.
 Currently the only supported database is MongoDB, but more adapters can be added.
 
+### Migrations
+For MongoDB migrations this app is using [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
+
 ## Deployment
 Being a Next.js app the deployment works best in Vercel, but the app can be deployed anywhere with the necessary configuration.
 

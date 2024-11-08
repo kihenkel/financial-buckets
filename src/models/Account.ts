@@ -8,6 +8,7 @@ export type AccountType = 'checking' | 'savings' | 'cd';
 export interface Account extends DatabaseModel {
   name: string;
   balance: number;
+  initialBalance: number;
   cycle: AccountCycle;
   lastAccess: string;
   type: AccountType;

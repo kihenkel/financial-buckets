@@ -1,4 +1,4 @@
-import { Account } from '@/models';
+import { Account, AccountType } from '@/models';
 import { AccountTypeMap } from '@/utils/accountUtils';
 import { Descriptions } from 'antd';
 import { EditableText } from '../EditableText/EditableText';
@@ -11,6 +11,11 @@ import EditableDate from '../EditableText/EditableDate';
 interface AccountInfoProps {
   account: Partial<Account>;
 }
+
+const allowedTypes: AccountType[] = ['checking', 'savings', 'cd'];
+const validateType = (text: string): boolean => {
+  return allowedTypes.some((allowedType) => text.toLowerCase() === allowedType);
+};
 
 export const AccountInfo = ({ account }: AccountInfoProps) => {
   const { updateData } = useDataContext();
@@ -30,7 +35,7 @@ export const AccountInfo = ({ account }: AccountInfoProps) => {
         <EditableText text={withFallback(account.name)} onEdit={(val) => handleDataEdit(val, 'name')} />
       </Descriptions.Item>
       <Descriptions.Item key="type" label="Type" span={2}>
-        {withFallback(account.type && AccountTypeMap[account.type])}
+        <EditableText text={withFallback(account.type && AccountTypeMap[account.type])} onEdit={(val) => handleDataEdit(val.toLowerCase(), 'type')} validate={validateType} clearOnSelect />
       </Descriptions.Item>
       <Descriptions.Item key="openDate" label="Opened" span={2}>
         <EditableDate text={account.openDate} onEdit={(val) => handleDataEdit(val, 'openDate')} />
